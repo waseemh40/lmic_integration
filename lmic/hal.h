@@ -21,8 +21,8 @@ typedef enum{
 	advance_sync
 }time_manager_cmd_t;
 
-#define		BASIC_SYNCH_SECONDS			3
-#define		ADVANCE_SYNCH_SECONDS		9
+#define		BASIC_SYNCH_SECONDS			10
+#define		ADVANCE_SYNCH_SECONDS		60
 
 
 void 				time_manager_init(void);

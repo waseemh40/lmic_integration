@@ -53,6 +53,7 @@
 		}
 		LMIC_setDrTxpow(DR_SF7, 7);
 		LMIC_setAdrMode(false);
+		debug_str("Tx Called\n");
 		return (LMIC_setTxData2(2,buf,strlen((char*)buf),1));
 	}
 
@@ -61,6 +62,7 @@
 	    LMIC_reset();
 	    // start joining
 	    LMIC_startJoining();
+	    //debug_str("joined called\n");
 	}
 	static osjob_t blinkjob;
 	static u1_t ledstate = 0;
@@ -86,11 +88,10 @@
 		else {
 			;
 		}
-	   os_setCallback(j, blinkfunc);
+	   os_setTimedCallback(j,os_getTime()+ms2osticks(300), blinkfunc);
 	}
 
 //////////////////////////////////////////////////////////////
-	bool join_flag=false;
 int main() {
 	 /*
 	  ********************* Chip initialization*************
@@ -103,8 +104,6 @@ int main() {
 	  *******************************************************
 	  */
 	bool								flag=false;
-	const unsigned char  				rs232_tx_buf[64];
-
 
 	flag=app_manager_init();
 	if(flag){
@@ -116,18 +115,20 @@ int main() {
 		 return 0;
 	}
 	time_manager_init();
-	os_init();
-	debug_str("OS initialized and join called. Waiting for join to finish...\n");
 
   while(1) {
+
 		osjob_t initjob;
+		os_init();
+		debug_str("OS initialized and join called. Waiting for join to finish...\n");
 	    os_setCallback(&initjob, initfunc);
-	    while(!join_flag);
+	    os_runloop();
+	    /*while(!join_flag);
 	    // execute scheduled jobs and events
 	    debug_str("\t\t\tJoined gateway. Starting system. Insh A ALLAH will be OK!\n");
 
 	    os_setCallback(&initjob, blinkfunc);
-	    os_runloop();
+	    os_runloop();*/
   }
 /*	  SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 	  EMU_EnterEM1();
@@ -158,8 +159,7 @@ void onEvent (ev_t ev) {
       // network joined, session established
       case EV_JOINED:
     	  debug_str("EV_JOINED\n");
-    	  join_flag=true;
-    	  //blinkfunc(&blinkjob);
+    	  blinkfunc(&blinkjob);
           break;
       //transmission complete
       case EV_TXCOMPLETE:
