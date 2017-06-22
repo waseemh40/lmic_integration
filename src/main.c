@@ -61,13 +61,6 @@
 	    LMIC_reset();
 	    // start joining
 	    LMIC_startJoining();
-	    // init done - onEvent() callback will be invoked...
-	    /*if(tx_function()<0){
-	    	debug_str("Tx gave -ive value\n");
-	    }
-	    else{
-	    	debug_str("Tx gave +ive value\n");
-	    }*/
 	}
 	static osjob_t blinkjob;
 	static u1_t ledstate = 0;
@@ -84,10 +77,16 @@
 			  nav_data=app_manager_get_nav_data();
 			  nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
 																nav_data.hour,nav_data.min,nav_data.sec);
+			  app_manager_tbr_synch_msg(advance_sync,nav_data);
+			  tx_function();
 		}
-	  	app_manager_tbr_synch_msg(time_manager_cmd,nav_data);
-	    tx_function();
-	   //os_setTimedCallback(j, os_getTime()+sec2osticks(20), blinkfunc);
+		else if(time_manager_cmd==basic_sync){
+			app_manager_tbr_synch_msg(basic_sync,nav_data);
+		}
+		else {
+			;
+		}
+	   os_setCallback(j, blinkfunc);
 	}
 
 //////////////////////////////////////////////////////////////
@@ -123,9 +122,13 @@ int main() {
   while(1) {
 		osjob_t initjob;
 	    os_setCallback(&initjob, initfunc);
+	    while(!join_flag);
 	    // execute scheduled jobs and events
-	    debug_str("\t\t\tOS callback job added!\n");
+	    debug_str("\t\t\tJoined gateway. Starting system. Insh A ALLAH will be OK!\n");
+
+	    os_setCallback(&initjob, blinkfunc);
 	    os_runloop();
+  }
 /*	  SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 	  EMU_EnterEM1();
 	  time_manager_cmd=time_manager_get_cmd();
@@ -161,8 +164,8 @@ void onEvent (ev_t ev) {
       //transmission complete
       case EV_TXCOMPLETE:
     	  debug_str("EV_TXCOMPLETE. Going to sleep mode\n");
-    	  SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-    	  EMU_EnterEM1();
+    	  //SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+    	  //EMU_EnterEM1();
     	  break;
       case EV_JOIN_FAILED:
     	  debug_str("EV_JOIN_FAILED\n");

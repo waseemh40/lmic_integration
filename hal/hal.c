@@ -57,6 +57,10 @@ unsigned long 		time_manager_unixTimestamp(int year, int month, int day,
 
   return sec + 60 * ( min + 60 * (hour + 24*days_since_1970) );
 }
+
+time_manager_cmd_t 		time_manager_get_cmd(void){
+	return time_manager_cmd;
+}
 //////////////////////////////////////////////////////////////////////
 
 // -----------------------------------------------------------------------------
@@ -80,14 +84,15 @@ void GPIO_EVEN_IRQHandler()	//impar
 	}
 	else if (int_mask & 1<<GPS_TIME_PULSE){
 	     time_count++;
-		 time_manager_cmd=basic_sync;
+		 time_manager_cmd=3;
 	     if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
-	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+	         //SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+	    	 time_manager_cmd=basic_sync;
 	     }
 	     if(time_count==ADVANCE_SYNCH_SECONDS){
 	    	 time_manager_cmd=advance_sync;
 	    	 time_count=0;
-	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+	         //SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 	     }
 	}
 	//debug_str("\tEven IRQ END\n");
@@ -107,9 +112,7 @@ void GPIO_ODD_IRQHandler()	//par
 	//debug_str("\tODD IRQ End\n");
 	return;
  }
-time_manager_cmd_t 		time_manager_get_cmd(void){
-	return time_manager_cmd;
-}
+
 static void hal_io_init ()
 {
 
