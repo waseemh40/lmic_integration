@@ -5,9 +5,10 @@
 
 
 
-////////////////////////////////////////////////////////////
-	// CONFIGURATION (FOR APPLICATION CALLBACKS BELOW)
+	///////////////////////////////////////////////////
+	/////////////////LPWAN node parameters////////////
 	//////////////////////////////////////////////////
+
 	// LoRaWAN Application identifier (0xLSB, 0xxx, ......, 0xMSB)
 	static const u1_t APPEUI[8]  = {  0x88,	0x99,	0x11,	0x55,	0x44,	0x22,	0x11,	0x00};
 
@@ -16,8 +17,9 @@
 
 	//static const u1_t DEVKEY[16] (0xMSB, 0xxx, ......, 0xLSB i.e. normal format)
 	static const u1_t DEVKEY[16] = {0x00,	0x11,	0x00,	0x22,	0x00,	0x33,	0x00,	0x44,	0x00,	0x55,	0x00,	0x66,	0x00,	0x77,	0x00,	0x88};
+
 	//////////////////////////////////////////////////
-	// APPLICATION CALLBACKS
+	////////////////lmic call backs///////////////////
 	//////////////////////////////////////////////////
 
 	// provide application router ID (8 bytes, LSBF)
@@ -38,7 +40,6 @@
 	osjob_t 	initjob;;
 	osjob_t		app_job;
 
-	static u1_t ledstate = 0;
 
 	static int tx_function (void) {
 		unsigned char buf[220];
@@ -51,7 +52,7 @@
 		    LMIC_disableChannel(i);
 		  }
 		}
-		LMIC_setDrTxpow(DR_SF7, 7);
+		LMIC_setDrTxpow(DR_SF7, 14);
 		LMIC_setAdrMode(false);
 		//debug_str("Tx Called\n");
 		return (LMIC_setTxData2(2,buf,strlen((char*)buf),1));
@@ -157,7 +158,6 @@ void onEvent (ev_t ev) {
     		  debug_str("\nNo ACK RXCVD retrying...\n");
     		  tx_function();	//retry logic. NOT tested.
     	  }
-
     	  break;
       case EV_JOIN_FAILED:
     	  debug_str("\tEV_JOIN_FAILED\n");
