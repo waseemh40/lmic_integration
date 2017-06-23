@@ -13,7 +13,6 @@
 #include "../devices_header/tbr.h"
 #include "../drivers_header/rs232.h"
 #include "../devices_header/ublox_gps.h"
-#include "../devices_header/radio.h"
 #include "../fat_filesystem_header/ff.h"
 #include "../fat_filesystem_header/diskio.h"
 #include "../lmic/lmic.h"

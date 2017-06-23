@@ -77,8 +77,6 @@ src/main.o: ../src/main.c \
  ../src/../resource\ managers_header/../devices_header/../drivers_header/pinmap.h \
  ../src/../resource\ managers_header/../devices_header/../drivers_header/spi.h \
  ../src/../resource\ managers_header/../devices_header/ublox_msg.h \
- ../src/../resource\ managers_header/../devices_header/radio.h \
- ../src/../resource\ managers_header/../devices_header/radio_reg_map.h \
  ../src/../resource\ managers_header/../fat_filesystem_header/ff.h \
  ../src/../resource\ managers_header/../fat_filesystem_header/../fat_filesystem_header/integer.h \
  ../src/../resource\ managers_header/../fat_filesystem_header/../fat_filesystem_header/ffconf.h \
@@ -252,10 +250,6 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buff
 ../src/../resource\ managers_header/../devices_header/../drivers_header/spi.h:
 
 ../src/../resource\ managers_header/../devices_header/ublox_msg.h:
-
-../src/../resource\ managers_header/../devices_header/radio.h:
-
-../src/../resource\ managers_header/../devices_header/radio_reg_map.h:
 
 ../src/../resource\ managers_header/../fat_filesystem_header/ff.h:
 

@@ -71,7 +71,7 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	rgb_shutdown();
 	return ret_flag;
 }
-void shift_buffer(unsigned char *buffer, uint8_t buffer_size, uint8_t shift_amount){
+/*void shift_buffer(unsigned char *buffer, uint8_t buffer_size, uint8_t shift_amount){
 	int 			inner_loop_var=0;
 	int 			outer_loop_var=0;
 
@@ -106,7 +106,7 @@ void send_data_on_radio(unsigned char *tx_buf,uint8_t message_count){
 	RFM_Send_Package(tx_buf,msg_length_in_bytes);
 	RFM_off();
 	return;
-}
+}*/
 		/*
 		 * public functions
 		 */
@@ -137,12 +137,6 @@ bool app_manager_init(void){
 	  	  }while(!temp_init_flag);
 	sprintf((char *)rs232_tx_buf,"GPS Init. DONE\n");
 	rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-				//LoRA
-	init_retry=RFM_Init();
-	RFM_off();
-	sprintf((char *)rs232_tx_buf,"Radio is  init. in %2x mode\n",init_retry);
-	rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-	init_retry=0;
 				//SD card
 	 do{
 		 temp_init_flag=sd_card_init();
@@ -190,14 +184,11 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 	int				tbr_msg_count=0;
 	int				tbr_msg_length=0;
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
-	////////////////Radio thing insh-A-ALLAH///////////////
-	unsigned char	radio_buf[LORA_TX_BUFFER_SIZE]="insh A ALLAH basic msg";
-	///////////////////////////////////////////////////////
+
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)nav_data.gps_timestamp);
 		sprintf((char *)rs232_tx_buf,"Basic Sync MSG:Flag=%d\t\n",temp_flag);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-		//RFM_Send_Package(radio_buf,23);
 	  }
 	  else if (time_manager_cmd==1 && nav_data.valid==1 ){
 		  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)nav_data.gps_timestamp);
@@ -208,7 +199,6 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 			temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,tbr_msg_buf);
 			sprintf((char *)rs232_tx_buf,"\t\tFile Write Flag=%1d Length=%3d\t\n",temp_flag,tbr_msg_length);
 			rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-			//send_data_on_radio((unsigned char *)tbr_msg_buf,tbr_msg_count);
 		  }
 		  last_nav_data=nav_data;
 	  }

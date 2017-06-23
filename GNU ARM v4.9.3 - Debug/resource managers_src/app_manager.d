@@ -78,8 +78,6 @@ resource\ managers_src/app_manager.o: \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\spi.h \
  ../resource\ managers_src/../resource\ managers_header/../devices_header/ublox_msg.h \
- ../resource\ managers_src/../resource\ managers_header/../devices_header/radio.h \
- ../resource\ managers_src/../resource\ managers_header/../devices_header/radio_reg_map.h \
  ../resource\ managers_src/../resource\ managers_header/../fat_filesystem_header/ff.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\integer.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\ffconf.h \
@@ -253,10 +251,6 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_h
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\spi.h:
 
 ../resource\ managers_src/../resource\ managers_header/../devices_header/ublox_msg.h:
-
-../resource\ managers_src/../resource\ managers_header/../devices_header/radio.h:
-
-../resource\ managers_src/../resource\ managers_header/../devices_header/radio_reg_map.h:
 
 ../resource\ managers_src/../resource\ managers_header/../fat_filesystem_header/ff.h:
 

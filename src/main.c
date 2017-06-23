@@ -8,18 +8,13 @@
 ////////////////////////////////////////////////////////////
 	// CONFIGURATION (FOR APPLICATION CALLBACKS BELOW)
 	//////////////////////////////////////////////////
-	// LoRaWAN Application identifier (AppEUI)
-	// Not used in this example
-		//my gateway EUIs
+	// LoRaWAN Application identifier (0xLSB, 0xxx, ......, 0xMSB)
 	static const u1_t APPEUI[8]  = {  0x88,	0x99,	0x11,	0x55,	0x44,	0x22,	0x11,	0x00};
 
-	// LoRaWAN DevEUI, unique device ID (LSBF)
-	// Not used in this example
+	// LoRaWAN DevEUI, unique device ID (0xLSB, 0xxx, ......, 0xMSB)
 	static const u1_t DEVEUI[8]  = { 0x00,	0x80,	0x00,	0x00,	0x00,	0x00,	0x78,	0x86};
 
-	// LoRaWAN NwkSKey, network session key
-	// Use this key for The Things Network
-	//static const u1_t DEVKEY[16] = {0x88,	0x00,	0x77,	0x00,	0x66,	0x00,	0x55,	0x00,	0x44,	0x00,	0x33,	0x00,	0x22,	0x00,	0x11,	0x00};
+	//static const u1_t DEVKEY[16] (0xMSB, 0xxx, ......, 0xLSB i.e. normal format)
 	static const u1_t DEVKEY[16] = {0x00,	0x11,	0x00,	0x22,	0x00,	0x33,	0x00,	0x44,	0x00,	0x55,	0x00,	0x66,	0x00,	0x77,	0x00,	0x88};
 	//////////////////////////////////////////////////
 	// APPLICATION CALLBACKS
@@ -58,7 +53,7 @@
 		}
 		LMIC_setDrTxpow(DR_SF7, 7);
 		LMIC_setAdrMode(false);
-		debug_str("Tx Called\n");
+		//debug_str("Tx Called\n");
 		return (LMIC_setTxData2(2,buf,strlen((char*)buf),1));
 	}
 
@@ -79,11 +74,9 @@
 		//debug_str("Going to sleep mode...\n");
 		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 		EMU_EnterEM1();
-		debug_str("\tWoke up\n");
-			// toggle LED
-	    ledstate = !ledstate;
-	    debug_led(ledstate);
-	    	// reschedule blink job
+		//debug_str("\tWoke up\n");
+
+	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
 		if(time_manager_cmd==advance_sync) {
 			  nav_data=app_manager_get_nav_data();
@@ -124,7 +117,6 @@ int main() {
 		 rgb_on(true,false,false);
 		 return 0;
 	}
-	time_manager_init();
 
   while(1) {
 
@@ -151,12 +143,21 @@ void onEvent (ev_t ev) {
       // network joined, session established
       case EV_JOINED:
     	  debug_str("\tEV_JOINED\n");
+    	  time_manager_init();
     	  app_funct(&app_job);	//first time call....
           break;
       //transmission complete
       case EV_TXCOMPLETE:
     	  debug_str("\tEV_TXCOMPLETE\n");
-   	   os_setCallback(&app_job, app_funct);
+    	  if(LMIC.txrxFlags & TXRX_ACK){
+    		  //debug_str("\nAck Rxcvd\n");
+        	  os_setCallback(&app_job, app_funct);
+    	  }
+    	  else{
+    		  debug_str("\nNo ACK RXCVD retrying...\n");
+    		  tx_function();	//retry logic. NOT tested.
+    	  }
+
     	  break;
       case EV_JOIN_FAILED:
     	  debug_str("\tEV_JOIN_FAILED\n");
@@ -174,7 +175,7 @@ void onEvent (ev_t ev) {
     	  debug_str("\tEV_LINK_ALIVE\n");
 	      break;
       default:
-    	  debug_str("\tDummy or default event..\n");
+    	  //debug_str("\tDummy or default event..\n");
     	  os_setCallback(&app_job, app_funct);
     	  break;
     }
