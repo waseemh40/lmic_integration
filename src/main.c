@@ -40,6 +40,11 @@
 	    memcpy(buf, DEVKEY, 16);
 	}
 /////////////////////////////////////////////////////////////
+	osjob_t 	initjob;;
+	osjob_t		app_job;
+
+	static u1_t ledstate = 0;
+
 	static int tx_function (void) {
 		unsigned char buf[220];
 		sprintf((char*)buf,"insh A ALLAH txt msg will be reveiced\n");// in good form and time will be much lesser I think so. Hello world this is Things Network for TTK8108 course...insh A ALLAH txt msg will be reveiced in good form\n");
@@ -64,16 +69,21 @@
 	    LMIC_startJoining();
 	    //debug_str("joined called\n");
 	}
-	static osjob_t blinkjob;
-	static u1_t ledstate = 0;
+		//jobs for os
 
-	static void blinkfunc (osjob_t* j) {
+	static void app_funct (osjob_t* j) {
 		time_manager_cmd_t					time_manager_cmd=basic_sync;
 		nav_data_t	 						nav_data;
-	    // toggle LED
+
+			//goto sleep
+		//debug_str("Going to sleep mode...\n");
+		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+		EMU_EnterEM1();
+		debug_str("\tWoke up\n");
+			// toggle LED
 	    ledstate = !ledstate;
 	    debug_led(ledstate);
-	    // reschedule blink job
+	    	// reschedule blink job
 		time_manager_cmd=time_manager_get_cmd();
 		if(time_manager_cmd==advance_sync) {
 			  nav_data=app_manager_get_nav_data();
@@ -84,11 +94,11 @@
 		}
 		else if(time_manager_cmd==basic_sync){
 			app_manager_tbr_synch_msg(basic_sync,nav_data);
+			onEvent(0);		//dummy event to sleep again....
 		}
 		else {
 			;
 		}
-	   os_setTimedCallback(j,os_getTime()+ms2osticks(300), blinkfunc);
 	}
 
 //////////////////////////////////////////////////////////////
@@ -118,29 +128,11 @@ int main() {
 
   while(1) {
 
-		osjob_t initjob;
 		os_init();
 		debug_str("OS initialized and join called. Waiting for join to finish...\n");
 	    os_setCallback(&initjob, initfunc);
 	    os_runloop();
-	    /*while(!join_flag);
-	    // execute scheduled jobs and events
-	    debug_str("\t\t\tJoined gateway. Starting system. Insh A ALLAH will be OK!\n");
-
-	    os_setCallback(&initjob, blinkfunc);
-	    os_runloop();*/
   }
-/*	  SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-	  EMU_EnterEM1();
-	  time_manager_cmd=time_manager_get_cmd();
-	  if(time_manager_cmd==advance_sync) {
-		  nav_data=app_manager_get_nav_data();
-		  nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
-															nav_data.hour,nav_data.min,nav_data.sec);
-	  }
-	  app_manager_tbr_synch_msg(time_manager_cmd,nav_data);
-   }
-   */
 }
 //////////////////////////////////////////////////
 // LMIC EVENT CALLBACK
@@ -153,37 +145,37 @@ void onEvent (ev_t ev) {
 
       // starting to join network
       case EV_JOINING:
-          debug_str("EV_JOINING\n");
+          debug_str("\tEV_JOINING\n");
           break;
 
       // network joined, session established
       case EV_JOINED:
-    	  debug_str("EV_JOINED\n");
-    	  blinkfunc(&blinkjob);
+    	  debug_str("\tEV_JOINED\n");
+    	  app_funct(&app_job);	//first time call....
           break;
       //transmission complete
       case EV_TXCOMPLETE:
-    	  debug_str("EV_TXCOMPLETE. Going to sleep mode\n");
-    	  //SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-    	  //EMU_EnterEM1();
+    	  debug_str("\tEV_TXCOMPLETE\n");
+   	   os_setCallback(&app_job, app_funct);
     	  break;
       case EV_JOIN_FAILED:
-    	  debug_str("EV_JOIN_FAILED\n");
+    	  debug_str("\tEV_JOIN_FAILED\n");
     	  break;
       case EV_RXCOMPLETE:
-    	  debug_str("EV_RXCOMPLETE\n");
+    	  debug_str("\tEV_RXCOMPLETE\n");
     	  break;
       case EV_SCAN_TIMEOUT:
-    	  debug_str("EV_SCAN_TIMEOUT\n");
+    	  debug_str("\tEV_SCAN_TIMEOUT\n");
     	  break;
       case EV_LINK_DEAD:
-    	  debug_str("EV_LINK_DEAD\n");
+    	  debug_str("\tEV_LINK_DEAD\n");
 	      break;
       case EV_LINK_ALIVE:
-    	  debug_str("EV_LINK_ALIVE\n");
+    	  debug_str("\tEV_LINK_ALIVE\n");
 	      break;
       default:
-    	  debug_str("Default Event..\n");
+    	  debug_str("\tDummy or default event..\n");
+    	  os_setCallback(&app_job, app_funct);
     	  break;
     }
 }
