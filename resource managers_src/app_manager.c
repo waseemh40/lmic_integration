@@ -183,8 +183,9 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 	bool			temp_flag=false;
 	int				tbr_msg_count=0;
 	int				tbr_msg_length=0;
+	int				tbr_lora_length=0;
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
-	uint8_t			lora_msg_buf[ARRAY_MESSAGE_SIZE];
+	uint8_t			tbr_lora_buf[ARRAY_MESSAGE_SIZE];
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)nav_data.gps_timestamp);
 		sprintf((char *)rs232_tx_buf,"Basic Sync MSG:Flag=%d\t\n",temp_flag);
@@ -194,7 +195,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 		  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)nav_data.gps_timestamp);
 		  sprintf((char *)rs232_tx_buf,"Advance Synch MSG:Flag=%d\t TimeStamp=%ld\t",temp_flag,(time_t)nav_data.gps_timestamp);
 		  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-		  tbr_msg_count=tbr_recv_msg_uint(lora_msg_buf,&tbr_msg_length);//tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
+		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);//tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 		  if(tbr_msg_count>0){
 			temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,tbr_msg_buf);
 			sprintf((char *)rs232_tx_buf,"\t\tFile Write Flag=%1d Length=%3d\t\n",temp_flag,tbr_msg_length);
@@ -208,7 +209,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 		  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)(last_nav_data.gps_timestamp+60));	//add exactly 60 seconds to last TimeStamp
 		  sprintf((char *)rs232_tx_buf,"\tAdvance Synch MSG:Flag=%d",temp_flag);
 		  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-		  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
+		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);//tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 		  if(tbr_msg_count>0){
 			  temp_flag=file_sys_setup(last_nav_data.year,last_nav_data.month,last_nav_data.day,tbr_msg_buf);
 			  sprintf((char *)rs232_tx_buf,"\t\tFile Write Flag=%1d Length=%3d\t\n",temp_flag,tbr_msg_length);
