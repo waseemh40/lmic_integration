@@ -71,42 +71,6 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	rgb_shutdown();
 	return ret_flag;
 }
-/*void shift_buffer(unsigned char *buffer, uint8_t buffer_size, uint8_t shift_amount){
-	int 			inner_loop_var=0;
-	int 			outer_loop_var=0;
-
-	for(outer_loop_var=0;outer_loop_var<shift_amount;outer_loop_var++){
-		for (inner_loop_var = buffer_size; inner_loop_var > 0; inner_loop_var--){
-			buffer[inner_loop_var]=buffer[inner_loop_var-1];
-		}
-	}
-	return;
-}
-uint8_t	pack_radio_message(unsigned char *tbr_sn, uint8_t msg_type, uint8_t message_count, unsigned char *tx_buf){
-	uint8_t			length=0;
-	int 			inner_loop_var=0;
-	length=strlen((char*)tx_buf);
-		//shift buffer to add space in the beginning
-	shift_buffer(tx_buf,240,4);
-		//add SN and message type
-	for (inner_loop_var = 0; inner_loop_var < 4; inner_loop_var++){
-		tx_buf[inner_loop_var]=tbr_sn[inner_loop_var];
-	}
-	//strncat((char *)tx_buf, (char *) tbr_sn,6);
-	//tx_buf[5]=(char)message_count;
-	return (7+length);
-}
-void send_data_on_radio(unsigned char *tx_buf,uint8_t message_count){
-	unsigned char	tbr_sn[7]="@01:";
-	uint8_t			msg_type=0;
-	uint8_t			msg_length_in_bytes=0;
-
-	RFM_Init();
-	msg_length_in_bytes=pack_radio_message(tbr_sn,msg_type,message_count,tx_buf);
-	RFM_Send_Package(tx_buf,msg_length_in_bytes);
-	RFM_off();
-	return;
-}*/
 		/*
 		 * public functions
 		 */
