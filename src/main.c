@@ -106,11 +106,11 @@ static void 	init_func (osjob_t* j);
 			  app_manager_tbr_synch_msg(advance_sync,nav_data);
 			  lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			  if(lora_msg_length>0){
-				  debug_str((const u1_t*)"LoRa Msgs Txmtd\n");
+				  debug_str((const u1_t*)"LoRa Txmtd\n");
 				  lora_tx_function();
 			  }
 			  else{
-				  debug_str((const u1_t*)"NO LoRa Messages\n");
+				  debug_str((const u1_t*)"No LoRa Message\n");
 				  onEvent(0);
 				  //os_setCallback(&app_job, app_funct);
 			  }
