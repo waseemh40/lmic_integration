@@ -180,7 +180,7 @@ bool get_and_compare(char *compare_string){
 char temp_buf[64];
 ///////////////////////
 uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uint8_t offset){
-	char 			buffer[16];
+	char 			resuable_buffer[16];
 	char			*temp_ptr;
 	uint8_t			loop_var=0;
 	uint32_t		timestamp=0;
@@ -191,12 +191,12 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 	debug_str(single_msg);
 	debug_str("\n");*/
 
-	clear_buffer(buffer, 16);
+	clear_buffer(resuable_buffer, 16);
 		//extract timestamp
 	for(loop_var=0;loop_var<10;loop_var++){
-		buffer[loop_var]=single_msg[loop_var+8];
+		resuable_buffer[loop_var]=single_msg[loop_var+8];
 	}
-	timestamp=(uint32_t)strtoul(buffer,&temp_ptr,10);
+	timestamp=(uint32_t)strtoul(resuable_buffer,&temp_ptr,10);
 		//process and put into buffer
 	dst_buf[offset+0]=(uint8_t)(timestamp>>24);
 	dst_buf[offset+1]=(uint8_t)(timestamp>>16);
@@ -211,12 +211,12 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 	debug_str(temp_buf);
 	delay_ms(7);*/
 
-	clear_buffer(buffer, 10);
+	clear_buffer(resuable_buffer, 10);
 		//extract millisec
 	for(loop_var=0;loop_var<3;loop_var++){
-		buffer[loop_var]=single_msg[loop_var+19];
+		resuable_buffer[loop_var]=single_msg[loop_var+19];
 	}
-	millisec=(uint16_t)strtoul(buffer,&temp_ptr,10);
+	millisec=(uint16_t)strtoul(resuable_buffer,&temp_ptr,10);
 		//process and put into buffer
 	dst_buf[offset+4]=(uint8_t)(millisec>>8);
 	dst_buf[offset+5]=(uint8_t)(millisec>>0);
@@ -226,12 +226,12 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 	debug_str(temp_buf);
 	delay_ms(7);*/
 
-	clear_buffer(buffer, 10);
+	clear_buffer(resuable_buffer, 10);
 		//extract tagID
 	for(loop_var=0;loop_var<2;loop_var++){
-		buffer[loop_var]=single_msg[loop_var+28];
+		resuable_buffer[loop_var]=single_msg[loop_var+28];
 	}
-	tagID=(uint8_t)strtoul(buffer,&temp_ptr,10);
+	tagID=(uint8_t)strtoul(resuable_buffer,&temp_ptr,10);
 		//process and put into buffer
 	dst_buf[offset+6]=(uint8_t)(tagID>>0);
 
@@ -246,7 +246,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 	uint8_t 		inner_loop_var=0;
 	uint8_t			outer_loop_var=0;
 	uint8_t			offset_src_buf=0;
-	uint8_t			offset_lora_buf=0;
+	uint8_t			offset_dst_buf=0;
 	char 			single_msg[50];
 	char			*temp_ptr;
 	uint8_t			messages_converted=0;
@@ -267,7 +267,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 	debug_str(temp_buf);
 	delay_ms(7);*/
 
-	offset_lora_buf=1;
+	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;
 	for(outer_loop_var=0;outer_loop_var<msg_count;outer_loop_var++){
@@ -281,7 +281,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		}
 
 		if((strstr(single_msg,(const char*)"TBR Sensor")==NULL) && (strstr(single_msg,(const char*)"ack")==NULL)){		//only add detections NOT sensor values....
-			offset_lora_buf+=convert_single_tbr_msg_into_uint(single_msg,dst_buf,offset_lora_buf);
+			offset_dst_buf+=convert_single_tbr_msg_into_uint(single_msg,dst_buf,offset_dst_buf);
 			messages_converted++;
 		}
 		/*sprintf(temp_buf,"\tConvert:Offset=%d Outer Loop_var=%d\n",offset_src_buf,outer_loop_var);
@@ -361,9 +361,9 @@ int tbr_recv_msg(char *msg_buf, int *msg_length){
 
 uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf, int *msg_length)
 {
-	int 			msg_count=0;
-	uint8_t			temp_int=0;
 	int 			loop_var=0;
+	int 			msg_count=0;
+	uint8_t			lora_buf_length=0;
 	char			temp_char='0';
 		//SD card msg_buffer
 	clear_buffer(msg_buf, ARRAY_MESSAGE_SIZE);
@@ -384,9 +384,9 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 	delay_ms(7);*/
 
 	//LoRa buffer
-	temp_int=convert_tbr_msgs_to_uint(msg_buf,lora_msg_buf,(uint8_t)msg_count);
-	temp_int=((temp_int*7)+1);
-	if(temp_int<=2){temp_int=0;}	//exclude Serial Number byte....
+	lora_buf_length=convert_tbr_msgs_to_uint(msg_buf,lora_msg_buf,(uint8_t)msg_count);
+	lora_buf_length=((lora_buf_length*7)+1);
+	if(lora_buf_length<=2){lora_buf_length=0;}	//exclude Serial Number byte....
 
 	/*sprintf(temp_buf,"Size=%d Lora Buffer is:\n",temp_int);
 	debug_str(temp_buf);
@@ -400,6 +400,6 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 	debug_char('\n');
 	delay_ms(7);*/
 
-	*lora_length=temp_int;
+	*lora_length=lora_buf_length;
 	return msg_count;
 }

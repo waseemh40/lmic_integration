@@ -13,6 +13,9 @@
 		 */
 static			FATFS 				FatFs;
 static 			nav_data_t			last_nav_data;
+static 			int					tbr_lora_length=0;
+static 			uint8_t				tbr_lora_buf[ARRAY_MESSAGE_SIZE];
+
 		/*
 		 * public variables
 		 */
@@ -147,9 +150,8 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 	bool			temp_flag=false;
 	int				tbr_msg_count=0;
 	int				tbr_msg_length=0;
-	int				tbr_lora_length=0;
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
-	uint8_t			tbr_lora_buf[ARRAY_MESSAGE_SIZE];
+
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)nav_data.gps_timestamp);
 		sprintf((char *)rs232_tx_buf,"Basic Sync MSG:Flag=%d\t\n",temp_flag);
@@ -188,4 +190,20 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 
 nav_data_t app_manager_get_nav_data(void){
 	return gps_get_nav_data();
+}
+uint8_t	app_manager_get_lora_buffer(uint8_t	*lora_buffer){
+	int				loop_var=0;
+	uint8_t			lora_buf_length=0;
+
+	if(tbr_lora_length>0){
+		for(loop_var=0;loop_var<tbr_lora_length;loop_var++){
+			lora_buffer[loop_var]=tbr_lora_buf[loop_var];
+		}
+		lora_buf_length=(uint8_t)tbr_lora_length;
+		tbr_lora_length=0;
+		return lora_buf_length;
+	}
+	else{
+		return 0;
+	}
 }
