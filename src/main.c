@@ -167,7 +167,7 @@ int main() {
 		nav_data_t	 			nav_data;
 		nav_data_t	 			last_nav_data;
 
-
+		rgb_shutdown();
 	    debug_str((const u1_t*)"\t\tNo radio version started\n");
 		time_manager_init();
 		while(1){
