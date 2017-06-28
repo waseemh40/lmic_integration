@@ -90,7 +90,7 @@ bool app_manager_init(void){
 	  	  	  	  //Turn on init. LED (blue)
 	  rgb_on(false,false,true);
 
-#ifdef USE_GPS		true
+#ifdef USE_GPS
 	  init_retry=0;
 	  do{
 		  temp_init_flag= gps_init();
@@ -107,7 +107,7 @@ bool app_manager_init(void){
 	rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 #endif
 
-#ifdef USE_SD_CARD	true
+#ifdef USE_SD_CARD
 	 do{
 		 temp_init_flag=sd_card_init();
 			 init_retry++;
@@ -134,7 +134,7 @@ bool app_manager_init(void){
 	sd_card_off();
 #endif
 
-#ifdef USE_TBR		true
+#ifdef USE_TBR
 	tbr_init();
 	init_retry=0;
 	 do{

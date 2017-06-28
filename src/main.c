@@ -152,10 +152,36 @@ int main() {
 	rgb_on(false,false,true);					//keep blue led on
   while(1) {
 
+#ifdef USE_RADIO
 		os_init();
-		debug_str((const u1_t*)"OS initialized and join called. Waiting for join to finish...\n");
-	    os_setCallback(&init_job, init_func);
+		debug_str((const u1_t*)"\t\t Radio Version. OS initialized and join called. Waiting for join to finish...\n");
+		os_setCallback(&init_job, init_func);
 	    os_runloop();
+#else
+		debug_str((const u1_t*)"\t\tNo radio version started\n");
+		time_manager_init();
+
+		while(1){
+			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+			EMU_EnterEM1();
+
+		    	//update application manager
+			time_manager_cmd=time_manager_get_cmd();
+			if(time_manager_cmd==advance_sync) {
+				  nav_data=app_manager_get_nav_data();
+				  nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
+																	nav_data.hour,nav_data.min,nav_data.sec);
+				  app_manager_tbr_synch_msg(advance_sync,nav_data);
+			}
+			else if(time_manager_cmd==basic_sync){
+				app_manager_tbr_synch_msg(basic_sync,nav_data);
+			}
+			else {
+				;
+			}
+
+		}
+#endif
   }
 }
 	//////////////////////////////////////////////////
