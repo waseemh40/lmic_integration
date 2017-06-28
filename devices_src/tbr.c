@@ -152,7 +152,6 @@ bool get_and_compare(char *compare_string){
 	int				loop_var=0;
 	char			temp_char='0';
 	bool			ret_flag=false;
-	bool			temp_flag=false;
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
 	delay_ms(7);												//response time from TBR
@@ -168,12 +167,12 @@ bool get_and_compare(char *compare_string){
 	 else{
 		 ret_flag=false;
 	 }
-	 temp_flag=check_other_messages(cmd_rx_tx_buf);
-	 if(temp_flag==true){
+	 check_other_messages(cmd_rx_tx_buf);
+	 /*if(temp_flag==true){
 		 rgb_on(false,false,true);
 		 delay_ms(7);
 		 rgb_shutdown();
-	 }
+	 }*/
 	return ret_flag;
 }
 

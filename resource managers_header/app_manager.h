@@ -25,6 +25,7 @@
 #define		USE_GPS				ture
 #define		USE_SD_CARD			true
 #define		USE_RADIO			true
+#define 	BOTH_RADIO_SD_CARD	true		//app_manager.c => inside advance_synch_message function
 	/*
 	 * shared variables
 	 */

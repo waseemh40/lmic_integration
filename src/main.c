@@ -92,6 +92,7 @@ static void 	init_func (osjob_t* j);
 	static void app_funct (osjob_t* j) {
 		time_manager_cmd_t		time_manager_cmd=basic_sync;
 		nav_data_t	 			nav_data;
+		nav_data_t	 			last_nav_data;
 
 			//goto sleep
 		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
@@ -99,29 +100,33 @@ static void 	init_func (osjob_t* j);
 
 	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
-		if(time_manager_cmd==advance_sync) {
-			  nav_data=app_manager_get_nav_data();
-			  nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
-																nav_data.hour,nav_data.min,nav_data.sec);
-			  app_manager_tbr_synch_msg(advance_sync,nav_data);
-			  lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
-			  if(lora_msg_length>0){
-				  debug_str((const u1_t*)"LoRa Tx Strtd\n");
-				  lora_tx_function();
-			  }
-			  else{
-				  debug_str((const u1_t*)"No LoRa Message\n");
-				  onEvent(0);
-				  //os_setCallback(&app_job, app_funct);
-			  }
+		last_nav_data=nav_data;
+		nav_data=app_manager_get_nav_data();
+		nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
+															nav_data.hour,nav_data.min,nav_data.sec);
+
+		if(nav_data.valid==true){
+			app_manager_tbr_synch_msg(time_manager_cmd,nav_data);
 		}
-		else if(time_manager_cmd==basic_sync){
-			app_manager_tbr_synch_msg(basic_sync,nav_data);
-			onEvent(0);
-			//os_setCallback(&app_job, app_funct);
+		else{
+			app_manager_tbr_synch_msg(time_manager_cmd,last_nav_data);
 		}
-		else {
-			;
+		if(time_manager_cmd==advance_sync){
+			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
+			if(lora_msg_length>0){
+			  debug_str((const u1_t*)"LoRa Tx Strtd\n");
+			  lora_tx_function();
+			}
+			else{
+			  debug_str((const u1_t*)"No LoRa Message\n");
+			  onEvent(0);
+			  //os_setCallback(&app_job, app_funct);
+			}
+
+		}
+		else{
+			  onEvent(0);
+			  //os_setCallback(&app_job, app_funct);
 		}
 		return;
 	}
@@ -154,30 +159,34 @@ int main() {
 
 #ifdef USE_RADIO
 		os_init();
-		debug_str((const u1_t*)"\t\t Radio Version. OS initialized and join called. Waiting for join to finish...\n");
+		debug_str((const u1_t*)"\t\tRadio Version. OS initialized and join called. Waiting for join to finish...\n");
 		os_setCallback(&init_job, init_func);
 	    os_runloop();
 #else
-		debug_str((const u1_t*)"\t\tNo radio version started\n");
-		time_manager_init();
+		time_manager_cmd_t		time_manager_cmd=basic_sync;
+		nav_data_t	 			nav_data;
+		nav_data_t	 			last_nav_data;
 
+
+	    debug_str((const u1_t*)"\t\tNo radio version started\n");
+		time_manager_init();
 		while(1){
+				//goto sleep
 			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 			EMU_EnterEM1();
 
-		    	//update application manager
+				//update application manager
 			time_manager_cmd=time_manager_get_cmd();
-			if(time_manager_cmd==advance_sync) {
-				  nav_data=app_manager_get_nav_data();
-				  nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
-																	nav_data.hour,nav_data.min,nav_data.sec);
-				  app_manager_tbr_synch_msg(advance_sync,nav_data);
+			last_nav_data=nav_data;
+			nav_data=app_manager_get_nav_data();
+			nav_data.gps_timestamp=time_manager_unixTimestamp(nav_data.year,nav_data.month,nav_data.day,
+																nav_data.hour,nav_data.min,nav_data.sec);
+
+			if(nav_data.valid==true){
+				app_manager_tbr_synch_msg(time_manager_cmd,nav_data);
 			}
-			else if(time_manager_cmd==basic_sync){
-				app_manager_tbr_synch_msg(basic_sync,nav_data);
-			}
-			else {
-				;
+			else{
+				app_manager_tbr_synch_msg(time_manager_cmd,last_nav_data);
 			}
 
 		}
