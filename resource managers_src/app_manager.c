@@ -89,7 +89,8 @@ bool app_manager_init(void){
 	  delay_init();
 	  	  	  	  //Turn on init. LED (blue)
 	  rgb_on(false,false,true);
-	  	  	  	  //GPS
+
+#ifdef USE_GPS		true
 	  init_retry=0;
 	  do{
 		  temp_init_flag= gps_init();
@@ -104,7 +105,9 @@ bool app_manager_init(void){
 	  	  }while(!temp_init_flag);
 	sprintf((char *)rs232_tx_buf,"GPS Init. DONE\n");
 	rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-				//SD card
+#endif
+
+#ifdef USE_SD_CARD	true
 	 do{
 		 temp_init_flag=sd_card_init();
 			 init_retry++;
@@ -116,6 +119,7 @@ bool app_manager_init(void){
 					return 0;
 			 }
 		 }while(!temp_init_flag);
+
 	init_retry=0;
 	 do{
 		 temp_init_flag=(bool)f_mount(&FatFs,"", 0);
@@ -128,7 +132,9 @@ bool app_manager_init(void){
 			 }
 		 }while(temp_init_flag);
 	sd_card_off();
-				//TBR
+#endif
+
+#ifdef USE_TBR		true
 	tbr_init();
 	init_retry=0;
 	 do{
@@ -140,6 +146,7 @@ bool app_manager_init(void){
 					break;
 			 }
 		 }while(!temp_init_flag);
+#endif
 	 	 	 //Turn off init. LED
 	 rgb_shutdown();
 	 return true;
@@ -151,45 +158,54 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 	int				tbr_msg_count=0;
 	int				tbr_msg_length=0;
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
-
+/////////////////////////////////////////
+	char 			timeStamp_buf[32];
+////////////////////////////////////////
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)nav_data.gps_timestamp);
-		/*if(!temp_flag){
+		//if(!temp_flag){
 			sprintf((char *)rs232_tx_buf,"Bsc Flg=%d\t\n",temp_flag);
 			rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-		}*/
+		//}
 	}
 	  else if (time_manager_cmd==1 && nav_data.valid==1 ){
 		  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)nav_data.gps_timestamp);
-		/*if(!temp_flag){
+		//if(!temp_flag){
 		  	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld\n",temp_flag,(time_t)nav_data.gps_timestamp);
 		  	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-			}*/
+			//}
 			//sprintf((char *)rs232_tx_buf,"TStmp=%ld\n",(time_t)nav_data.gps_timestamp);
 			//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 			//delay_ms(1);////////////////////
 		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);//tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 		  if(tbr_msg_count>0){
-			sprintf(tbr_msg_buf,"%ld\t %s",nav_data.gps_timestamp,tbr_msg_buf);////////////
 			temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,tbr_msg_buf);
-			//sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
-			//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+			sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
+			rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		  }
 		  last_nav_data=nav_data;
+		 /////////////////////////////////////////////////////
+		sprintf(timeStamp_buf,"%ld\n",(time_t)nav_data.gps_timestamp);
+		temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,timeStamp_buf);
+		//////////////////////////////////////////////////////
+
 	  }
 	  else if (time_manager_cmd==1 && nav_data.valid==0){
-		  //sprintf((char *)rs232_tx_buf,"\tInvld TStmp\n");
-		  //rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+		  sprintf((char *)rs232_tx_buf,"\tInvld TStmp\n");
+		  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)(last_nav_data.gps_timestamp+60));	//add exactly 60 seconds to last TimeStamp
-		  //sprintf((char *)rs232_tx_buf,"\tAdv Flg=%d",temp_flag);
-		  //rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+		  sprintf((char *)rs232_tx_buf,"\tAdv Flg=%d",temp_flag);
+		  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);//tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 		  if(tbr_msg_count>0){
-			  sprintf(tbr_msg_buf,"Invalid TS: %ld\t %s",last_nav_data.gps_timestamp+60,tbr_msg_buf);/////////////////////////
 			  temp_flag=file_sys_setup(last_nav_data.year,last_nav_data.month,last_nav_data.day,tbr_msg_buf);
-			  //sprintf((char *)rs232_tx_buf,"\t\tWrt Flg=%1d Lngth=%3d\t\n",temp_flag,tbr_msg_length);
-			  //rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+			  sprintf((char *)rs232_tx_buf,"\t\tWrt Flg=%1d Lngth=%3d\t\n",temp_flag,tbr_msg_length);
+			  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		  }
+		 /////////////////////////////////////////////////////
+		sprintf(timeStamp_buf,"Invalid:%ld\n",(time_t)(last_nav_data.gps_timestamp+60));
+		temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,timeStamp_buf);
+		//////////////////////////////////////////////////////
 	  }
 	  else{
 		  ;

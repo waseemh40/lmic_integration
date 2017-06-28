@@ -19,8 +19,12 @@
 #include "../hal/debug.h"
 #include "../lmic/hal.h"
 
-#define INIT_RETRIES	10
+#define 	INIT_RETRIES	10
 
+#define 	USE_TBR 			true
+#define		USE_GPS				ture
+#define		USE_SD_CARD			true
+#define		USE_RADIO			true
 	/*
 	 * shared variables
 	 */

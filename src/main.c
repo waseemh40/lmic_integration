@@ -77,7 +77,7 @@ static void 	init_func (osjob_t* j);
 
 		//sprintf((char*)lora_buffer,"insh A ALLAH txt msg will be reveiced\n");
 		//debug_str("Tx Called\n");
-		LMIC_setTxData2(2,lora_buffer,lora_msg_length,1); //Ack => blocking behavior....
+		LMIC_setTxData2(2,lora_buffer,lora_msg_length,0); //Ack => blocking behavior....
 		return;
 	}
 
@@ -106,7 +106,7 @@ static void 	init_func (osjob_t* j);
 			  app_manager_tbr_synch_msg(advance_sync,nav_data);
 			  lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			  if(lora_msg_length>0){
-				  //debug_str((const u1_t*)"LoRa Txmtd\n");
+				  debug_str((const u1_t*)"LoRa Tx Strtd\n");
 				  lora_tx_function();
 			  }
 			  else{
@@ -183,15 +183,15 @@ void onEvent (ev_t ev) {
       //transmission complete
       case EV_TXCOMPLETE:
     	  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
-    	  if(LMIC.txrxFlags & TXRX_ACK){
+    	  /*if(LMIC.txrxFlags & TXRX_ACK){
     		  //debug_str("\nAck Rxcvd\n");
         	  os_setCallback(&app_job, app_funct);
     	  }
     	  else{
     		  debug_str((const u1_t*)"\nNo ACK RXCVD retrying...\n");
     		  lora_tx_function();	//retry logic. NOT tested.
-    	  }
-    	  //os_setCallback(&app_job, app_funct);
+    	  }*/
+    	  os_setCallback(&app_job, app_funct);
     	  break;
       case EV_JOIN_FAILED:
     	  debug_str((const u1_t*)"\tEV_JOIN_FAILED\n");
