@@ -10,8 +10,8 @@
 			/*
 			 * Shared variables
 			 */
-	osjob_t 			init_job;
-	osjob_t				app_job;
+	static osjob_t 			init_job;
+	static osjob_t			app_job;
 
 			/*
 			 * LMIC callbacks
@@ -82,7 +82,7 @@
 	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
 		//pos_nav_data=app_manager_get_nav_data();
-		ref_timestamp.gps_timestamp+=10;				//add 10secs
+		ref_timestamp.gps_timestamp+=BASIC_SYNCH_SECONDS;				//add 10secs
 		app_manager_tbr_synch_msg(time_manager_cmd,ref_timestamp);
 
 		if(time_manager_cmd==advance_sync){

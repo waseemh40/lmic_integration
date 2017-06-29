@@ -161,16 +161,20 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
 /////////////////////////////////////////
 	char 			timeStamp_buf[32];
+	nav_data_t		debug_timestamp;
+	debug_timestamp=gps_get_nav_data();
+	debug_timestamp.gps_timestamp=time_manager_unixTimestamp(debug_timestamp.year,debug_timestamp.month,debug_timestamp.day,
+															debug_timestamp.hour,debug_timestamp.min,debug_timestamp.sec);
+
 ////////////////////////////////////////
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
-		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld\t\n",temp_flag,(time_t)ref_timestamp.gps_timestamp);
+		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld DStmp=%ld\t\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-		delay_ms(0);
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
-	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp);
+	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld DStmp=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp);
 	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
@@ -190,10 +194,9 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 #endif
 	  /////////////////////////////////////////////////////////
-	  sprintf(timeStamp_buf,"%ld\n",(time_t)ref_timestamp.gps_timestamp);
+	  sprintf(timeStamp_buf,"Ref=%ld, Debug=%ld\n",(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp);
 	  temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,timeStamp_buf);
 	  //////////////////////////////////////////////////////////
-	  delay_ms(0);
 	  }
 	  else{
 		  ;

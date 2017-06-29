@@ -29,6 +29,10 @@ static time_manager_cmd_t 		time_manager_cmd=basic_sync;
 static int 						time_count=0;
 
 void 		time_manager_init(void){
+	////////////////////////////////////////////////////////////////
+	GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, 5, gpioModePushPull, 0);
+	////////////////////////////////////////////////////////////////
 	//GPIO_PinModeSet(GPS_SIG_PORT, GPS_INT, gpioModeInput, 0);
 	GPIO_PinModeSet(GPS_SIG_PORT, GPS_TIME_PULSE, gpioModeInput, 0);
 	GPIO_IntConfig(GPS_SIG_PORT,GPS_TIME_PULSE,true,false,true);
@@ -67,6 +71,9 @@ time_manager_cmd_t 		time_manager_get_cmd(void){
 // I/O
 extern void radio_irq_handler(u1_t dio);
 int gpio_int_flag=0;
+////////////////////////////////////
+static bool		test_flag=false;
+////////////////////////////////
 void GPIO_EVEN_IRQHandler()	//impar
  {
 	u4_t int_mask = GPIO_IntGetEnabled();
@@ -83,6 +90,18 @@ void GPIO_EVEN_IRQHandler()	//impar
 		gpio_int_flag=2;
 	}
 	else if (int_mask & 1<<GPS_TIME_PULSE){
+		//////////////////////////////////
+		if(test_flag){
+			GPIO_PinOutSet(gpioPortC, 4);
+			GPIO_PinOutSet(gpioPortC, 5);
+			test_flag=false;
+		}
+		else{
+			GPIO_PinOutClear(gpioPortC, 5);
+			GPIO_PinOutClear(gpioPortC, 4);
+			test_flag=true;
+		}
+		///////////////////////////////////
 	     time_count++;
 	     if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
 	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
@@ -318,7 +337,7 @@ void hal_enableIRQs ()
 
 void hal_sleep ()
 {
-	//EMU_EnterEM2(false);
+	EMU_EnterEM1();
 }
 
 // -----------------------------------------------------------------------------
