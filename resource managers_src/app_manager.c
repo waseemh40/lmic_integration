@@ -153,7 +153,7 @@ bool app_manager_init(void){
 	 return true;
 }
 
-void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
+void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timestamp){
 
 	bool			temp_flag=false;
 	int				tbr_msg_count=0;
@@ -163,26 +163,26 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 	char 			timeStamp_buf[32];
 ////////////////////////////////////////
 	if(time_manager_cmd==0){
-		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)nav_data.gps_timestamp);
-		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld\t\n",temp_flag,(time_t)nav_data.gps_timestamp);
+		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
+		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld\t\n",temp_flag,(time_t)ref_timestamp.gps_timestamp);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		delay_ms(0);
 	}
 	else if (time_manager_cmd==1){
-	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)nav_data.gps_timestamp);
-	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld\n",temp_flag,(time_t)nav_data.gps_timestamp);
+	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
+	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp);
 	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
-		temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,tbr_msg_buf);
+		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
 		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  }
 #elif BOTH_RADIO_SD_CARD
 	  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
-		temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,tbr_msg_buf);
+		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
 		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  }
@@ -190,8 +190,8 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t nav_data){
 		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 #endif
 	  /////////////////////////////////////////////////////////
-	  sprintf(timeStamp_buf,"%ld\n",(time_t)nav_data.gps_timestamp);
-	  temp_flag=file_sys_setup(nav_data.year,nav_data.month,nav_data.day,timeStamp_buf);
+	  sprintf(timeStamp_buf,"%ld\n",(time_t)ref_timestamp.gps_timestamp);
+	  temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,timeStamp_buf);
 	  //////////////////////////////////////////////////////////
 	  delay_ms(0);
 	  }

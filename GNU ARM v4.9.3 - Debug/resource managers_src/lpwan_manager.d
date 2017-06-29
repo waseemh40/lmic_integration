@@ -1,7 +1,10 @@
-src/main.o: ../src/main.c \
- ../src/../resource\ managers_header/app_manager.h \
- ../src/../resource\ managers_header/../drivers_header/delay.h \
- ../src/../resource\ managers_header/../drivers_header/../drivers_header/pinmap.h \
+resource\ managers_src/lpwan_manager.o: \
+ ../resource\ managers_src/lpwan_manager.c \
+ ../resource\ managers_src/../resource\ managers_header/lpwan_manager.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/hal.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/oslmic.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/hal.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_emu.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\em_device.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg842f1024.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\cmsis\include\core_cm3.h \
@@ -46,9 +49,12 @@ src/main.o: ../src/main.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg_dmactrl.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg_af_ports.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg_af_pins.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_bus.h \
+ ../resource\ managers_src/../resource\ managers_header/../resource\ managers_header/app_manager.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_cmu.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_assert.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_bus.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_gpio.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_system.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_chip.h \
@@ -58,50 +64,46 @@ src/main.o: ../src/main.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h \
- ../src/../resource\ managers_header/../devices_header/rgb_led.h \
- ../src/../resource\ managers_header/../devices_header/../drivers_header/pwm.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\rgb_led.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pwm.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
- ../src/../resource\ managers_header/../devices_header/../drivers_header/delay.h \
- ../src/../resource\ managers_header/../devices_header/../drivers_header/rs232.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs232.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_rs232.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
- ../src/../resource\ managers_header/../devices_header/tbr.h \
- ../src/../resource\ managers_header/../devices_header/../drivers_header/rs485.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\tbr.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs485.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_leuart.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_tbr.h \
- ../src/../resource\ managers_header/../devices_header/../devices_header/rgb_led.h \
- ../src/../resource\ managers_header/../drivers_header/rs232.h \
- ../src/../resource\ managers_header/../devices_header/ublox_gps.h \
- ../src/../resource\ managers_header/../devices_header/../drivers_header/pinmap.h \
- ../src/../resource\ managers_header/../devices_header/../drivers_header/spi.h \
- ../src/../resource\ managers_header/../devices_header/ublox_msg.h \
- ../src/../resource\ managers_header/../fat_filesystem_header/ff.h \
- ../src/../resource\ managers_header/../fat_filesystem_header/../fat_filesystem_header/integer.h \
- ../src/../resource\ managers_header/../fat_filesystem_header/../fat_filesystem_header/ffconf.h \
- ../src/../resource\ managers_header/../fat_filesystem_header/diskio.h \
- ../src/../resource\ managers_header/../fat_filesystem_header/../devices_header/sd_card.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\rgb_led.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs232.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\ublox_gps.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\spi.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
- ../src/../resource\ managers_header/../lmic/lmic.h \
- ../src/../resource\ managers_header/../lmic/oslmic.h \
- ../src/../resource\ managers_header/../lmic/hal.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_emu.h \
- ../src/../resource\ managers_header/../lmic/lorabase.h \
- ../src/../resource\ managers_header/../lmic/config.h \
- ../src/../resource\ managers_header/../hal/debug.h \
- ../src/../resource\ managers_header/../hal/../lmic/oslmic.h \
- ../src/../resource\ managers_header/../lmic/hal.h \
- ../src/../resource\ managers_header/lpwan_manager.h \
- ../src/../resource\ managers_header/../resource\ managers_header/app_manager.h
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\ublox_msg.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\ff.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\integer.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\ffconf.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\diskio.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\sd_card.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\lmic.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\lorabase.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\config.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\hal\debug.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\hal.h
 
-../src/../resource\ managers_header/app_manager.h:
+../resource\ managers_src/../resource\ managers_header/lpwan_manager.h:
 
-../src/../resource\ managers_header/../drivers_header/delay.h:
+../resource\ managers_src/../resource\ managers_header/../lmic/hal.h:
 
-../src/../resource\ managers_header/../drivers_header/../drivers_header/pinmap.h:
+../resource\ managers_src/../resource\ managers_header/../lmic/oslmic.h:
+
+../resource\ managers_src/../resource\ managers_header/../lmic/hal.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_emu.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\em_device.h:
 
@@ -191,11 +193,17 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg_af_pins.h:
 
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_bus.h:
+
+../resource\ managers_src/../resource\ managers_header/../resource\ managers_header/app_manager.h:
+
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
+
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
+
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_cmu.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_assert.h:
-
-c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_bus.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_gpio.h:
 
@@ -215,17 +223,15 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h:
 
-../src/../resource\ managers_header/../devices_header/rgb_led.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\rgb_led.h:
 
-../src/../resource\ managers_header/../devices_header/../drivers_header/pwm.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pwm.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
 
-../src/../resource\ managers_header/../devices_header/../drivers_header/delay.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
 
-../src/../resource\ managers_header/../devices_header/../drivers_header/rs232.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs232.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
 
@@ -233,60 +239,46 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buff
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
 
-../src/../resource\ managers_header/../devices_header/tbr.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\tbr.h:
 
-../src/../resource\ managers_header/../devices_header/../drivers_header/rs485.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs485.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_leuart.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_tbr.h:
 
-../src/../resource\ managers_header/../devices_header/../devices_header/rgb_led.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\rgb_led.h:
 
-../src/../resource\ managers_header/../drivers_header/rs232.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs232.h:
 
-../src/../resource\ managers_header/../devices_header/ublox_gps.h:
-
-../src/../resource\ managers_header/../devices_header/../drivers_header/pinmap.h:
-
-../src/../resource\ managers_header/../devices_header/../drivers_header/spi.h:
-
-../src/../resource\ managers_header/../devices_header/ublox_msg.h:
-
-../src/../resource\ managers_header/../fat_filesystem_header/ff.h:
-
-../src/../resource\ managers_header/../fat_filesystem_header/../fat_filesystem_header/integer.h:
-
-../src/../resource\ managers_header/../fat_filesystem_header/../fat_filesystem_header/ffconf.h:
-
-../src/../resource\ managers_header/../fat_filesystem_header/diskio.h:
-
-../src/../resource\ managers_header/../fat_filesystem_header/../devices_header/sd_card.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\ublox_gps.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\spi.h:
 
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\ublox_msg.h:
 
-../src/../resource\ managers_header/../lmic/lmic.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\ff.h:
 
-../src/../resource\ managers_header/../lmic/oslmic.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\integer.h:
 
-../src/../resource\ managers_header/../lmic/hal.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\ffconf.h:
 
-c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_emu.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fat_filesystem_header\diskio.h:
 
-../src/../resource\ managers_header/../lmic/lorabase.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\sd_card.h:
 
-../src/../resource\ managers_header/../lmic/config.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\lmic.h:
 
-../src/../resource\ managers_header/../hal/debug.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h:
 
-../src/../resource\ managers_header/../hal/../lmic/oslmic.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\lorabase.h:
 
-../src/../resource\ managers_header/../lmic/hal.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\config.h:
 
-../src/../resource\ managers_header/lpwan_manager.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\hal\debug.h:
 
-../src/../resource\ managers_header/../resource\ managers_header/app_manager.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h:
+
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\hal.h:

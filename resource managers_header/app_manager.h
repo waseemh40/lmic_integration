@@ -27,6 +27,8 @@
 #define		USE_RADIO			true
 #define 	BOTH_RADIO_SD_CARD	true		//app_manager.c => inside advance_synch_message function
 //#define 	SD_CARD_ONLY		true		//app_manager.c => inside advance_synch_message function
+//#define		RADIO_ONLY			true
+//#define		USE_LORA_ACK		true
 	/*
 	 * shared variables
 	 */
@@ -40,7 +42,7 @@ bool 			tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp);
 	/*
 	 * public functions
 	 */
-void 			app_manager_tbr_synch_msg(uint8_t time_manager_cmd, nav_data_t nav_data);
+void 			app_manager_tbr_synch_msg(uint8_t time_manager_cmd, nav_data_t ref_timestamp);
 bool 			app_manager_init(void);
 uint8_t			app_manager_get_lora_buffer(uint8_t	*lora_buffer);
 nav_data_t 		app_manager_get_nav_data(void);
