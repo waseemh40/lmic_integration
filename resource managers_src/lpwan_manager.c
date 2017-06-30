@@ -13,6 +13,9 @@
 	static osjob_t 			init_job;
 	static osjob_t			app_job;
 
+
+
+	char					temp_buf[32];
 			/*
 			 * LMIC callbacks
 			 */
@@ -37,9 +40,21 @@
 			 */
 	static	void lora_tx_function (void) {
 #ifdef USE_LORA_ACK
-		LMIC_setTxData2(2,lora_buffer,lora_msg_length,1); //Ack => blocking behavior....
+		if(LMIC_setTxData2(2,lora_buffer,lora_msg_length,1)==0){ //Ack => blocking behavior....
+			return;
+		}
+		else{
+		 	debug_str((const u1_t*)"Tx function failed on length");
+		 	onEvent(0);
+		}
 #else
-		LMIC_setTxData2(2,lora_buffer,lora_msg_length,0);
+		if(!LMIC_setTxData2(2,lora_buffer,lora_msg_length,0)){
+			return;
+		}
+		else{
+		 	debug_str((const u1_t*)"Tx function failed on length");
+		 	onEvent(0);
+		}
 #endif
 		return;
 	}
@@ -50,7 +65,7 @@
 			 * 868.5 MHz
 			 * Spreading factor=7
 			 * ADR=off
-			 * 14dBm power @ 10% duty cycle
+			 * 14dBm power @ 1% duty cycle
 			 */
 		LMIC_setupBand(BAND_AUX,14,100);
 		LMIC_setupChannel(4,868500000,DR_RANGE_MAP(DR_SF12,DR_SF7),BAND_AUX);
@@ -76,6 +91,7 @@
 		nav_data_t	 			pos_nav_data;
 
 			//goto sleep
+		//debug_str((const u1_t*)"App function sleeping\n");
 		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 		EMU_EnterEM1();
 
@@ -88,8 +104,9 @@
 		if(time_manager_cmd==advance_sync){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			if(lora_msg_length>0){
-			  debug_str((const u1_t*)"LoRa Tx Strtd\n");
-			  lora_tx_function();
+				sprintf(temp_buf,"LoRA message length=%d\n",lora_msg_length);
+			 	debug_str((const u1_t*)temp_buf);
+			 	lora_tx_function();
 			}
 			else{
 			  debug_str((const u1_t*)"No LoRa Message\n");
