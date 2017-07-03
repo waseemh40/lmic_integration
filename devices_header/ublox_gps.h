@@ -32,6 +32,10 @@ typedef struct {
 	uint8_t		hour;
 	uint8_t		min;
 	uint8_t		sec;
+	uint8_t		t_flags;	//added later on
+	uint32_t	tAcc;		//added later on
+	uint32_t	nano;		//added later on
+	uint8_t		numSV;		//added later on
 	uint32_t	longitude;
 	uint32_t	latitude;
 	uint32_t	height;

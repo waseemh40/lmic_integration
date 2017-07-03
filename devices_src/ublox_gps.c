@@ -212,6 +212,8 @@ bool			poll_psm(void){
 nav_data_t		parse_message(uint8_t data[]){
 	nav_data_t 		nav_data;
 	uint32_t		gps_timestamp=0;
+	uint32_t		tAcc=0;	//added later on
+	uint32_t		nano=0;	//added later on
 	uint16_t		year=0;
 	uint32_t		longitude=0;
 	uint32_t		latitude=0;
@@ -235,6 +237,19 @@ nav_data_t		parse_message(uint8_t data[]){
 	nav_data.hour=data[offset+8];
 	nav_data.min=data[offset+9];
 	nav_data.sec=data[offset+10];
+		//extract timing accuracy
+	nav_data.t_flags=data[offset+11];		//added later on
+	tAcc|=(data[offset+15]<<24);			//added later on
+	tAcc|=(data[offset+14]<<16);			//added later on
+	tAcc|=(data[offset+13]<<8);				//added later on
+	tAcc|=data[offset+12];					//added later on
+	nav_data.tAcc=(uint32_t)(tAcc);			//added later on
+	nano|=(data[offset+19]<<24);			//added later on
+	nano|=(data[offset+18]<<16);			//added later on
+	nano|=(data[offset+17]<<8);				//added later on
+	nano|=data[offset+16];					//added later on
+	nav_data.nano=(uint32_t)(nano);			//added later on
+	nav_data.numSV=data[offset+23];			//added later on
 		//extract longitude
 	longitude=0;
 	longitude|=(data[offset+27]<<24);

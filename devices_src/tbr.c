@@ -177,42 +177,145 @@ bool get_and_compare(char *compare_string){
 }
 
 uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uint8_t offset){
-	char 			resuable_buffer[16];
+	char 			resuable_buffer[64];
 	char			*temp_ptr;
-	uint8_t			loop_var=0;
-	uint32_t		timestamp=0;
-	uint16_t		millisec=0;
-	uint8_t			tagID=0;
+	char			ref_token[2]=",";
+	char			*token;
+	bool			messgae_type=TBR_DETECION_MSG;
+	tbr_msesage_t	tbr_message;
 
-		//extract timestamp
+		//$000xxx
+	token = strtok(single_msg, ref_token);
+	sprintf( resuable_buffer, "Single:%s\n",token);
+	debug_str(resuable_buffer);
+		//timestamp
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:TStmp=%s\n",token);
+	debug_str(resuable_buffer);
+	tbr_message.timestamp=(uint32_t)strtoul(token,&temp_ptr,10);
+		//TBR Sensor or millisec
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:TBR Sensor or Detecion=%s\n",token);
+	debug_str(resuable_buffer);
+	if(token=="TBR Sensor"){
+		messgae_type=TBR_SENSOR_MSG;
+	}
+	else
+	{
+		tbr_message.millisec=(uint16_t)strtoul(token,&temp_ptr,10);
+	}
+		//Codetype or Temperature
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:%s\n",token);
+	debug_str(resuable_buffer);
+	if(messgae_type==TBR_DETECION_MSG){
+		switch (token){
+		case 	"S256":
+			tbr_message.CodeType=00;
+			break;
+		case 	"R64K":
+			tbr_message.CodeType=01;
+			break;
+		case 	"R04K":
+			tbr_message.CodeType=02;
+			break;
+		case	"S256":
+			tbr_message.CodeType=03;
+			break;
+		default:
+			tbr_message.CodeType=0xFF;
+			break;
+		}
+	}
+	else{
+		tbr_message.Temperature=(uint16_t)strtoul(token,&temp_ptr,10);
+	}
+		//CodeID or Noise
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:%s\n",token);
+	debug_str(resuable_buffer);
+	if(messgae_type==TBR_DETECION_MSG){
+		tbr_message.CodeID=(uint16_t)strtoul(token,&temp_ptr,10);
+	}
+	else{
+		tbr_message.Noise=(uint8_t)strtoul(token,&temp_ptr,10);
+	}
+		//CodeData or NoiseLP
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:%s\n",token);
+	debug_str(resuable_buffer);
+	if(messgae_type==TBR_DETECION_MSG){
+		tbr_message.CodeData=(uint16_t)strtoul(token,&temp_ptr,10);
+	}
+	else{
+		tbr_message.NoiseLP=(uint8_t)strtoul(token,&temp_ptr,10);
+	}
+		//SNR or Frequency
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:%s\n",token);
+	debug_str(resuable_buffer);
+	if(messgae_type==TBR_DETECION_MSG){
+		tbr_message.SNR=(uint8_t)strtoul(token,&temp_ptr,10);
+	}
+	else{
+		tbr_message.frequency=(uint8_t)strtoul(token,&temp_ptr,10);
+	}
+
+	token = strtok(NULL, ref_token);
+	sprintf( resuable_buffer, "Single:ROM entry=%s\n",token);
+	debug_str(resuable_buffer);
+			//fill the lora buffer
+	dst_buf[offset+0]=(uint8_t)(tbr_message.timestamp>>24);
+	dst_buf[offset+1]=(uint8_t)(tbr_message.timestamp>>16);
+	dst_buf[offset+2]=(uint8_t)(tbr_message.timestamp>>8);
+	dst_buf[offset+3]=(uint8_t)(tbr_message.timestamp>>0);
+	if(messgae_type==TBR_DETECION_MSG){
+		dst_buf[offset+4]=(uint8_t)tbr_message.CodeType;
+		dst_buf[offset+5]=(uint8_t)tbr_message.CodeID;
+		dst_buf[offset+6]=(uint8_t)tbr_message.CodeID;
+		dst_buf[offset+7]=(uint8_t)tbr_message.CodeData;
+		dst_buf[offset+8]=(uint8_t)tbr_message.CodeType;
+		dst_buf[offset+9]=(uint8_t)tbr_message.SNR;
+		dst_buf[offset+10]=(uint8_t)tbr_message.millisec;
+	}else{
+		dst_buf[offset+4]=(uint8_t)tbr_message.CodeType;
+		dst_buf[offset+5]=(uint8_t)tbr_message.CodeID;
+		dst_buf[offset+6]=(uint8_t)tbr_message.CodeID;
+		dst_buf[offset+7]=(uint8_t)tbr_message.CodeData;
+		dst_buf[offset+8]=(uint8_t)tbr_message.CodeType;
+		dst_buf[offset+9]=(uint8_t)tbr_message.SNR;
+		dst_buf[offset+10]=(uint8_t)tbr_message.millisec;
+	}
+
+	/*	//extract timestamp
 	clear_buffer(resuable_buffer, 16);
 	for(loop_var=0;loop_var<10;loop_var++){
 		resuable_buffer[loop_var]=single_msg[loop_var+8];
 	}
-	timestamp=(uint32_t)strtoul(resuable_buffer,&temp_ptr,10);
+	tbr_message.timestamp=(uint32_t)strtoul(resuable_buffer,&temp_ptr,10);
 		//process and put into buffer
-	dst_buf[offset+0]=(uint8_t)(timestamp>>24);
-	dst_buf[offset+1]=(uint8_t)(timestamp>>16);
-	dst_buf[offset+2]=(uint8_t)(timestamp>>8);
-	dst_buf[offset+3]=(uint8_t)(timestamp>>0);
+	dst_buf[offset+0]=(uint8_t)(tbr_message.timestamp>>24);
+	dst_buf[offset+1]=(uint8_t)(tbr_message.timestamp>>16);
+	dst_buf[offset+2]=(uint8_t)(tbr_message.timestamp>>8);
+	dst_buf[offset+3]=(uint8_t)(tbr_message.timestamp>>0);
 		//extract millisec
 	clear_buffer(resuable_buffer, 10);
 	for(loop_var=0;loop_var<3;loop_var++){
 		resuable_buffer[loop_var]=single_msg[loop_var+19];
 	}
-	millisec=(uint16_t)strtoul(resuable_buffer,&temp_ptr,10);
+	tbr_message.millisec=(uint16_t)strtoul(resuable_buffer,&temp_ptr,10);
 		//process and put into buffer
-	dst_buf[offset+4]=(uint8_t)(millisec>>8);
-	dst_buf[offset+5]=(uint8_t)(millisec>>0);
+	dst_buf[offset+4]=(uint8_t)(tbr_message.millisec>>8);
+	dst_buf[offset+5]=(uint8_t)(tbr_message.millisec>>0);
 		//extract tagID
 	clear_buffer(resuable_buffer, 10);
 	for(loop_var=0;loop_var<2;loop_var++){
 		resuable_buffer[loop_var]=single_msg[loop_var+28];
 	}
-	tagID=(uint8_t)strtoul(resuable_buffer,&temp_ptr,10);
+	tbr_message.CodeID=(uint8_t)strtoul(resuable_buffer,&temp_ptr,10);
 		//process and put into buffer
-	dst_buf[offset+6]=(uint8_t)(tagID>>0);
-	return offset+6;		//fixed offset of 7bytes into last value.....
+	dst_buf[offset+6]=(uint8_t)(tbr_message.CodeID>>0);
+	return offset+6;		//fixed offset=message size - 1.....*/
 }
 uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_count){
 	uint8_t 		inner_loop_var=0;
@@ -249,7 +352,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		}
 	}
 
-	return messages_converted;
+	return 0;//messages_converted;
 }
 	/*
 	 * public functions

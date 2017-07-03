@@ -18,7 +18,7 @@ static 			uint8_t				tbr_lora_buf[ARRAY_MESSAGE_SIZE];
 		/*
 		 * public variables
 		 */
-const 			unsigned char  		rs232_tx_buf[64];
+const 			unsigned char  		rs232_tx_buf[128];
 
 		/*
 		 * private functions
@@ -169,12 +169,12 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 ////////////////////////////////////////
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
-		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld DStmp=%ld\t\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp);
+		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld DStmp=%ld nano=%ld sec=%d flags=%d tacc=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,debug_timestamp.sec,debug_timestamp.t_flags,debug_timestamp.tAcc);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
-	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld DStmp=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp);
+	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld DStmp=%ld nano=%ld sec=%d flags=%d tacc=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,debug_timestamp.sec,debug_timestamp.t_flags,debug_timestamp.tAcc);
 	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);

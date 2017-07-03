@@ -14,7 +14,27 @@
 #define ARRAY_MESSAGE_SIZE		512
 #define CMD_RX_TX_BUF_SIZE		256
 #define	CMD_TX_BUF_SIZE			16
+#define TBR_SENSOR_MSG 			true
+#define TBR_DETECION_MSG		false
 
+typedef struct {
+		//First delimiter
+	uint32_t	timestamp;
+		//Second delimiter
+	uint8_t		millisec;
+		//3rd delimiter
+	uint8_t		CodeType;
+	uint16_t	Temperature;
+		//4th delimiter
+	uint16_t	CodeID;
+	uint8_t		Noise;
+		//5th delimiter
+	uint16_t	CodeData;
+	uint8_t		NoiseLP;
+		//6th delimiter
+	uint8_t		frequency;
+	uint8_t		SNR;
+}tbr_msesage_t;
 
 	/*
 	 * private functions
