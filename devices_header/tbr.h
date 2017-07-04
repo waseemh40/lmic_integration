@@ -21,7 +21,7 @@ typedef struct {
 		//First delimiter
 	uint32_t	timestamp;
 		//Second delimiter
-	uint8_t		millisec;
+	uint16_t	millisec;
 		//3rd delimiter
 	uint8_t		CodeType;
 	uint16_t	Temperature;

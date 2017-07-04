@@ -91,7 +91,7 @@
 		nav_data_t	 			pos_nav_data;
 
 			//goto sleep
-		//debug_str((const u1_t*)"App function sleeping\n");
+		debug_str((const u1_t*)"App function sleeping\n");
 		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 		EMU_EnterEM1();
 
