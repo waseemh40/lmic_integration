@@ -344,7 +344,7 @@ nav_data_t 		gps_get_nav_data (void){
 	uint8_t					msg_buf[90];
 
 	spi_cs_set(gps);
-	//delay_ms(0);
+	delay_ms(0);
 	spi_cs_clear(gps);
 	spi_read_write_byte(0xFF);
 	flag_success=false;
@@ -368,10 +368,10 @@ nav_data_t 		gps_get_nav_data (void){
 			}
 			else{retry++;}
 			if(retry>RETRY){
-				//delay_ms(0);
+				delay_ms(0);
 				break;
 			}
-			//delay_ms(0);
+			delay_ms(0);
 		}
 		if(flag_success==true){break;}
 	}
