@@ -187,7 +187,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 	  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
 		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
-		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
+		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d Count=%d\n",temp_flag,tbr_msg_length,tbr_msg_count);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  }
 #elif RADIO_ONLY
@@ -201,6 +201,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 	  else{
 		  ;
 	  }
+	delay_ms(0);
 	return;
 }
 

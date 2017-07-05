@@ -104,8 +104,8 @@ void GPIO_EVEN_IRQHandler()	//impar
 		///////////////////////////////////
 	     time_count++;
 	     if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
-	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 	    	 time_manager_cmd=basic_sync;
+	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 	     }
 	     if(time_count==ADVANCE_SYNCH_SECONDS){
 	    	 time_manager_cmd=advance_sync;
