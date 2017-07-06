@@ -146,6 +146,8 @@
 			  setup_channel();		//setup channel....
 			  time_manager_init();
 			  app_funct(&app_job);	//first time call....
+			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
+			  debug_str((const u1_t*)temp_buf);
 			  break;
 		  //transmission complete
 		  case EV_TXCOMPLETE:
