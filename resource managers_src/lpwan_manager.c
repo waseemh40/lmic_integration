@@ -91,7 +91,7 @@
 		nav_data_t	 			pos_nav_data;
 
 			//goto sleep
-		debug_str((const u1_t*)"App function sleeping\n");
+		//debug_str((const u1_t*)"App function sleeping\n");
 		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 		EMU_EnterEM1();
 
@@ -105,7 +105,7 @@
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			if(lora_msg_length>0){
 				sprintf(temp_buf,"LoRA message length=%d\n",lora_msg_length);
-			 	debug_str((const u1_t*)temp_buf);
+			 	//debug_str((const u1_t*)temp_buf);
 			 	lora_tx_function();
 			}
 			else{
@@ -160,7 +160,7 @@
 			  lora_tx_function();	//retry logic. NOT tested.
 		  }
 #else
-		  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
+		  //debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
 		  os_setCallback(&app_job, app_funct);
 #endif
 			  break;
