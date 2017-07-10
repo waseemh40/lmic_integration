@@ -37,7 +37,7 @@
 			/*
 			 * private functions
 			 */
-	static	void lora_tx_function () {
+	static	void lora_tx_function (void) {
 #ifdef USE_LORA_ACK
 		if(LMIC_setTxData2(2,lora_buffer,lora_msg_length,1)==0){ //Ack => blocking behavior....
 			return;
@@ -105,7 +105,7 @@
 			if(lora_msg_length>0){
 				sprintf(temp_buf,"LoRA message length=%d\n",lora_msg_length);
 			 	//debug_str((const u1_t*)temp_buf);
-			 	//lora_tx_function();
+			 	lora_tx_function();
 			}
 			else{
 			  debug_str((const u1_t*)"No LoRa Message\n");
@@ -125,7 +125,6 @@
 	void lpwan_init(void){
 		os_init();
 		debug_str((const u1_t*)"\t\tRadio Version. OS initialized and join called. Waiting for join to finish...\n");
-		//join
 		os_setCallback(&init_job, init_funct);
 	    os_runloop();
 	}
@@ -162,7 +161,7 @@
 			  lora_tx_function();	//retry logic. NOT tested.
 		  }
 #else
-		  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
+		  //debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
 		  os_setCallback(&app_job, app_funct);
 #endif
 			  break;
