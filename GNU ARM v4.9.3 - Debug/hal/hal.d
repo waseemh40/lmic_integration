@@ -71,7 +71,9 @@ hal/hal.o: ../hal/hal.c ../hal/../lmic/hal.h ../hal/../lmic/oslmic.h \
  ../hal/../devices_header/../drivers_header/../fifo_buffers_header/../drivers_header/pinmap.h \
  ../hal/../drivers_header/spi.h \
  ../hal/../drivers_header/../drivers_header/pinmap.h ../hal/debug.h \
- ../hal/../lmic/oslmic.h
+ ../hal/../lmic/oslmic.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_burtc.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_letimer.h
 
 ../hal/../lmic/hal.h:
 
@@ -228,3 +230,7 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 ../hal/debug.h:
 
 ../hal/../lmic/oslmic.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_burtc.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_letimer.h:

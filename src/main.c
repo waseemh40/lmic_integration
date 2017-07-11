@@ -17,6 +17,7 @@ int main() {
 			CHIP_Init();
 			CMU_HFRCOBandSet(cmuHFRCOBand_7MHz );
 			CMU_OscillatorEnable(cmuOsc_HFRCO, true, true);
+			CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
 			CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
 	 /*
 	  *******************************************************

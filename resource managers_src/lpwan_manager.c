@@ -6,7 +6,8 @@
  */
 
 #include "../resource managers_header/lpwan_manager.h"
-
+//#include "em_burtc.h"
+#include "em_rmu.h"
 			/*
 			 * Shared variables
 			 */
@@ -108,7 +109,8 @@
 			 	lora_tx_function();
 			}
 			else{
-			  debug_str((const u1_t*)"No LoRa Message\n");
+			  //sprintf(temp_buf,"\t\tBURTC count=%d\n",BURTC_CounterGet());
+			  //debug_str((const u1_t*)"No LoRa mesage\n");
 			  onEvent(0);
 			}
 
@@ -143,10 +145,11 @@
 			  debug_str((const u1_t*)"\tEV_JOINED\n");
 			  rgb_shutdown();
 			  setup_channel();		//setup channel....
+			  RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 			  time_manager_init();
-			  app_funct(&app_job);	//first time call....
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
 			  debug_str((const u1_t*)temp_buf);
+			  app_funct(&app_job);	//first time call....
 			  break;
 		  //transmission complete
 		  case EV_TXCOMPLETE:

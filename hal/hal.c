@@ -15,7 +15,8 @@
 #include "../drivers_header/spi.h"
 #include "debug.h"
 #include "em_emu.h"
-
+#include "em_burtc.h"
+#include "em_letimer.h"
 
 // HAL state
 static struct
@@ -24,15 +25,40 @@ static struct
     uint64_t ticks;
 } HAL;
 //////////////////////////////////////////////////////////////
+static	uint32_t	one_sec_top_ref=32768;
+static	bool		letimer_running=false;
+static 	int			last_letimer_count=65535;
+//////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
 static int 						time_count=0;
 
+void BURTC_IRQHandler(void)
+{
+	uint32_t	int_mask=BURTC_IntGet();
+	if(int_mask & BURTC_IF_COMP0){
+
+	time_count++;
+		 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
+			 time_manager_cmd=basic_sync;
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+		 }
+		 if(time_count==ADVANCE_SYNCH_SECONDS){
+			 time_manager_cmd=advance_sync;
+			 time_count=0;
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+			 if(one_sec_top_ref<32800 && one_sec_top_ref>32740){
+			 BURTC_CompareSet(0,one_sec_top_ref);
+			 }
+			char					temp_buf[32];
+			sprintf(temp_buf,"\t\t\one_sec_top=%d\n",one_sec_top_ref);
+			debug_str(temp_buf);
+		 }
+
+	}
+	BURTC_IntClear(int_mask);
+}
 void 		time_manager_init(void){
-	////////////////////////////////////////////////////////////////
-	GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 0);
-	GPIO_PinModeSet(gpioPortC, 5, gpioModePushPull, 0);
-	////////////////////////////////////////////////////////////////
 	//GPIO_PinModeSet(GPS_SIG_PORT, GPS_INT, gpioModeInput, 0);
 	GPIO_PinModeSet(GPS_SIG_PORT, GPS_TIME_PULSE, gpioModeInput, 0);
 	GPIO_IntConfig(GPS_SIG_PORT,GPS_TIME_PULSE,true,false,true);
@@ -40,9 +66,33 @@ void 		time_manager_init(void){
 	GPIO_IntClear(_GPIO_IF_MASK);
 	//GPIO_IntEnable();
     NVIC_EnableIRQ(GPIO_EVEN_IRQn);
+    //////////////////BURTC and LETIMER///////////////////////////////
+    BURTC_Init_TypeDef	burtc_init=BURTC_INIT_DEFAULT;
+    burtc_init.enable=false;
+    burtc_init.clkSel=burtcClkSelLFXO ;
+    burtc_init.compare0Top=true;
+    burtc_init.mode=burtcModeEM4;
+    //RMU_ResetControl(rmuResetBU, rmuResetModeClear);
+    BURTC_Reset();
+    BURTC_Init(&burtc_init);
+    BURTC_CompareSet(0,one_sec_top_ref);
+	/* Disable interrupt generation from BURTRC*/
+    BURTC_IntDisable(_BURTC_IF_MASK);
+    BURTC_IntEnable(BURTC_IF_COMP0);	//Enable interrupt on compare
+	/* Enable interrupts */
+	NVIC_ClearPendingIRQ(BURTC_IRQn);
+	NVIC_EnableIRQ(BURTC_IRQn);
+		//Setup and initialize LETIMER
+    LETIMER_Init_TypeDef	letimer_init=LETIMER_INIT_DEFAULT;
+    letimer_init.enable=false;
+	CMU_ClockEnable(cmuClock_LETIMER0, true);
+	LETIMER_Reset(LETIMER0);
+	LETIMER_Init(LETIMER0,&letimer_init);
+	/* Enable RTC */
+	BURTC_Enable(true);
+    /////////////////////////////////////////////////////////////////
     return;
 }
-
 
 unsigned long 		time_manager_unixTimestamp(int year, int month, int day,
               int hour, int min, int sec)
@@ -91,29 +141,26 @@ void GPIO_EVEN_IRQHandler()	//impar
 	}
 	else if (int_mask & 1<<GPS_TIME_PULSE){
 		//////////////////////////////////
-		if(test_flag){
-			GPIO_PinOutSet(gpioPortC, 4);
-			GPIO_PinOutSet(gpioPortC, 5);
-			test_flag=false;
+		if(letimer_running){
+			LETIMER_Enable(LETIMER0,false);
+			int i=last_letimer_count-LETIMER_CounterGet(LETIMER0);
+			if(i>0){
+				one_sec_top_ref=(uint32_t)i;
+			}
+			else{
+				one_sec_top_ref=(uint32_t)(-1*i);
+			}
+			last_letimer_count=LETIMER_CounterGet(LETIMER0);
+			letimer_running=false;
 		}
 		else{
-			GPIO_PinOutClear(gpioPortC, 5);
-			GPIO_PinOutClear(gpioPortC, 4);
-			test_flag=true;
+			LETIMER_Enable(LETIMER0,true);
+			letimer_running=true;
 		}
-		///////////////////////////////////
-	     time_count++;
-	     if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
-	    	 time_manager_cmd=basic_sync;
-	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-	     }
-	     if(time_count==ADVANCE_SYNCH_SECONDS){
-	    	 time_manager_cmd=advance_sync;
-	    	 time_count=0;
-	         SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-	     }
 	}
-	//debug_str("\tEven IRQ END\n");
+	else{
+		;
+	}
 	return;
  }
 

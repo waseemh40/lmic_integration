@@ -93,7 +93,8 @@ resource\ managers_src/lpwan_manager.o: \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\config.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\hal\debug.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\hal.h
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\hal.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rmu.h
 
 ../resource\ managers_src/../resource\ managers_header/lpwan_manager.h:
 
@@ -282,3 +283,5 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\hal\debug
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\hal.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rmu.h:
