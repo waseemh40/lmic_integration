@@ -70,7 +70,7 @@ void send_cmd(uint8_t cmd){
 		spi_write_byte(0x40);	//0x40
 		spi_write_byte(ARG_0);
 		spi_write_byte(ARG_0);
-		spi_write_byte(ARG_0);
+		spi_write_byte(0x41);	//Modification for Kingston from ARG_0...
 		spi_write_byte(0x77);	//0x77 for 0x40
 		break;
 	}
@@ -164,6 +164,7 @@ bool sd_card_init(void){
 	while(reply!=0x00){
 		start_transfer();
 		send_cmd(CMD_55);
+		reply=spi_read_write_byte(0xFF);		//Modification for Kingston...
 		end_transfer();
 		start_transfer();
 		send_cmd(CMD_41);

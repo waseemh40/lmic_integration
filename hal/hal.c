@@ -28,11 +28,14 @@ static struct
 static	uint32_t	one_sec_top_ref=32768;
 static	bool		letimer_running=false;
 static 	int			last_letimer_count=65535;
+static	uint16_t	average_n=0;
+static 	uint32_t	avergae_sum=0;
+static 	uint32_t	ref_count=0;
 //////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
 static int 						time_count=0;
-
+char					temp_buf[32];
 void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
@@ -42,16 +45,18 @@ void BURTC_IRQHandler(void)
 		 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
 			 time_manager_cmd=basic_sync;
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+			 sprintf(temp_buf,"\t\t\t\tPPS_count=%d\n",ref_count);
+			 debug_str(temp_buf);
 		 }
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
 			 time_count=0;
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-			 if(one_sec_top_ref<32800 && one_sec_top_ref>32740){
-			 BURTC_CompareSet(0,one_sec_top_ref);
+			 if(one_sec_top_ref<32790 && one_sec_top_ref>32750){
+			 BURTC_CompareSet(0,32768);
 			 }
-			char					temp_buf[32];
-			sprintf(temp_buf,"\t\t\one_sec_top=%d\n",one_sec_top_ref);
+
+			sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d samples=%d\n",one_sec_top_ref,ref_count,average_n);
 			debug_str(temp_buf);
 		 }
 
@@ -121,9 +126,7 @@ time_manager_cmd_t 		time_manager_get_cmd(void){
 // I/O
 extern void radio_irq_handler(u1_t dio);
 int gpio_int_flag=0;
-////////////////////////////////////
-static bool		test_flag=false;
-////////////////////////////////
+
 void GPIO_EVEN_IRQHandler()	//impar
  {
 	u4_t int_mask = GPIO_IntGetEnabled();
@@ -143,20 +146,26 @@ void GPIO_EVEN_IRQHandler()	//impar
 		//////////////////////////////////
 		if(letimer_running){
 			LETIMER_Enable(LETIMER0,false);
-			int i=last_letimer_count-LETIMER_CounterGet(LETIMER0);
-			if(i>0){
-				one_sec_top_ref=(uint32_t)i;
+			if(LETIMER_CounterGet(LETIMER0)>last_letimer_count){
+				avergae_sum+=(uint32_t)(LETIMER_CounterGet(LETIMER0)-last_letimer_count);
 			}
 			else{
-				one_sec_top_ref=(uint32_t)(-1*i);
+				avergae_sum+=(uint32_t)(last_letimer_count-LETIMER_CounterGet(LETIMER0));
 			}
 			last_letimer_count=LETIMER_CounterGet(LETIMER0);
 			letimer_running=false;
+			average_n++;
+			if(average_n>63){
+				one_sec_top_ref=avergae_sum>>6;
+				avergae_sum=0;
+				average_n=0;
+			}
 		}
 		else{
 			LETIMER_Enable(LETIMER0,true);
 			letimer_running=true;
 		}
+		ref_count++;
 	}
 	else{
 		;
