@@ -52,11 +52,11 @@ void BURTC_IRQHandler(void)
 			 time_manager_cmd=advance_sync;
 			 time_count=0;
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-			 if(one_sec_top_ref<32790 && one_sec_top_ref>32750){
-			 BURTC_CompareSet(0,32768);
+			 if(one_sec_top_ref<32000 && one_sec_top_ref>33000){
+			 BURTC_CompareSet(0,one_sec_top_ref);
 			 }
 
-			sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d samples=%d\n",one_sec_top_ref,ref_count,average_n);
+			sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
 			debug_str(temp_buf);
 		 }
 
@@ -64,27 +64,27 @@ void BURTC_IRQHandler(void)
 	BURTC_IntClear(int_mask);
 }
 void 		time_manager_init(void){
+
+				/////////////GPS PPS and INT pins////////////
 	//GPIO_PinModeSet(GPS_SIG_PORT, GPS_INT, gpioModeInput, 0);
 	GPIO_PinModeSet(GPS_SIG_PORT, GPS_TIME_PULSE, gpioModeInput, 0);
 	GPIO_IntConfig(GPS_SIG_PORT,GPS_TIME_PULSE,true,false,true);
 	//GPIO_IntConfig(GPS_SIG_PORT,GPS_INT,true,false,false);
 	GPIO_IntClear(_GPIO_IF_MASK);
-	//GPIO_IntEnable();
     NVIC_EnableIRQ(GPIO_EVEN_IRQn);
-    //////////////////BURTC and LETIMER///////////////////////////////
+
+    			/////////////BURTC and LETIMER////////////
+    	//Setup and initialize BURTC
     BURTC_Init_TypeDef	burtc_init=BURTC_INIT_DEFAULT;
     burtc_init.enable=false;
     burtc_init.clkSel=burtcClkSelLFXO ;
     burtc_init.compare0Top=true;
     burtc_init.mode=burtcModeEM4;
-    //RMU_ResetControl(rmuResetBU, rmuResetModeClear);
     BURTC_Reset();
     BURTC_Init(&burtc_init);
     BURTC_CompareSet(0,one_sec_top_ref);
-	/* Disable interrupt generation from BURTRC*/
     BURTC_IntDisable(_BURTC_IF_MASK);
-    BURTC_IntEnable(BURTC_IF_COMP0);	//Enable interrupt on compare
-	/* Enable interrupts */
+    BURTC_IntEnable(BURTC_IF_COMP0);
 	NVIC_ClearPendingIRQ(BURTC_IRQn);
 	NVIC_EnableIRQ(BURTC_IRQn);
 		//Setup and initialize LETIMER
@@ -93,9 +93,8 @@ void 		time_manager_init(void){
 	CMU_ClockEnable(cmuClock_LETIMER0, true);
 	LETIMER_Reset(LETIMER0);
 	LETIMER_Init(LETIMER0,&letimer_init);
-	/* Enable RTC */
+		//start BURTC
 	BURTC_Enable(true);
-    /////////////////////////////////////////////////////////////////
     return;
 }
 
@@ -125,25 +124,18 @@ time_manager_cmd_t 		time_manager_get_cmd(void){
 // -----------------------------------------------------------------------------
 // I/O
 extern void radio_irq_handler(u1_t dio);
-int gpio_int_flag=0;
 
 void GPIO_EVEN_IRQHandler()	//impar
  {
 	u4_t int_mask = GPIO_IntGetEnabled();
 	GPIO_IntClear(int_mask);
-	//debug_str("\tEven IRQ\n");
 	if (int_mask & 1<<RADIO_IO_0){
 		radio_irq_handler(0);
-		//debug_str("\tEven IRQ 0\n");
-		gpio_int_flag=2;
 	}
 	else if (int_mask & 1<<RADIO_IO_2){
 		radio_irq_handler(2);
-		//debug_str("\tEven IRQ 2\n");
-		gpio_int_flag=2;
 	}
 	else if (int_mask & 1<<GPS_TIME_PULSE){
-		//////////////////////////////////
 		if(letimer_running){
 			LETIMER_Enable(LETIMER0,false);
 			if(LETIMER_CounterGet(LETIMER0)>last_letimer_count){
@@ -155,8 +147,8 @@ void GPIO_EVEN_IRQHandler()	//impar
 			last_letimer_count=LETIMER_CounterGet(LETIMER0);
 			letimer_running=false;
 			average_n++;
-			if(average_n>63){
-				one_sec_top_ref=avergae_sum>>6;
+			if(average_n>15){
+				one_sec_top_ref=avergae_sum>>4;
 				avergae_sum=0;
 				average_n=0;
 			}
@@ -177,13 +169,9 @@ void GPIO_ODD_IRQHandler()	//par
  {
 	u4_t int_mask = GPIO_IntGetEnabled();
 	GPIO_IntClear(int_mask);
-	//debug_str("\tODD IRQ\n");
 	if (int_mask & 1<<RADIO_IO_1){
 		radio_irq_handler(1);
-		//debug_str("\tODD IRQ 1");
-		gpio_int_flag=1;
 	}
-	//debug_str("\tODD IRQ End\n");
 	return;
  }
 
@@ -216,7 +204,7 @@ static void hal_io_init ()
 
 void hal_pin_rxtx (u1_t val)
 {
-	//not used in PA52 nor PA53
+
 }
 
 
