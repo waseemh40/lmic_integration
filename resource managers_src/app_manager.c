@@ -195,15 +195,16 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 #elif RADIO_ONLY
 		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 #endif
-	  /////////////////////////////////////////////////////////
-	  sprintf(timeStamp_buf,"Ref=%ld, Debug=%ld\n",(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp);
-	  temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,timeStamp_buf);
-	  //////////////////////////////////////////////////////////
+
 	  }
 	  else{
 		  ;
 	  }
-	delay_ms(0);
+	  /////////////////////////////////////////////////////////
+	  sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,(time_t)ref_timestamp.gps_timestamp,debug_timestamp.sec,temp_flag,debug_timestamp.tAcc,debug_timestamp.t_flags);
+	  temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,rs232_tx_buf);
+	  //////////////////////////////////////////////////////////
+	//delay_ms(0);
 	return;
 }
 

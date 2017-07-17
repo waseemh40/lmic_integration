@@ -18,6 +18,9 @@
 #include "em_burtc.h"
 #include "em_letimer.h"
 
+#define N_SAMPLES 	5
+#define BASE_2_N 	32		//-1 done inside if...
+
 // HAL state
 static struct
 {
@@ -45,21 +48,22 @@ void BURTC_IRQHandler(void)
 		 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
 			 time_manager_cmd=basic_sync;
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-			 sprintf(temp_buf,"\t\t\t\tPPS_count=%d\n",ref_count);
+
+			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
 			 debug_str(temp_buf);
 		 }
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
 			 time_count=0;
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-			 if(one_sec_top_ref<32000 && one_sec_top_ref>33000){
-			 BURTC_CompareSet(0,one_sec_top_ref);
-			 }
 
 			sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
 			debug_str(temp_buf);
 		 }
-
+		 	 //update clock...
+		 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
+		 BURTC_CompareSet(0,one_sec_top_ref);
+		 }
 	}
 	BURTC_IntClear(int_mask);
 }
@@ -147,8 +151,9 @@ void GPIO_EVEN_IRQHandler()	//impar
 			last_letimer_count=LETIMER_CounterGet(LETIMER0);
 			letimer_running=false;
 			average_n++;
-			if(average_n>15){
-				one_sec_top_ref=avergae_sum>>4;
+			if(average_n>BASE_2_N-1){
+				one_sec_top_ref=avergae_sum>>N_SAMPLES;
+				//one_sec_top_ref=avergae_sum;//>>N_SAMPLES;
 				avergae_sum=0;
 				average_n=0;
 			}
