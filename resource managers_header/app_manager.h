@@ -42,7 +42,7 @@ bool 			tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp);
 	/*
 	 * public functions
 	 */
-void 			app_manager_tbr_synch_msg(uint8_t time_manager_cmd, nav_data_t ref_timestamp);
+void 			app_manager_tbr_synch_msg(uint8_t time_manager_cmd, nav_data_t ref_timestamp,nav_data_t running_timestamp);
 bool 			app_manager_init(void);
 uint8_t			app_manager_get_lora_buffer(uint8_t	*lora_buffer);
 nav_data_t 		app_manager_get_nav_data(void);

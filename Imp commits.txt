@@ -1,0 +1,4 @@
+1) good with 16/32 samples, no control loop => 
+	Debug mode, everything written to SD card. Issues solved: one_sec_ref_top update non reachable condition solved and compare is updated on every second.
+2) with control loop and single system timestamp =>
+	With control loop and single timestamp. Debug mode, TODO: remove comments from BURTC ISR and add SN of TBR as DEVEUI.

@@ -27,7 +27,6 @@ static const u1_t DEVKEY[16] = {0x00,	0x11,	0x00,	0x22,	0x00,	0x33,	0x00,	0x44,	
 		 */
 extern	uint8_t 		lora_buffer[512];
 extern	uint8_t			lora_msg_length;
-extern	nav_data_t	 	ref_timestamp;
 
 
 		/*

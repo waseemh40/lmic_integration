@@ -153,30 +153,23 @@ bool app_manager_init(void){
 	 return true;
 }
 
-void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timestamp){
+void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timestamp, nav_data_t running_tstamp){
 
 	bool			temp_flag=false;
 	int				tbr_msg_count=0;
 	int				tbr_msg_length=0;
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
-/////////////////////////////////////////
-	char 			timeStamp_buf[32];
-	nav_data_t		debug_timestamp;
-	debug_timestamp=gps_get_nav_data();
-	debug_timestamp.gps_timestamp=time_manager_unixTimestamp(debug_timestamp.year,debug_timestamp.month,debug_timestamp.day,
-															debug_timestamp.hour,debug_timestamp.min,debug_timestamp.sec);
 
-////////////////////////////////////////
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
 //		sprintf((char *)rs232_tx_buf,"Bsc Flg=%d TStmp=%ld DStmp=%ld nano=%ld sec=%d flags=%d tacc=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,debug_timestamp.sec,debug_timestamp.t_flags,debug_timestamp.tAcc);
-		sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,(time_t)ref_timestamp.gps_timestamp,debug_timestamp.sec,temp_flag,debug_timestamp.tAcc,debug_timestamp.t_flags);
+		sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
 //	  sprintf((char *)rs232_tx_buf,"Adv Flg=%d TStmp=%ld DStmp=%ld nano=%ld sec=%d flags=%d tacc=%ld\n",temp_flag,(time_t)ref_timestamp.gps_timestamp,(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,debug_timestamp.sec,debug_timestamp.t_flags,debug_timestamp.tAcc);
-	  sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,(time_t)ref_timestamp.gps_timestamp,debug_timestamp.sec,temp_flag,debug_timestamp.tAcc,debug_timestamp.t_flags);
+		sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags);
 	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
@@ -201,7 +194,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		  ;
 	  }
 	  /////////////////////////////////////////////////////////
-	  sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)debug_timestamp.gps_timestamp,debug_timestamp.nano,(time_t)ref_timestamp.gps_timestamp,debug_timestamp.sec,temp_flag,debug_timestamp.tAcc,debug_timestamp.t_flags);
+	  sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags);
 	  temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,rs232_tx_buf);
 	  //////////////////////////////////////////////////////////
 	//delay_ms(0);

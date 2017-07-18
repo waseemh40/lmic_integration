@@ -14,6 +14,13 @@
 
 #include "oslmic.h"
 #include "em_emu.h"
+#include "../devices_header/ublox_gps.h"
+#include "../drivers_header/pinmap.h"
+#include "../devices_header/rgb_led.h"
+#include "../drivers_header/spi.h"
+#include "em_emu.h"
+#include "em_burtc.h"
+#include "em_letimer.h"
 
 //////////////////////////////////////////////////////
 typedef enum{
@@ -24,6 +31,11 @@ typedef enum{
 #define		BASIC_SYNCH_SECONDS			10
 #define		ADVANCE_SYNCH_SECONDS		60
 
+
+	//
+	extern nav_data_t	 	running_tstamp;
+	extern nav_data_t	 	ref_tstamp;
+	//
 
 void 				time_manager_init(void);
 unsigned long 		time_manager_unixTimestamp(int year, int month, int day,

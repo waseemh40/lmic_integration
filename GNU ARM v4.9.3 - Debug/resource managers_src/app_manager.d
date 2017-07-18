@@ -90,6 +90,12 @@ resource\ managers_src/app_manager.o: \
  ../resource\ managers_src/../resource\ managers_header/../lmic/oslmic.h \
  ../resource\ managers_src/../resource\ managers_header/../lmic/hal.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_emu.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/../devices_header/ublox_gps.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/../drivers_header/pinmap.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/../devices_header/rgb_led.h \
+ ../resource\ managers_src/../resource\ managers_header/../lmic/../drivers_header/spi.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_burtc.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_letimer.h \
  ../resource\ managers_src/../resource\ managers_header/../lmic/lorabase.h \
  ../resource\ managers_src/../resource\ managers_header/../lmic/config.h \
  ../resource\ managers_src/../resource\ managers_header/../hal/debug.h \
@@ -275,6 +281,18 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_h
 ../resource\ managers_src/../resource\ managers_header/../lmic/hal.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_emu.h:
+
+../resource\ managers_src/../resource\ managers_header/../lmic/../devices_header/ublox_gps.h:
+
+../resource\ managers_src/../resource\ managers_header/../lmic/../drivers_header/pinmap.h:
+
+../resource\ managers_src/../resource\ managers_header/../lmic/../devices_header/rgb_led.h:
+
+../resource\ managers_src/../resource\ managers_header/../lmic/../drivers_header/spi.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_burtc.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_letimer.h:
 
 ../resource\ managers_src/../resource\ managers_header/../lmic/lorabase.h:
 

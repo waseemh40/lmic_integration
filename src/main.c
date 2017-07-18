@@ -7,7 +7,6 @@
 	 */
 uint8_t 		lora_buffer[512];
 uint8_t			lora_msg_length=0;
-nav_data_t	 	ref_timestamp;
 
 
 int main() {
@@ -25,15 +24,6 @@ int main() {
 
 	if(app_manager_init()){
 		debug_str((const u1_t*)"\tApp Manager Init Successful\t\n");
-			//immediately update TimeStamp
-		while(ref_timestamp.valid!=true){
-			ref_timestamp=app_manager_get_nav_data();
-			debug_str((const u1_t*)"\tWaiting for valid reference timestamp\t\n");
-			delay_ms(7);
-		}
-		ref_timestamp.gps_timestamp=time_manager_unixTimestamp(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,
-																ref_timestamp.hour,ref_timestamp.min,ref_timestamp.sec);
-
 	}
 	else{
 		debug_str((const u1_t*)"\tApp Manager Init Failed...\t\n");

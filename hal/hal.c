@@ -10,16 +10,11 @@
  *******************************************************************************/
 #include "../lmic/hal.h"
 #include "../lmic/lmic.h"
-#include "../drivers_header/pinmap.h"
-#include "../devices_header/rgb_led.h"
-#include "../drivers_header/spi.h"
 #include "debug.h"
-#include "em_emu.h"
-#include "em_burtc.h"
-#include "em_letimer.h"
 
-#define N_SAMPLES 	5
-#define BASE_2_N 	32		//-1 done inside if...
+
+#define N_SAMPLES 	4
+#define BASE_2_N 	16		//-1 done inside if...
 
 // HAL state
 static struct
@@ -34,18 +29,21 @@ static 	int			last_letimer_count=65535;
 static	uint16_t	average_n=0;
 static 	uint32_t	avergae_sum=0;
 static 	uint32_t	ref_count=0;
+
+static int			diff_in_tstamp=0;
 //////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
 static int 						time_count=0;
-char					temp_buf[32];
+char					temp_buf[128];
 void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
 	if(int_mask & BURTC_IF_COMP0){
 
-	time_count++;
-		 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS){	//60
+		time_count++;
+
+		 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS && time_count!=0 ){	//60
 			 time_manager_cmd=basic_sync;
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 
@@ -54,10 +52,20 @@ void BURTC_IRQHandler(void)
 		 }
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
-			 time_count=0;
+			 ///////////////////////
+			 if(running_tstamp.valid==true){
+				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
+				 sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
+				 debug_str(temp_buf);
+				 time_count=diff_in_tstamp;
+			 }
+			 else{
+				 time_count=0;
+			 }
+			 /////////////////////
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 
-			sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
+			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
 			debug_str(temp_buf);
 		 }
 		 	 //update clock...
@@ -98,7 +106,7 @@ void 		time_manager_init(void){
 	LETIMER_Reset(LETIMER0);
 	LETIMER_Init(LETIMER0,&letimer_init);
 		//start BURTC
-	BURTC_Enable(true);
+		BURTC_Enable(true);
     return;
 }
 
@@ -153,7 +161,6 @@ void GPIO_EVEN_IRQHandler()	//impar
 			average_n++;
 			if(average_n>BASE_2_N-1){
 				one_sec_top_ref=avergae_sum>>N_SAMPLES;
-				//one_sec_top_ref=avergae_sum;//>>N_SAMPLES;
 				avergae_sum=0;
 				average_n=0;
 			}

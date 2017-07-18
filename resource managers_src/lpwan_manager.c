@@ -13,8 +13,8 @@
 			 */
 	static osjob_t 			init_job;
 	static osjob_t			app_job;
-
-
+	nav_data_t	 			running_tstamp;
+	nav_data_t	 			ref_tstamp;
 	char					temp_buf[32];
 			/*
 			 * LMIC callbacks
@@ -94,12 +94,15 @@
 		//debug_str((const u1_t*)"App function sleeping\n");
 		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
 		EMU_EnterEM1();
-
+			//update Timestamps
+		running_tstamp=gps_get_nav_data();
+		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
+																running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
+		ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;				//add 10secs
 	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
 		//pos_nav_data=app_manager_get_nav_data();
-		ref_timestamp.gps_timestamp+=BASIC_SYNCH_SECONDS;				//add 10secs
-		app_manager_tbr_synch_msg(time_manager_cmd,ref_timestamp);
+		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp);
 
 		if(time_manager_cmd==advance_sync){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
@@ -145,6 +148,12 @@
 			  debug_str((const u1_t*)"\tEV_JOINED\n");
 			  rgb_shutdown();
 			  setup_channel();		//setup channel....
+			  while(ref_tstamp.valid!=true){
+				  ref_tstamp=gps_get_nav_data();
+				  delay_ms(5);
+			  }
+			  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
+					  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
 			  RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 			  time_manager_init();
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");

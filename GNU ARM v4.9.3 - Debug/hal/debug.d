@@ -46,8 +46,8 @@ hal/debug.o: ../hal/debug.c ../hal/debug.h ../hal/../lmic/oslmic.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg_af_ports.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg_af_pins.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_bus.h \
- ../hal/../lmic/lmic.h ../hal/../lmic/lorabase.h ../hal/../lmic/config.h \
- ../hal/../drivers_header/pinmap.h \
+ ../hal/../lmic/../devices_header/ublox_gps.h \
+ ../hal/../lmic/../devices_header/../drivers_header/pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_cmu.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_assert.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_gpio.h \
@@ -58,17 +58,24 @@ hal/debug.o: ../hal/debug.c ../hal/debug.h ../hal/../lmic/oslmic.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_core.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h \
- ../hal/../devices_header/rgb_led.h \
- ../hal/../devices_header/../drivers_header/pwm.h \
- ../hal/../devices_header/../drivers_header/../drivers_header/pinmap.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h \
- ../hal/../devices_header/../drivers_header/../drivers_header/delay.h \
- ../hal/../devices_header/../drivers_header/../drivers_header/../drivers_header/pinmap.h \
- ../hal/../devices_header/../drivers_header/delay.h \
- ../hal/../devices_header/../drivers_header/rs232.h \
+ ../hal/../lmic/../devices_header/../drivers_header/spi.h \
+ ../hal/../lmic/../devices_header/../drivers_header/../drivers_header/pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
- ../hal/../devices_header/../drivers_header/../fifo_buffers_header/fifo_rs232.h \
- ../hal/../devices_header/../drivers_header/../fifo_buffers_header/../drivers_header/pinmap.h \
+ ../hal/../lmic/../devices_header/../drivers_header/delay.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h \
+ ../hal/../lmic/../devices_header/../drivers_header/rs232.h \
+ ../hal/../lmic/../devices_header/../drivers_header/../fifo_buffers_header/fifo_rs232.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
+ ../hal/../lmic/../devices_header/ublox_msg.h \
+ ../hal/../lmic/../drivers_header/pinmap.h \
+ ../hal/../lmic/../devices_header/rgb_led.h \
+ ../hal/../lmic/../devices_header/../drivers_header/pwm.h \
+ ../hal/../lmic/../devices_header/../drivers_header/../drivers_header/delay.h \
+ ../hal/../lmic/../drivers_header/spi.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_burtc.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_letimer.h \
+ ../hal/../lmic/lmic.h ../hal/../lmic/lorabase.h ../hal/../lmic/config.h \
+ ../hal/../drivers_header/pinmap.h ../hal/../devices_header/rgb_led.h \
  ../hal/../drivers_header/rs232.h
 
 ../hal/debug.h:
@@ -171,13 +178,9 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_bus.h:
 
-../hal/../lmic/lmic.h:
+../hal/../lmic/../devices_header/ublox_gps.h:
 
-../hal/../lmic/lorabase.h:
-
-../hal/../lmic/config.h:
-
-../hal/../drivers_header/pinmap.h:
+../hal/../lmic/../devices_header/../drivers_header/pinmap.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_cmu.h:
 
@@ -199,26 +202,46 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h:
 
-../hal/../devices_header/rgb_led.h:
+../hal/../lmic/../devices_header/../drivers_header/spi.h:
 
-../hal/../devices_header/../drivers_header/pwm.h:
-
-../hal/../devices_header/../drivers_header/../drivers_header/pinmap.h:
-
-c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h:
-
-../hal/../devices_header/../drivers_header/../drivers_header/delay.h:
-
-../hal/../devices_header/../drivers_header/../drivers_header/../drivers_header/pinmap.h:
-
-../hal/../devices_header/../drivers_header/delay.h:
-
-../hal/../devices_header/../drivers_header/rs232.h:
+../hal/../lmic/../devices_header/../drivers_header/../drivers_header/pinmap.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
 
-../hal/../devices_header/../drivers_header/../fifo_buffers_header/fifo_rs232.h:
+../hal/../lmic/../devices_header/../drivers_header/delay.h:
 
-../hal/../devices_header/../drivers_header/../fifo_buffers_header/../drivers_header/pinmap.h:
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h:
+
+../hal/../lmic/../devices_header/../drivers_header/rs232.h:
+
+../hal/../lmic/../devices_header/../drivers_header/../fifo_buffers_header/fifo_rs232.h:
+
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
+
+../hal/../lmic/../devices_header/ublox_msg.h:
+
+../hal/../lmic/../drivers_header/pinmap.h:
+
+../hal/../lmic/../devices_header/rgb_led.h:
+
+../hal/../lmic/../devices_header/../drivers_header/pwm.h:
+
+../hal/../lmic/../devices_header/../drivers_header/../drivers_header/delay.h:
+
+../hal/../lmic/../drivers_header/spi.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_burtc.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_letimer.h:
+
+../hal/../lmic/lmic.h:
+
+../hal/../lmic/lorabase.h:
+
+../hal/../lmic/config.h:
+
+../hal/../drivers_header/pinmap.h:
+
+../hal/../devices_header/rgb_led.h:
 
 ../hal/../drivers_header/rs232.h:
