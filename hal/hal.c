@@ -30,7 +30,6 @@ static	uint16_t	average_n=0;
 static 	uint32_t	avergae_sum=0;
 static 	uint32_t	ref_count=0;
 
-static int			diff_in_tstamp=0;
 //////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
@@ -42,36 +41,45 @@ void BURTC_IRQHandler(void)
 	if(int_mask & BURTC_IF_COMP0){
 
 		time_count++;
-
-		 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=ADVANCE_SYNCH_SECONDS && time_count!=0 ){	//60
-			 time_manager_cmd=basic_sync;
-			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-
-			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
-			 debug_str(temp_buf);
-		 }
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
+				//wakeup
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 			 ///////////////////////
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
 				 sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 				 debug_str(temp_buf);
-				 time_count=diff_in_tstamp;
+				 if(diff_in_tstamp>=10){
+					 time_count=9;
+				 }
+				 else{
+					 time_count=diff_in_tstamp;
+				 }
 			 }
-			 else{
+			 else {
 				 time_count=0;
 			 }
 			 /////////////////////
-			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-
-			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\n",one_sec_top_ref,ref_count);
+			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
 			debug_str(temp_buf);
 		 }
-		 	 //update clock...
-		 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
-		 BURTC_CompareSet(0,one_sec_top_ref);
+		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
+			 time_manager_cmd=basic_sync;
+				//wakeup
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+
+			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
+			 debug_str(temp_buf);
+		 	 	 //update clock...
+			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
+			 BURTC_CompareSet(0,one_sec_top_ref);
+			 }
 		 }
+		 else {
+			 ;
+		 }
+
 	}
 	BURTC_IntClear(int_mask);
 }

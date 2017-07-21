@@ -103,7 +103,9 @@ src/main.o: ../src/main.c \
  ../src/../resource\ managers_header/../resource\ managers_header/../lmic/config.h \
  ../src/../resource\ managers_header/../resource\ managers_header/../hal/debug.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h \
- ../src/../resource\ managers_header/../resource\ managers_header/../lmic/hal.h
+ ../src/../resource\ managers_header/../resource\ managers_header/../lmic/hal.h \
+ ../src/../resource\ managers_header/app_manager.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rmu.h
 
 ../src/../resource\ managers_header/lpwan_manager.h:
 
@@ -314,3 +316,7 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_h
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\lmic\oslmic.h:
 
 ../src/../resource\ managers_header/../resource\ managers_header/../lmic/hal.h:
+
+../src/../resource\ managers_header/app_manager.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rmu.h:
