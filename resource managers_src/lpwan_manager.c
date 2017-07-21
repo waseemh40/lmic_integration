@@ -15,7 +15,7 @@
 #ifdef USE_RADIO
 	nav_data_t	 			running_tstamp;
 	nav_data_t	 			ref_tstamp;
-	int						diff_in_tstamp;
+	//int						diff_in_tstamp;
 #endif
 	char					temp_buf[32];
 			/*
@@ -88,12 +88,10 @@
 		return;
 	}
 
-	static void app_funct (osjob_t* j) {
-		time_manager_cmd_t		time_manager_cmd=basic_sync;
+static	time_manager_cmd_t		time_manager_cmd=basic_sync;
 
-			//goto sleep
-		SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-		EMU_EnterEM1();
+	static void app_funct (osjob_t* j) {
+
 			//update Timestamps
 		running_tstamp=gps_get_nav_data();
 		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
@@ -101,7 +99,7 @@
 		ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;				//add 10secs
 	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
-		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
+		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp);
 
 		if(time_manager_cmd==advance_sync){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
@@ -113,13 +111,8 @@
 			else{
 			  //sprintf(temp_buf,"No LoRa message\n");
 			  //debug_str((const u1_t*)"No LoRa mesage\n");
-			  onEvent(0);
 			}*/
-			onEvent(0);
 
-		}
-		else{
-			  onEvent(0);
 		}
 		return;
 	}
@@ -158,7 +151,6 @@
 			  time_manager_init();
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
 			  debug_str((const u1_t*)temp_buf);
-			  app_funct(&app_job);					//first time call....
 			  break;
 		  //transmission complete
 		  case EV_TXCOMPLETE:
@@ -173,8 +165,7 @@
 			  lora_tx_function();	//retry logic. NOT tested.
 		  }
 #else
-		  //debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
-		  os_setCallback(&app_job, app_funct);
+		  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
 #endif
 			  break;
 		  case EV_JOIN_FAILED:
@@ -193,8 +184,11 @@
 			  debug_str((const u1_t*)"\tEV_LINK_ALIVE\n");
 			  break;
 		  default:
-			  //debug_str("\tDummy or default event..\n");
-			  os_setCallback(&app_job, app_funct);
+			  debug_str("\tDummy or default event..\n");
 			  break;
 		}
+	}
+	void debug_function(void){
+		  os_setCallback(&app_job, app_funct);
+
 	}

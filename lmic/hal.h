@@ -35,7 +35,7 @@ typedef enum{
 	//
 	extern nav_data_t	 	running_tstamp;
 	extern nav_data_t	 	ref_tstamp;
-	extern int				diff_in_tstamp;
+	//extern int				diff_in_tstamp;
 
 	//
 
