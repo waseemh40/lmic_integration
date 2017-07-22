@@ -192,8 +192,8 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		  ;
 	  }
 	  /////////////////////////////////////////////////////////
-	  //sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags);
-	  //temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,rs232_tx_buf);
+	  sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags);
+	  temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,rs232_tx_buf);
 	  //////////////////////////////////////////////////////////
 	return;
 }

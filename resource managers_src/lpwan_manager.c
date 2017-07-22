@@ -158,7 +158,6 @@ static	time_manager_cmd_t		time_manager_cmd=basic_sync;
 #ifdef USE_LORA_ACK
 		  if(LMIC.txrxFlags & TXRX_ACK){
 			  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
-			  os_setCallback(&app_job, app_funct);
 		  }
 		  else{
 			  debug_str((const u1_t*)"\nNo ACK RXCVD retrying...\n");
