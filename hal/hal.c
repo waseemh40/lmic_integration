@@ -19,6 +19,7 @@
 // HAL state
 static struct
 {
+    //int irqlevel;
     uint64_t ticks;
 } HAL;
 //////////////////////////////////////////////////////////////
@@ -28,13 +29,12 @@ static 	int			last_letimer_count=65535;
 static	uint16_t	average_n=0;
 static 	uint32_t	avergae_sum=0;
 static 	uint32_t	ref_count=0;
-static 	int			diff_in_tstamp=0;
+
 //////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
 static int 						time_count=0;
 char					temp_buf[128];
-extern void debug_function(void);
 void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
@@ -42,14 +42,14 @@ void BURTC_IRQHandler(void)
 
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
-	 	 	 	 //add job
 			 time_manager_cmd=advance_sync;
-			 debug_function();
-
+				//wakeup
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+			 ///////////////////////
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
-				 //sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
-				 //debug_str(temp_buf);
+				 sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
+				 debug_str(temp_buf);
 				 if(diff_in_tstamp>=10){
 					 time_count=9;
 				 }
@@ -60,16 +60,17 @@ void BURTC_IRQHandler(void)
 			 else {
 				 time_count=0;
 			 }
-			//sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
-			//debug_str(temp_buf);
+			 /////////////////////
+			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
+			debug_str(temp_buf);
 		 }
 		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
-		 	 	 //add job
 			 time_manager_cmd=basic_sync;
-			 debug_function();
+				//wakeup
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 
-			 //sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
-			 //debug_str(temp_buf);
+			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
+			 debug_str(temp_buf);
 		 	 	 //update clock...
 			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
 			 BURTC_CompareSet(0,one_sec_top_ref);
@@ -113,7 +114,7 @@ void 		time_manager_init(void){
 	LETIMER_Reset(LETIMER0);
 	LETIMER_Init(LETIMER0,&letimer_init);
 		//start BURTC
-	BURTC_Enable(true);
+		BURTC_Enable(true);
     return;
 }
 
@@ -400,7 +401,7 @@ void hal_enableIRQs ()
 
 void hal_sleep ()
 {
-	EMU_EnterEM1();
+	//EMU_EnterEM1();
 }
 
 // -----------------------------------------------------------------------------
