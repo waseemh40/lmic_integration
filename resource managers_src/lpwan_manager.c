@@ -106,16 +106,23 @@
 		if(time_manager_cmd==advance_sync){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			if(lora_msg_length>0){
-				sprintf(temp_buf,"LoRa message length=%d\n",lora_msg_length);
-			 	//debug_str((const u1_t*)temp_buf);
+				sprintf(temp_buf,"LoRa message length=%d MSG=",lora_msg_length);
+			 	debug_str((const u1_t*)temp_buf);
+			 		//////
+			 	for(int i=0;i<lora_msg_length;i++){
+			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
+			 		debug_str((const u1_t*)temp_buf);
+			 	}
+			 	debug_char('\n');
+			 		///////////
 			 	lora_tx_function();
 			}
 			else{
-			  //sprintf(temp_buf,"No LoRa message\n");
-			  //debug_str((const u1_t*)"No LoRa mesage\n");
+			  sprintf(temp_buf,"No LoRa message\n");
+			  debug_str((const u1_t*)"No LoRa mesage\n");
 			  onEvent(0);
 			}
-			onEvent(0);
+			//onEvent(0);
 
 		}
 		else{
@@ -173,7 +180,7 @@
 			  lora_tx_function();	//retry logic. NOT tested.
 		  }
 #else
-		  //debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
+		  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
 		  os_setCallback(&app_job, app_funct);
 #endif
 			  break;
