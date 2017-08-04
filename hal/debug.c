@@ -12,7 +12,6 @@
 
 #include "debug.h"
 #include "../lmic/lmic.h"
-#include "../drivers_header/pinmap.h"
 #include "../devices_header/rgb_led.h"
 #include "../drivers_header/rs232.h"
 

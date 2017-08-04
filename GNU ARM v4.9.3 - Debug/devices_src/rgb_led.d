@@ -57,14 +57,7 @@ devices_src/rgb_led.o: ../devices_src/rgb_led.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_core.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h \
- ../devices_src/../devices_header/../drivers_header/../drivers_header/delay.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
- ../devices_src/../devices_header/../drivers_header/delay.h \
- ../devices_src/../devices_header/../drivers_header/rs232.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
- ../devices_src/../devices_header/../drivers_header/../fifo_buffers_header/fifo_rs232.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h
 
 ../devices_src/../devices_header/rgb_led.h:
 
@@ -183,17 +176,3 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h:
-
-../devices_src/../devices_header/../drivers_header/../drivers_header/delay.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
-
-../devices_src/../devices_header/../drivers_header/delay.h:
-
-../devices_src/../devices_header/../drivers_header/rs232.h:
-
-c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
-
-../devices_src/../devices_header/../drivers_header/../fifo_buffers_header/fifo_rs232.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:

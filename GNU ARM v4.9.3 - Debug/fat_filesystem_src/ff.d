@@ -4,7 +4,8 @@ fat_filesystem_src/ff.o: ../fat_filesystem_src/ff.c \
  ../fat_filesystem_src/../fat_filesystem_header/../fat_filesystem_header/ffconf.h \
  ../fat_filesystem_src/../fat_filesystem_header/diskio.h \
  ../fat_filesystem_src/../fat_filesystem_header/../devices_header/sd_card.h \
- ../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/pinmap.h \
+ ../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/spi.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\em_device.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg842f1024.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\cmsis\include\core_cm3.h \
@@ -60,8 +61,6 @@ fat_filesystem_src/ff.o: ../fat_filesystem_src/ff.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_core.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h \
- ../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/spi.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
  ../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/delay.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h
@@ -76,7 +75,9 @@ fat_filesystem_src/ff.o: ../fat_filesystem_src/ff.c \
 
 ../fat_filesystem_src/../fat_filesystem_header/../devices_header/sd_card.h:
 
-../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/pinmap.h:
+../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/spi.h:
+
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\em_device.h:
 
@@ -187,10 +188,6 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h:
-
-../fat_filesystem_src/../fat_filesystem_header/../devices_header/../drivers_header/spi.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
 

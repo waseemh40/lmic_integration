@@ -8,7 +8,6 @@
 #ifndef SRC_SD_CARD_H_
 #define SRC_SD_CARD_H_
 
-#include "../drivers_header/pinmap.h"
 #include "../drivers_header/spi.h"
 #include "../drivers_header/delay.h"
 

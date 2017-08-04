@@ -8,7 +8,6 @@
 #ifndef SRC_UBLOX_GPS_H_
 #define SRC_UBLOX_GPS_H_
 
-#include "../drivers_header/pinmap.h"
 #include "../drivers_header/spi.h"
 #include "../drivers_header/delay.h"
 #include "../drivers_header/rs232.h"

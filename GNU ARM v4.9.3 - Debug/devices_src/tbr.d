@@ -65,12 +65,6 @@ devices_src/tbr.o: ../devices_src/tbr.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h \
  ../devices_src/../devices_header/../devices_header/rgb_led.h \
  ../devices_src/../devices_header/../devices_header/../drivers_header/pwm.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
- ../devices_src/../devices_header/../devices_header/../drivers_header/delay.h \
- ../devices_src/../devices_header/../devices_header/../drivers_header/rs232.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_rs232.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h
 
 ../devices_src/../devices_header/tbr.h:
@@ -204,17 +198,5 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 ../devices_src/../devices_header/../devices_header/rgb_led.h:
 
 ../devices_src/../devices_header/../devices_header/../drivers_header/pwm.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
-
-../devices_src/../devices_header/../devices_header/../drivers_header/delay.h:
-
-../devices_src/../devices_header/../devices_header/../drivers_header/rs232.h:
-
-c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_rs232.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h:

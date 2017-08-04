@@ -1,6 +1,7 @@
 devices_src/sd_card.o: ../devices_src/sd_card.c \
  ../devices_src/../devices_header/sd_card.h \
- ../devices_src/../devices_header/../drivers_header/pinmap.h \
+ ../devices_src/../devices_header/../drivers_header/spi.h \
+ ../devices_src/../devices_header/../drivers_header/../drivers_header/pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\em_device.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\efm32gg842f1024.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\cmsis\include\core_cm3.h \
@@ -56,15 +57,15 @@ devices_src/sd_card.o: ../devices_src/sd_card.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_core.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h \
- ../devices_src/../devices_header/../drivers_header/spi.h \
- ../devices_src/../devices_header/../drivers_header/../drivers_header/pinmap.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
  ../devices_src/../devices_header/../drivers_header/delay.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_timer.h
 
 ../devices_src/../devices_header/sd_card.h:
 
-../devices_src/../devices_header/../drivers_header/pinmap.h:
+../devices_src/../devices_header/../drivers_header/spi.h:
+
+../devices_src/../devices_header/../drivers_header/../drivers_header/pinmap.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\device\siliconlabs\efm32gg\include\em_device.h:
 
@@ -175,10 +176,6 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_common.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_rtc.h:
-
-../devices_src/../devices_header/../drivers_header/spi.h:
-
-../devices_src/../devices_header/../drivers_header/../drivers_header/pinmap.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
 

@@ -10,7 +10,7 @@
 
 #include "../drivers_header/pinmap.h"
 #include "em_timer.h"
-#include "../drivers_header/delay.h"
+
 	//macros
 #define 	PWM_TIMER 		TIMER1
 #define 	PWM_CLK			cmuClock_TIMER1

@@ -6,7 +6,7 @@
  */
 
 #include "../resource managers_header/lpwan_manager.h"
-#include "em_rmu.h"
+
 			/*
 			 * Shared variables
 			 */

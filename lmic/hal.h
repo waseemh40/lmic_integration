@@ -13,14 +13,13 @@
 #define _hal_hpp_
 
 #include "oslmic.h"
-#include "em_emu.h"
 #include "../devices_header/ublox_gps.h"
-#include "../drivers_header/pinmap.h"
 #include "../devices_header/rgb_led.h"
 #include "../drivers_header/spi.h"
 #include "em_emu.h"
 #include "em_burtc.h"
 #include "em_letimer.h"
+#include "em_emu.h"
 
 //////////////////////////////////////////////////////
 typedef enum{

@@ -9,8 +9,7 @@
 #define SRC_RGB_LED_H_
 
 #include "../drivers_header/pwm.h"
-#include "../drivers_header/delay.h"
-#include "../drivers_header/rs232.h"
+
 
 #define 	LTC_HIGH_TIME		80
 #define 	LTC_LOW_TIME		15

@@ -8,8 +8,11 @@
 #ifndef RESOURCE_MANAGERS_HEADER_LPWAN_MANAGER_H_
 #define RESOURCE_MANAGERS_HEADER_LPWAN_MANAGER_H_
 
-#include "../lmic/hal.h"
 #include "../resource managers_header/app_manager.h"
+#include "../lmic/lmic.h"
+#include "../hal/debug.h"
+#include "../lmic/hal.h"
+#include "em_rmu.h"
 		/*
 		 * Node parameters
 		 */
