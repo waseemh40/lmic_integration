@@ -157,23 +157,11 @@
 		  // starting to join network
 		  case EV_JOINING:
 			  debug_str((const u1_t*)"\tEV_JOINING\n");
-			  os_clearCallback(&init_job);
 			  break;
 		  // network joined, session established
 		  case EV_JOINED:
 			  debug_str((const u1_t*)"\tEV_JOINED\n");
-
-			  //os_clearCallback(&init_job);
-
-			 /* if(app_manager_init()){
-			  		debug_str((const u1_t*)"\tApp Manager Init Successful\t\n");
-			  	}
-			  	else{
-			  		debug_str((const u1_t*)"\tApp Manager Init Failed...\t\n");
-			  		 rgb_on(true,false,false);
-			  		 return;
-			  	}
-			  	 */
+			  os_clearCallback(&init_job);
 			  rgb_shutdown();
 			  setup_channel();						//setup channel....
 			  while(ref_tstamp.valid!=true){		//wait for reference timestamp...
