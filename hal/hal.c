@@ -30,6 +30,7 @@ static	uint16_t	average_n=0;
 static 	uint32_t	avergae_sum=0;
 static 	uint32_t	ref_count=0;
 
+extern void debug_function(void);
 //////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
@@ -44,7 +45,8 @@ void BURTC_IRQHandler(void)
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
 				//wakeup
-			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+			 //SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+			 debug_function();
 			 ///////////////////////
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
@@ -61,15 +63,15 @@ void BURTC_IRQHandler(void)
 				 time_count=0;
 			 }
 			 /////////////////////
-			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
+			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
 			debug_str(temp_buf);
 		 }
 		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
 			 time_manager_cmd=basic_sync;
 				//wakeup
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-
-			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t",one_sec_top_ref,ref_count);
+			 debug_function();
+			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
 			 debug_str(temp_buf);
 		 	 	 //update clock...
 			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
@@ -401,7 +403,7 @@ void hal_enableIRQs ()
 
 void hal_sleep ()
 {
-	//EMU_EnterEM1();
+	EMU_EnterEM1();
 }
 
 // -----------------------------------------------------------------------------

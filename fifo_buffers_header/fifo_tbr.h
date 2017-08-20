@@ -12,7 +12,7 @@
 #include "../drivers_header/pinmap.h"
 
 
-#define 	FIFO_TBR_RX_DATA_SIZE		512
+#define 	FIFO_TBR_RX_DATA_SIZE		1024
 #define 	FIFO_TBR_RX_CMD_SIZE		0
 #define 	FIFO_TBR_TX_CMD_SIZE		16
 

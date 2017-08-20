@@ -27,6 +27,7 @@ int main() {
 	  *******************************************************
 	  */
 
+
 	if(app_manager_init()){
 		debug_str((const u1_t*)"\tApp Manager Init Successful\t\n");
 	}
@@ -35,7 +36,12 @@ int main() {
 		 rgb_on(true,false,false);
 		 return 0;
 	}
-
+	/*
+			  rgb_init();
+			  rs232_init();
+			  rs232_enable();
+			  delay_init();
+*/
 	rgb_on(false,false,true);					//keep blue led on
 
   while(1) {

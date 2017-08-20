@@ -18,7 +18,7 @@ static 			uint8_t				tbr_lora_buf[ARRAY_MESSAGE_SIZE];
 		/*
 		 * public variables
 		 */
-const 			unsigned char  		rs232_tx_buf[512];
+static 			unsigned char  		rs232_tx_buf[512];
 
 		/*
 		 * private functions
@@ -62,14 +62,14 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	bool 	ret_flag=false;
 
 	ret_flag=tbr_send_cmd(tbr_cmd,timestamp);
+	debug_str("\tAPP Manager TBR done\n");
 	if(ret_flag){
 		rgb_on(false,true,false);
-		delay_ms(7);
 	}
 	else{
 		rgb_on(true,false,false);
-		delay_ms(7);
 	}
+	delay_ms(7);
 	rgb_shutdown();
 	return ret_flag;
 }
@@ -77,7 +77,7 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 		 * public functions
 		 */
 bool app_manager_init(void){
-	  const unsigned char  		rs232_tx_buf[64];
+	  //const unsigned char  		rs232_tx_buf[64];
 	  uint8_t					init_retry=0;
 	  bool						temp_init_flag=false;
 
@@ -164,6 +164,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
 		sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d %d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags,diff);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+		delay_ms(5);
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
@@ -180,7 +181,8 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 	  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
 		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
-		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d Count=%d MSG=%s\n",temp_flag,tbr_msg_length,tbr_msg_count,tbr_msg_buf);
+		//sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d Count=%d MSG=%s\n",temp_flag,tbr_msg_length,tbr_msg_count,tbr_msg_buf);
+		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  }
 #elif RADIO_ONLY

@@ -66,11 +66,10 @@ resource\ managers_src/app_manager.o: \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_tbr.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\pinmap.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\rgb_led.h \
+ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
  ../resource\ managers_src/../resource\ managers_header/../devices_header/ublox_gps.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\spi.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h \
- c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs232.h \
  c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\fifo_buffers_header\fifo_rs232.h \
  ../resource\ managers_src/../resource\ managers_header/../devices_header/ublox_msg.h \
@@ -214,15 +213,13 @@ c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_h
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
 
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\devices_header\rgb_led.h:
+c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
 
 ../resource\ managers_src/../resource\ managers_header/../devices_header/ublox_gps.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\spi.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v1.1\platform\emlib\inc\em_usart.h:
-
-c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\delay.h:
 
 c:\users\waseemh\simplicitystudio\v4_workspace\lmic_and_testproject_ia\drivers_header\rs232.h:
 

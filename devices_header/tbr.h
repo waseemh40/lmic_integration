@@ -9,10 +9,10 @@
 #define SRC_TBR_H_
 
 #include "../drivers_header/rs485.h"
-#include "../devices_header/rgb_led.h"
+#include "../drivers_header/delay.h"
 
-#define ARRAY_MESSAGE_SIZE		512
-#define CMD_RX_TX_BUF_SIZE		256
+#define ARRAY_MESSAGE_SIZE		1024//512
+#define CMD_RX_TX_BUF_SIZE		1024//256
 #define	CMD_TX_BUF_SIZE			16
 #define TBR_SENSOR_MSG 			true
 #define TBR_DETECION_MSG		false
