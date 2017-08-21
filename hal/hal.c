@@ -50,8 +50,8 @@ void BURTC_IRQHandler(void)
 			 ///////////////////////
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
-				 sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
-				 debug_str(temp_buf);
+				// sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
+				 //debug_str(temp_buf);
 				 if(diff_in_tstamp>=10){
 					 time_count=9;
 				 }
@@ -63,16 +63,16 @@ void BURTC_IRQHandler(void)
 				 time_count=0;
 			 }
 			 /////////////////////
-			sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
-			debug_str(temp_buf);
+			//sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
+			//debug_str(temp_buf);
 		 }
 		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
 			 time_manager_cmd=basic_sync;
 				//wakeup
-			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+			 //SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
 			 debug_function();
-			 sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
-			 debug_str(temp_buf);
+			 //sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
+			 //debug_str(temp_buf);
 		 	 	 //update clock...
 			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
 			 BURTC_CompareSet(0,one_sec_top_ref);

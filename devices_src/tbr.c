@@ -126,8 +126,8 @@ bool check_other_messages(char * cmd_rx_tx_buf){
 	int				temp_var=0;
 	char	 		*cmd_compare_str;
 
-	delay_ms(5);
-	debug_str("\tTBR CoM Called\n");
+	//delay_ms(5);
+	//debug_str("\tTBR CoM Called\n");
 
 	cmd_compare_str=strchr(cmd_rx_tx_buf,'$');
 	 if(cmd_compare_str==NULL){
@@ -136,7 +136,7 @@ bool check_other_messages(char * cmd_rx_tx_buf){
 	 else{
 		 temp_var=parse_message_tbr(cmd_rx_tx_buf);
 
-			debug_str("\tTBR CoM Returning\n");
+			//debug_str("\tTBR CoM Returning\n");
 
 		 if(temp_var>0){
 			 return true;
@@ -161,8 +161,8 @@ bool get_and_compare(char *compare_string){
 	char			temp_char='0';
 	bool			ret_flag=false;
 
-	delay_ms(5);
-	debug_str("\tTBR G & C Called\n");
+	//delay_ms(5);
+	//debug_str("\tTBR G & C Called\n");
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
 	delay_ms(8);												//response time from TBR
@@ -188,7 +188,7 @@ bool get_and_compare(char *compare_string){
 		 rgb_shutdown();
 	 }*/
 
-	debug_str("\tTBR G & C Returning\n");
+	//debug_str("\tTBR G & C Returning\n");
 
 	return ret_flag;
 }
@@ -363,8 +363,8 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 	uint8_t			luhn;
 	int				temp_var=0;
 
-	delay_ms(5);
-	debug_str("\tTBR Called\n");
+	//delay_ms(5);
+	//debug_str("\tTBR Called\n");
 
 	if( tbr_cmd==cmd_sn_req){
 		sprintf((char *)cmd_tx_buf,"?\n");
@@ -388,10 +388,10 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 	else{
 		ret_flag=false;
 	}
-	debug_str("\tTBR Returning\n");
+	/*debug_str("\tTBR Returning\n");
 	for(int i=0;i<10;i++){
 		debug_str("\tHello shit I am working\n");
-	}
+	}*/
 	return ret_flag;
 }
 int tbr_recv_msg(char *msg_buf, int *msg_length){

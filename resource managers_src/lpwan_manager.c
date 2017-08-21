@@ -92,8 +92,8 @@
 		time_manager_cmd_t		time_manager_cmd=basic_sync;
 
 
-		debug_str("\nApp funct Called\n");
-		delay_ms(7);
+		//debug_str("\nApp funct Called\n");
+		//delay_ms(7);
 			//update Timestamps
 		running_tstamp=gps_get_nav_data();
 		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
@@ -103,13 +103,13 @@
 	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
 
-		debug_str("App funct timing part done\n");
-		delay_ms(5);
+		//debug_str("App funct timing part done\n");
+		//delay_ms(5);
 
 		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
 
-		debug_str("App funct TBR part done\n");
-		delay_ms(5);
+		//debug_str("App funct TBR part done\n");
+		//delay_ms(5);
 
 		if(time_manager_cmd==advance_sync){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
