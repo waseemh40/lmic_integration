@@ -165,7 +165,7 @@ bool get_and_compare(char *compare_string){
 	//debug_str("\tTBR G & C Called\n");
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	delay_ms(8);												//response time from TBR
+	delay_ms(9);												//response time from TBR
 	//debug_str("TBR RXVD\n");
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
 		temp_char=rs485_recieve_char();
