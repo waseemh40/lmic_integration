@@ -14,6 +14,7 @@
 static			FATFS 				FatFs;
 static 			int					tbr_lora_length=0;
 static 			uint8_t				tbr_lora_buf[ARRAY_MESSAGE_SIZE];
+static			char				tbr_sd_card_buf[ARRAY_MESSAGE_SIZE];	//tags with NAV data appended
 
 		/*
 		 * public variables
@@ -72,6 +73,102 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	delay_ms(7);
 	rgb_shutdown();
 	return ret_flag;
+}
+int nmea0183_checksum(char *nmea_data)
+{
+    int crc = 0;
+    int i;
+
+    // the first $ sign and the last two bytes of original CRC + the * sign
+    for (i = 1; i < strlen(nmea_data) - 2; i ++) {
+        crc ^= nmea_data[i];
+    }
+
+    return crc;
+}
+void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data){
+			//GP variables
+	int	 		outer_loop_var=0;
+	int	 		inner_loop_var=0;
+	int 		tbr_msg_buf_offset=0;
+	int 		tbr_sd_card_buf_offset=0;
+	char		temp_single_tbr_msg_buf[60];
+	char		temp_single_appended_msg_buf[100];
+			//variables for latitude, long and DOP calculations
+	float		latitude=0.0;
+	float		longitude=0.0;
+	int32_t		lat_deg=0;
+	int32_t		long_deg=0;
+	float		lat_min=0.0;
+	float		long_min=0.0;
+	float		p_dop=0.0;
+	int 		fixType=3;
+	uint8_t		checksum=0x3f;
+	char		lat_dir='N';	//1=North and 0=South
+	char		long_dir='E';	//1=East and 0=West
+
+			//calculate navigation variables in degrees and minutes
+		//Latitude
+	latitude=(float)nav_data.latitude;
+	latitude=(float)(latitude/10000000);
+	if(latitude<0.0){
+		latitude=(float)-1.0*latitude;
+		lat_dir='S';		//South
+	}
+	else{
+		lat_dir='N';		//North
+	}
+	lat_deg=(int32_t)(latitude);
+	lat_min=(float)(latitude-lat_deg);
+	lat_min=(float)lat_min*60;
+		//Longitude
+	longitude=(float)nav_data.longitude;
+	longitude=(float)(longitude/10000000);
+	if(longitude<0.0){
+		longitude=(float)-1*longitude;
+		long_dir='W';		//West
+	}
+	else{
+		long_dir='E';		//East
+	}
+	long_deg=(int32_t)(longitude);
+	long_min=(float)(longitude-long_deg);
+	long_min=(float)long_min*60;
+	sprintf((char *)rs232_tx_buf,"Long=%f %f %f\n",longitude,latitude,lat_min);
+	rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+
+		//DOP for position
+	p_dop=(float)(nav_data.pDOP/100);
+			//now decimate messages and append navigation data
+	clear_buffer(tbr_sd_card_buf, ARRAY_MESSAGE_SIZE);
+	tbr_msg_buf_offset=0;
+	tbr_sd_card_buf_offset=0;
+	for(outer_loop_var=0;outer_loop_var<tbr_msg_count;outer_loop_var++){
+		clear_buffer(temp_single_tbr_msg_buf, 60);
+		clear_buffer(temp_single_appended_msg_buf, 100);
+			//extract single TBR message
+		for(inner_loop_var=0;inner_loop_var<60;inner_loop_var++){
+			if(tbr_msg_buf[tbr_msg_buf_offset+inner_loop_var]=='\n'){
+				tbr_msg_buf_offset+=inner_loop_var+1;	//\n ropped here
+				break;
+			}
+			temp_single_tbr_msg_buf[inner_loop_var]=tbr_msg_buf[tbr_msg_buf_offset+inner_loop_var];
+		}
+			//append NAV data
+		sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%3d%02.3f,%c,%1d,%2d,%01.1f*\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop);
+		checksum=nmea0183_checksum(temp_single_appended_msg_buf);
+		sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%3d%02.3f,%c,%1d,%2d,%01.1f*%2x\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop,checksum);
+			//put appended message in SD card buffer
+		for(inner_loop_var=0;inner_loop_var<100;inner_loop_var++){
+			tbr_sd_card_buf[inner_loop_var+tbr_sd_card_buf_offset]=temp_single_appended_msg_buf[inner_loop_var];
+			if(temp_single_appended_msg_buf[inner_loop_var]=='\n'){
+				tbr_sd_card_buf_offset+=inner_loop_var+1;	//\n addedd already
+				break;
+			}
+		}
+		rs232_transmit_string(temp_single_appended_msg_buf,strlen(temp_single_appended_msg_buf));
+		delay_ms(5);
+	}
 }
 		/*
 		 * public functions
@@ -184,6 +281,14 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		//sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d Count=%d MSG=%s\n",temp_flag,tbr_msg_length,tbr_msg_count,tbr_msg_buf);
 		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+		if(running_tstamp.valid=true){
+			append_gps_status(tbr_msg_buf,tbr_msg_count, running_tstamp);
+		}
+		else{
+			append_gps_status(tbr_msg_buf,tbr_msg_count, ref_timestamp);
+		}
+		//rs232_transmit_string(tbr_sd_card_buf,(tbr_msg_length+(tbr_msg_count*35)));
+		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 	  }
 #elif RADIO_ONLY
 		  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
@@ -219,3 +324,5 @@ uint8_t	app_manager_get_lora_buffer(uint8_t	*lora_buffer){
 		return 0;
 	}
 }
+
+

@@ -250,6 +250,7 @@ nav_data_t		parse_message(uint8_t data[]){
 	nano|=data[offset+16];					//added later on
 	nav_data.nano=(uint32_t)(nano);			//added later on
 	nav_data.numSV=data[offset+23];			//added later on
+	nav_data.pDOP=data[offset+76];			//added later later on
 		//extract longitude
 	longitude=0;
 	longitude|=(data[offset+27]<<24);

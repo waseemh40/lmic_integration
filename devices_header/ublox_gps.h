@@ -35,9 +35,11 @@ typedef struct {
 	uint32_t	tAcc;		//added later on
 	uint32_t	nano;		//added later on
 	uint8_t		numSV;		//added later on
+	uint8_t		pDOP;		//added later later on
 	uint32_t	longitude;
 	uint32_t	latitude;
 	uint32_t	height;
+
 }nav_data_t;
 /*
  * public variables

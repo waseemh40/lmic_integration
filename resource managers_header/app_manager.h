@@ -35,6 +35,7 @@
 bool 			file_sys_setup(uint16_t year,uint8_t date,uint8_t day,
 											char buf[]);
 bool 			tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp);
+void 			append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data);
 	/*
 	 * public functions
 	 */
