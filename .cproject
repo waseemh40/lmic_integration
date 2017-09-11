@@ -69,7 +69,7 @@
 							<tool id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.base.677438291" name="GNU ARM C Linker" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.base">
 								<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.nostdlibs.213701914" name="No startup or default libs (-nostdlib)" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.nostdlibs" value="false" valueType="boolean"/>
 								<option id="gnu.c.link.option.ldflags.1819758819" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="-u _printf_float" valueType="string"/>
-								<option id="gnu.c.link.option.other.1650566942" name="Other options (-Xlinker [option])" superClass="gnu.c.link.option.other" valueType="stringList"/>
+								<option id="gnu.c.link.option.other.1650566942" name="Other options (-Xlinker [option])" superClass="gnu.c.link.option.other"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.161203721" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
