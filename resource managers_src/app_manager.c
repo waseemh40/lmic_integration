@@ -290,7 +290,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		//rs232_transmit_string(tbr_sd_card_buf,(tbr_msg_length+(tbr_msg_count*35)));
 		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 		if(temp_flag==false){
-			sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
+			sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d write failed\n",temp_flag,tbr_msg_length);
 			rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 
 		}
