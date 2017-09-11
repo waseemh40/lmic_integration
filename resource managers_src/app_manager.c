@@ -149,25 +149,27 @@ void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data
 			//extract single TBR message
 		for(inner_loop_var=0;inner_loop_var<60;inner_loop_var++){
 			if(tbr_msg_buf[tbr_msg_buf_offset+inner_loop_var]=='\n'){
-				tbr_msg_buf_offset+=inner_loop_var+1;	//\n ropped here
+				tbr_msg_buf_offset+=inner_loop_var+1;	//\n dropped here
 				break;
 			}
 			temp_single_tbr_msg_buf[inner_loop_var]=tbr_msg_buf[tbr_msg_buf_offset+inner_loop_var];
 		}
-			//append NAV data
-		sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop);
-		checksum=nmea0183_checksum(temp_single_appended_msg_buf);
-		sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*%02d\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop,checksum);
-			//put appended message in SD card buffer
-		for(inner_loop_var=0;inner_loop_var<100;inner_loop_var++){
-			tbr_sd_card_buf[inner_loop_var+tbr_sd_card_buf_offset]=temp_single_appended_msg_buf[inner_loop_var];
-			if(temp_single_appended_msg_buf[inner_loop_var]=='\n'){
-				tbr_sd_card_buf_offset+=inner_loop_var+1;	//\n addedd already
-				break;
+		if(strlen(temp_single_tbr_msg_buf)>30){	//valid messages only
+				//append NAV data
+			sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop);
+			checksum=nmea0183_checksum(temp_single_appended_msg_buf);
+			sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*%02d\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop,checksum);
+				//put appended message in SD card buffer
+			for(inner_loop_var=0;inner_loop_var<100;inner_loop_var++){
+				tbr_sd_card_buf[inner_loop_var+tbr_sd_card_buf_offset]=temp_single_appended_msg_buf[inner_loop_var];
+				if(temp_single_appended_msg_buf[inner_loop_var]=='\n'){
+					tbr_sd_card_buf_offset+=inner_loop_var+1;	//\n addedd already
+					break;
+				}
 			}
+			rs232_transmit_string(temp_single_appended_msg_buf,strlen(temp_single_appended_msg_buf));
+			delay_ms(5);
 		}
-		rs232_transmit_string(temp_single_appended_msg_buf,strlen(temp_single_appended_msg_buf));
-		delay_ms(5);
 	}
 }
 		/*
@@ -267,6 +269,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
 	  //sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags,diff);
 	  //rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+	  delay_ms(5);
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
