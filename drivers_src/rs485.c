@@ -134,7 +134,7 @@ void RS485_ISR(){
 			LEUART_FreezeEnable(RS485_UART,true);
 			LEUART_Tx(RS485_UART,(uint8_t)isr_rx_tx_char );
 			LEUART_FreezeEnable(RS485_UART,false);
-			delay_ms(2);
+			delay_ms(1);
 		}
 	  else{
 		  	LEUART_IntDisable(RS485_UART,LEUART_IF_TXBL);
