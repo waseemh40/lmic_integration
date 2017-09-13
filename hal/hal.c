@@ -59,7 +59,7 @@ void BURTC_IRQHandler(void)
 					 time_count=diff_in_tstamp;
 				 }
 				 if(diff_in_tstamp!=0){
-						sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
+						sprintf(temp_buf,"\t\t\tSynching:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 						debug_str(temp_buf);
 				 }
 			 }

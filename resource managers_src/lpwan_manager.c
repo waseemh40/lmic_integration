@@ -111,12 +111,12 @@
 		//debug_str("App funct TBR part done\n");
 		//delay_ms(5);
 
-		if(time_manager_cmd==advance_sync){
-			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
-			if(lora_msg_length>0){
-				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
-			 	debug_str((const u1_t*)temp_buf);
-			 	delay_ms(5);
+		//if(time_manager_cmd==advance_sync){
+		//	lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
+		//	if(lora_msg_length>0){
+		//		sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
+		//	 	debug_str((const u1_t*)temp_buf);
+		//	 	delay_ms(5);
 			 	/*	//////
 			 	for(int i=0;i<lora_msg_length;i++){
 			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
@@ -124,16 +124,16 @@
 			 	}
 			 	debug_char('\n');
 			 		///////////*/
-			 	lora_tx_function();
-			}
-			else{
-			  sprintf(temp_buf,"No LoRa message\n");
-			  debug_str((const u1_t*)"No LoRa message\n");
-			  delay_ms(5);
-			}
+		//	 	lora_tx_function();
+		//	}
+		//	else{
+		//	  sprintf(temp_buf,"No LoRa message\n");
+		//	  debug_str((const u1_t*)"No LoRa message\n");
+		//	  delay_ms(5);
+		//	}
 
 
-		}
+		//}
 		os_clearCallback(&app_job);
 	return;
 	}
@@ -143,9 +143,8 @@
 
 	void lpwan_init(void){
 		os_init();
-		debug_str((const u1_t*)"\t\tRadio Version. OS initialized and join called. Waiting for join to finish...\n");
-		os_setCallback(&init_job, init_funct);
-		//init_funct(&init_job);
+		debug_str((const u1_t*)"\t\tNo radio version. OS initialized...\n");
+		onEvent(EV_JOINED);
 		os_runloop();
 	}
 
@@ -160,10 +159,10 @@
 			  break;
 		  // network joined, session established
 		  case EV_JOINED:
-			  debug_str((const u1_t*)"\tEV_JOINED\n");
-			  os_clearCallback(&init_job);
+			  //debug_str((const u1_t*)"\tEV_JOINED\n");
+			  //os_clearCallback(&init_job);
 			  rgb_shutdown();
-			  setup_channel();						//setup channel....
+			  //setup_channel();						//setup channel....
 			  while(ref_tstamp.valid!=true){		//wait for reference timestamp...
 				  ref_tstamp=gps_get_nav_data();
 				  delay_ms(5);
