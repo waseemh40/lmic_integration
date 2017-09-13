@@ -12,7 +12,8 @@
  */
 static			fifo_tbr_type_t			current_rx_fifo=fifo_tbr_rx_data;
 static 			char 					isr_rx_tx_char='0';
-
+extern 			char*					real_time_buf;
+extern 			uint16_t				real_time_buf_size;
 /*
  * public variables
  */

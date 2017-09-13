@@ -1589,6 +1589,8 @@ Discarded input sections
                 0x00000000        0xa ./resource managers_src/app_manager.o
  .rodata.cfg_rxm_poll_psm
                 0x00000000        0x8 ./resource managers_src/app_manager.o
+ .bss.real_time_buf
+                0x00000000      0x400 ./resource managers_src/app_manager.o
  .text.app_manager_get_nav_data
                 0x00000000       0x18 ./resource managers_src/app_manager.o
  .text.app_manager_get_lora_buffer
@@ -3562,7 +3564,7 @@ OUTPUT(lmic_and_testproject_iA.axf elf32-littlearm)
  .debug_line    0x0000af73      0x433 ./resource managers_src/lpwan_manager.o
  .debug_line    0x0000b3a6      0x3e1 ./src/main.o
 
-.debug_info     0x00000000    0x16dcb
+.debug_info     0x00000000    0x16de1
  .debug_info    0x00000000      0x10e ./CMSIS/EFM32GG/startup_efm32gg.o
  .debug_info    0x0000010e      0x5a1 ./CMSIS/EFM32GG/system_efm32gg.o
  .debug_info    0x000006af      0x5df ./devices_src/rgb_led.o
@@ -3595,11 +3597,11 @@ OUTPUT(lmic_and_testproject_iA.axf elf32-littlearm)
  .debug_info    0x00011454     0x27db ./lmic/lmic.o
  .debug_info    0x00013c2f      0x62c ./lmic/oslmic.o
  .debug_info    0x0001425b      0xf4f ./lmic/radio.o
- .debug_info    0x000151aa      0xa85 ./resource managers_src/app_manager.o
- .debug_info    0x00015c2f      0x928 ./resource managers_src/lpwan_manager.o
- .debug_info    0x00016557      0x874 ./src/main.o
+ .debug_info    0x000151aa      0xa9b ./resource managers_src/app_manager.o
+ .debug_info    0x00015c45      0x928 ./resource managers_src/lpwan_manager.o
+ .debug_info    0x0001656d      0x874 ./src/main.o
 
-.debug_abbrev   0x00000000     0x3ceb
+.debug_abbrev   0x00000000     0x3d05
  .debug_abbrev  0x00000000       0x14 ./CMSIS/EFM32GG/startup_efm32gg.o
  .debug_abbrev  0x00000014      0x1a3 ./CMSIS/EFM32GG/system_efm32gg.o
  .debug_abbrev  0x000001b7      0x15a ./devices_src/rgb_led.o
@@ -3632,9 +3634,9 @@ OUTPUT(lmic_and_testproject_iA.axf elf32-littlearm)
  .debug_abbrev  0x000030fa      0x380 ./lmic/lmic.o
  .debug_abbrev  0x0000347a      0x18c ./lmic/oslmic.o
  .debug_abbrev  0x00003606      0x228 ./lmic/radio.o
- .debug_abbrev  0x0000382e      0x19d ./resource managers_src/app_manager.o
- .debug_abbrev  0x000039cb      0x1b1 ./resource managers_src/lpwan_manager.o
- .debug_abbrev  0x00003b7c      0x16f ./src/main.o
+ .debug_abbrev  0x0000382e      0x1b7 ./resource managers_src/app_manager.o
+ .debug_abbrev  0x000039e5      0x1b1 ./resource managers_src/lpwan_manager.o
+ .debug_abbrev  0x00003b96      0x16f ./src/main.o
 
 .debug_aranges  0x00000000     0x1590
  .debug_aranges
@@ -3780,7 +3782,7 @@ OUTPUT(lmic_and_testproject_iA.axf elf32-littlearm)
  .debug_ranges  0x000012d8       0x58 ./resource managers_src/lpwan_manager.o
  .debug_ranges  0x00001330       0x20 ./src/main.o
 
-.debug_str      0x00000000     0x6b23
+.debug_str      0x00000000     0x6b31
  .debug_str     0x00000000      0x442 ./CMSIS/EFM32GG/system_efm32gg.o
                                 0x4c9 (size before relaxing)
  .debug_str     0x00000442      0x580 ./devices_src/rgb_led.o
@@ -3843,11 +3845,11 @@ OUTPUT(lmic_and_testproject_iA.axf elf32-littlearm)
                                 0x53b (size before relaxing)
  .debug_str     0x000066d5      0x140 ./lmic/radio.o
                                 0x8d0 (size before relaxing)
- .debug_str     0x00006815      0x211 ./resource managers_src/app_manager.o
-                                0x823 (size before relaxing)
- .debug_str     0x00006a26       0xd5 ./resource managers_src/lpwan_manager.o
+ .debug_str     0x00006815      0x21f ./resource managers_src/app_manager.o
+                                0x831 (size before relaxing)
+ .debug_str     0x00006a34       0xd5 ./resource managers_src/lpwan_manager.o
                                 0x7d7 (size before relaxing)
- .debug_str     0x00006afb       0x28 ./src/main.o
+ .debug_str     0x00006b09       0x28 ./src/main.o
                                 0x95d (size before relaxing)
 
 .debug_frame    0x00000000     0x6068
