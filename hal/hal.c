@@ -52,12 +52,12 @@ void BURTC_IRQHandler(void)
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
 				// sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 				 //debug_str(temp_buf);
-				 if(diff_in_tstamp>=10){
-					 time_count=9;
-				 }
-				 else{
+				 //if(diff_in_tstamp>=10){
+					// time_count=9;
+				 //}
+				 //else{
 					 time_count=diff_in_tstamp;
-				 }
+				 //}
 				 if(diff_in_tstamp!=0){
 						sprintf(temp_buf,"\t\t\tSynching:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 						debug_str(temp_buf);

@@ -156,11 +156,11 @@ void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data
 			}
 			temp_single_tbr_msg_buf[inner_loop_var]=tbr_msg_buf[tbr_msg_buf_offset+inner_loop_var];
 		}
-		if(strlen(temp_single_tbr_msg_buf)>30){	//valid messages only
+		if(strlen(temp_single_tbr_msg_buf)>10){	//valid messages only
 				//append NAV data
 			sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop);
 			checksum=nmea0183_checksum(temp_single_appended_msg_buf);
-			sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*%02d\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop,checksum);
+			sprintf(temp_single_appended_msg_buf,"%s,%02d%02.3f,%c,%03d%02.3f,%c,%01d,%02d,%01.1f*%2x\n",temp_single_tbr_msg_buf,lat_deg,lat_min,lat_dir,long_deg,long_min,long_dir,fixType,nav_data.numSV,p_dop,checksum);
 				//put appended message in SD card buffer
 			for(inner_loop_var=0;inner_loop_var<100;inner_loop_var++){
 				tbr_sd_card_buf[inner_loop_var+tbr_sd_card_buf_offset]=temp_single_appended_msg_buf[inner_loop_var];
@@ -263,32 +263,32 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
-		sprintf((char *)rs232_tx_buf,"Basic Synch Msg\n");
+		sprintf((char *)rs232_tx_buf,"\t\tBasic Synch Msg\n");
 		rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		delay_ms(5);
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
-	  sprintf((char *)rs232_tx_buf,"Advance Synch Msg\n");
+	  sprintf((char *)rs232_tx_buf,"\t\tAdvance Synch Msg\n");
 	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  delay_ms(5);
 	  }
 	else if (time_manager_cmd==2){
-	  temp_flag=tbr_cmd_update_rgb_led(cmd_real_time,(time_t)ref_timestamp.gps_timestamp);
-	  sprintf((char *)rs232_tx_buf,"Real Time check\n");
-	  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-	  delay_ms(5);
+	  temp_flag=tbr_send_cmd(cmd_real_time,(time_t)ref_timestamp.gps_timestamp);
+	  //sprintf((char *)rs232_tx_buf,"Real Time check\n");
+	  //rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+	  //delay_ms(5);
 	}
 	else {
 		  ;
 	}
 	tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 	if(tbr_msg_count>0){
-		/*if(time_manager_cmd==2){
-		  sprintf((char *)rs232_tx_buf,"\t\tReal time Message\n");
+		if(time_manager_cmd==2){
+		  sprintf((char *)rs232_tx_buf,"Real time Message\n");
 		  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		}
-		if(time_manager_cmd==1){
+		/*if(time_manager_cmd==1){
 					  sprintf((char *)rs232_tx_buf,"\t\tAdv time Message\n");
 					  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		}
@@ -296,7 +296,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 					  sprintf((char *)rs232_tx_buf,"\t\tBasic time Message\n");
 					  rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		}*/
-		if(running_tstamp.valid=true){
+		if(running_tstamp.valid==true){
 			append_gps_status(tbr_msg_buf,tbr_msg_count, running_tstamp);
 		}
 		else{
