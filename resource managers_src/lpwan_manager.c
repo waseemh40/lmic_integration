@@ -12,6 +12,10 @@
 			 */
 	static osjob_t 			init_job;
 	static osjob_t			app_job;
+	static osjob_t			rt_job;
+	static	char			rs_rs232_buf[128];
+	char					real_time_buf[ARRAY_MESSAGE_SIZE];		//tags with NAV data appended
+	bool					real_time_msg_flag=false;
 #ifdef USE_RADIO
 	nav_data_t	 			running_tstamp;
 	nav_data_t	 			ref_tstamp;
@@ -137,6 +141,15 @@
 		os_clearCallback(&app_job);
 	return;
 	}
+	static void real_time_funct (osjob_t* j) {
+		if(real_time_msg_flag)
+		{
+			real_time_msg_flag=false;
+			sprintf(rs_rs232_buf,"\t\t\tRT function:%s\n",real_time_buf);
+			debug_str((const u1_t*)rs_rs232_buf);
+		}
+		os_setTimedCallback(j, os_getTime()+ms2osticks(500), real_time_funct);
+	}
 			/*
 			 * public funtions
 			 */
@@ -174,6 +187,7 @@
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
 			  debug_str((const u1_t*)temp_buf);
 			  os_setCallback(&app_job, app_funct);//app_funct(&app_job);					//first time call....
+			  os_setCallback(&rt_job, real_time_funct);//app_funct(&app_job);					//first time call....
 			  break;
 		  //transmission complete
 		  case EV_TXCOMPLETE:

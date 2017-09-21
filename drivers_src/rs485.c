@@ -12,8 +12,12 @@
  */
 static			fifo_tbr_type_t			current_rx_fifo=fifo_tbr_rx_data;
 static 			char 					isr_rx_tx_char='0';
+static			bool					first_char=false;
+static			bool					last_char=false;
+static 			uint16_t				real_time_buf_size;
+
 extern 			char*					real_time_buf;
-extern 			uint16_t				real_time_buf_size;
+extern 			bool					real_time_msg_flag;
 /*
  * public variables
  */
@@ -149,6 +153,21 @@ void RS485_ISR(){
 			 if(!fifo_tbr_is_full(current_rx_fifo)){
 				 fifo_tbr_add(current_rx_fifo, isr_rx_tx_char);
 			}
+		if(isr_rx_tx_char=='$'){
+			first_char=true;
+			last_char=false;
+			real_time_buf[0]=isr_rx_tx_char;
+			real_time_buf_size=1;
+		}
+		if(first_char==true && last_char==false){
+			real_time_buf[real_time_buf_size]=isr_rx_tx_char;
+			real_time_buf_size++;
+			if(isr_rx_tx_char=='\r'){
+				last_char=true;
+				real_time_msg_flag=true;
+				real_time_buf[real_time_buf_size]='\n';
+			}
+		}
 	 }
 
 }
