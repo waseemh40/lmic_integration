@@ -151,7 +151,7 @@
 		os_setTimedCallback(j, os_getTime()+ms2osticks(500), real_time_funct);
 	}
 			/*
-			 * public funtions
+			 * public functions
 			 */
 
 	void lpwan_init(void){
