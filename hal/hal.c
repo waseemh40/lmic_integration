@@ -83,7 +83,8 @@ void BURTC_IRQHandler(void)
 			 }
 		 }
 		 else {
-			 ;
+			 time_manager_cmd=real_time_check;
+			 debug_function();
 		 }
 
 	}

@@ -12,10 +12,6 @@
 			 */
 	static osjob_t 			init_job;
 	static osjob_t			app_job;
-	static osjob_t			rt_job;
-	static	char			rs_rs232_buf[128];
-	char					real_time_buf[ARRAY_MESSAGE_SIZE];		//tags with NAV data appended
-	bool					real_time_msg_flag=false;
 #ifdef USE_RADIO
 	nav_data_t	 			running_tstamp;
 	nav_data_t	 			ref_tstamp;
@@ -93,65 +89,26 @@
 	}
 
 	static void app_funct (osjob_t* j) {
-		time_manager_cmd_t		time_manager_cmd=basic_sync;
+		time_manager_cmd_t		time_manager_cmd=real_time_check;
 
 
-		//debug_str("\nApp funct Called\n");
-		//delay_ms(7);
-			//update Timestamps
-		running_tstamp=gps_get_nav_data();
-		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
-																running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
-						//add 10secs
-		ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
-	    	//update application manager
 		time_manager_cmd=time_manager_get_cmd();
-
-		//debug_str("App funct timing part done\n");
-		//delay_ms(5);
+		if(time_manager_cmd!=real_time_check){
+				//update Timestamps
+			running_tstamp=gps_get_nav_data();
+			running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
+																	running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
+			ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
+		}
+		//time_manager_cmd=time_manager_get_cmd();
 
 		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
 
-		//debug_str("App funct TBR part done\n");
-		//delay_ms(5);
-
-		//if(time_manager_cmd==advance_sync){
-		//	lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
-		//	if(lora_msg_length>0){
-		//		sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
-		//	 	debug_str((const u1_t*)temp_buf);
-		//	 	delay_ms(5);
-			 	/*	//////
-			 	for(int i=0;i<lora_msg_length;i++){
-			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
-			 		debug_str((const u1_t*)temp_buf);
-			 	}
-			 	debug_char('\n');
-			 		///////////*/
-		//	 	lora_tx_function();
-		//	}
-		//	else{
-		//	  sprintf(temp_buf,"No LoRa message\n");
-		//	  debug_str((const u1_t*)"No LoRa message\n");
-		//	  delay_ms(5);
-		//	}
-
-
-		//}
 		os_clearCallback(&app_job);
 	return;
 	}
-	static void real_time_funct (osjob_t* j) {
-		if(real_time_msg_flag)
-		{
-			real_time_msg_flag=false;
-			sprintf(rs_rs232_buf,"\t\t\tRT function:%s\n",real_time_buf);
-			debug_str((const u1_t*)rs_rs232_buf);
-		}
-		os_setTimedCallback(j, os_getTime()+ms2osticks(500), real_time_funct);
-	}
 			/*
-			 * public functions
+			 * public funtions
 			 */
 
 	void lpwan_init(void){
@@ -187,7 +144,6 @@
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
 			  debug_str((const u1_t*)temp_buf);
 			  os_setCallback(&app_job, app_funct);//app_funct(&app_job);					//first time call....
-			  os_setCallback(&rt_job, real_time_funct);//app_funct(&app_job);					//first time call....
 			  break;
 		  //transmission complete
 		  case EV_TXCOMPLETE:

@@ -24,7 +24,8 @@
 //////////////////////////////////////////////////////
 typedef enum{
 	basic_sync=0,
-	advance_sync
+	advance_sync=1,
+	real_time_check=2
 }time_manager_cmd_t;
 
 #define		BASIC_SYNCH_SECONDS			10

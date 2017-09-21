@@ -22,7 +22,8 @@
 typedef enum{
 	cmd_sn_req=0,
 	cmd_basic_sync,
-	cmd_advance_sync
+	cmd_advance_sync,
+	cmd_real_time
 }tbr_cmd_t;
 
 

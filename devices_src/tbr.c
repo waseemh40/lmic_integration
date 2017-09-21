@@ -385,6 +385,9 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		rs485_transmit_string(cmd_tx_buf,temp_var-1);
 		ret_flag=get_and_compare((char *)"ack02");
 	}
+	else if(tbr_cmd==cmd_real_time){
+		ret_flag=get_and_compare((char *)"ack01");
+	}
 	else{
 		ret_flag=false;
 	}
