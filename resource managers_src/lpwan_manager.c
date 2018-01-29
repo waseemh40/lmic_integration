@@ -118,9 +118,10 @@
 			 	debug_str((const u1_t*)temp_buf);
 			 	delay_ms(5);
 			 		//////
-			 	/*for(int i=0;i<lora_msg_length;i++){
+			 	for(int i=0;i<lora_msg_length;i++){
 			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
 			 		debug_str((const u1_t*)temp_buf);
+			 		delay_ms(4);
 			 	}
 			 	debug_char('\n');
 			 		///////////*/
