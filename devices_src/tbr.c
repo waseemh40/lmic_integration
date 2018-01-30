@@ -278,11 +278,11 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 		uint8_t temp_2=((tbr_message.millisec>>8));
 		dst_buf[offset+9]=temp_1 | temp_2;
 		dst_buf[offset+10]=(uint8_t)(tbr_message.millisec>>0);
-		for(int i=0;i<11;i++){
+		/*for(int i=0;i<11;i++){
 			sprintf(resuable_buffer, "\tSingle:Broken Tag Offset=%d dst_buf[%d]=%2x\n",offset,i,dst_buf[offset+i]);
 			debug_str(resuable_buffer);
 			delay_ms(4);
-		}
+		}*/
 	}else{
 		dst_buf[offset+4]=(uint8_t)0xFF;
 		dst_buf[offset+5]=(uint8_t)(tbr_message.Temperature>>8);
@@ -291,11 +291,11 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 		dst_buf[offset+8]=(uint8_t)tbr_message.NoiseLP;
 		dst_buf[offset+9]=(uint8_t)0xFF;
 		dst_buf[offset+10]=(uint8_t)tbr_message.frequency;
-		for(int i=0;i<11;i++){
+		/*for(int i=0;i<11;i++){
 			sprintf(resuable_buffer, "\tSingle:Broken Sensor Offset=%d  dst_buf[%d]=%2x\n",offset,i,dst_buf[offset+i]);
 			debug_str(resuable_buffer);
 			delay_ms(4);
-		}
+		}*/
 	}
 	return offset+11;		//fixed offset=message size - 1.....*/
 }
@@ -318,20 +318,25 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;
+	if(msg_count>8){
+		sprintf(resuable_buffer, "\tMessage length =%d. NO LoRA parse\n",msg_count);
+		debug_str(resuable_buffer);
+		return 0;
+	}
 	for(outer_loop_var=0;outer_loop_var<msg_count;outer_loop_var++){
 		clear_buffer(single_msg, 50);
 		for(inner_loop_var=0;inner_loop_var<strlen(src_buf);inner_loop_var++){
 			if(src_buf[offset_src_buf+inner_loop_var]=='\n'){
 				offset_src_buf+=inner_loop_var+1;
 				//sprintf(resuable_buffer, "\tSingle: Offset Src buffer=%d\n",offset_src_buf);
-				debug_str(resuable_buffer);
+				//debug_str(resuable_buffer);
 				break;
 			}
 			single_msg[inner_loop_var]=src_buf[offset_src_buf+inner_loop_var];
 		}
 
 //		if((strstr(single_msg,(const char*)"TBR Sensor")==NULL) && (strstr(single_msg,(const char*)"ack")==NULL)){		//only add detections NOT sensor values....
-		if((strstr(single_msg,(const char*)"ack")==NULL)){
+		if((strstr(single_msg,(const char*)"ack")==NULL) && strlen(single_msg)>15){
 			offset_dst_buf=convert_single_tbr_msg_into_uint(single_msg,dst_buf,offset_dst_buf);
 			messages_converted++;
 		}
@@ -422,14 +427,26 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 	char			temp_char='0';
 		//SD card msg_buffer
 	clear_buffer(msg_buf, ARRAY_MESSAGE_SIZE);
+
+	sprintf(resuable_buffer, "\t\t\tBuffer is:\n");
+	debug_str(resuable_buffer);
+
 	while(!array_is_empty()){
 		temp_char=array_remove();
+
+		sprintf(resuable_buffer, "%c",temp_char);
+		debug_str(resuable_buffer);
+
 		if(temp_char=='$'){
 			msg_count++;
 		}
 		msg_buf[loop_var]=temp_char;
 		loop_var++;
 	}
+
+	sprintf(resuable_buffer, "\n");
+	debug_str(resuable_buffer);
+
 	*msg_length=loop_var;
 		//LoRa buffer
 	lora_buf_length=convert_tbr_msgs_to_uint(msg_buf,lora_msg_buf,(uint8_t)msg_count);

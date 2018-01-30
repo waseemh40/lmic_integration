@@ -209,7 +209,8 @@
 			  debug_str((const u1_t*)"\tEV_LINK_ALIVE\n");
 			  break;
 		  default:
-			  os_setCallback(&app_job, app_funct);
+			  //os_setCallback(&app_job, app_funct);
+			  debug_str((const u1_t*)"\tEV_DEFAULT\n");
 			  break;
 		}
 	}
