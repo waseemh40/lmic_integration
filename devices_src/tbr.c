@@ -95,6 +95,8 @@ int		parse_message_tbr(char *buffer){
 	int			loop_var=0;
 	char		*token_str;
 	char		ref_token[2]="$";
+	char		temp_buffer[50];
+	int			temp_buf_index=1;
 
 	token_str=strtok(buffer,ref_token);
 	if(token_str==NULL){
@@ -103,14 +105,36 @@ int		parse_message_tbr(char *buffer){
 	else{
 		if(!array_is_full()){
 			while(token_str!=NULL){
-				array_add('$');
+				//array_add('$');
+				temp_buffer[0]='$';
 				for(loop_var=0;loop_var<strlen(token_str);loop_var++){
+					 /*if(token_str[loop_var]=='\r'){
+						 debug_str("\t\t\tParse Found One Message\n");
+						 temp_buf_index=1;
+						 break;
+					 }*/
+					 //array_add(token_str[loop_var]);
 					 if(token_str[loop_var]=='\r'){
+						 if(strlen(temp_buffer)>30){
+							 for(loop_var=0;loop_var<temp_buf_index;loop_var++){
+								 array_add(temp_buffer[loop_var]);
+							 }
+							 array_add('\n');
+							 //debug_str("\t\t\tParse Found One Message\n");
+							 //debug_str(temp_buffer);
+							 //debug_str("\n");
+							 //delay_ms(4);
+						 }
+						 else{
+							 debug_str("\t\t\tParse Broken Message Found\n");;
+						 }
+						 temp_buf_index=1;
 						 break;
 					 }
-					 array_add(token_str[loop_var]);
+					 temp_buffer[temp_buf_index]=token_str[loop_var];
+					 temp_buf_index++;
 				}
-				array_add('\n');
+				//array_add('\n');
 				token_str=strtok(NULL,ref_token);
 			}
 			return 1;
@@ -336,7 +360,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		}
 
 //		if((strstr(single_msg,(const char*)"TBR Sensor")==NULL) && (strstr(single_msg,(const char*)"ack")==NULL)){		//only add detections NOT sensor values....
-		if((strstr(single_msg,(const char*)"ack")==NULL) && strlen(single_msg)>15){
+		if((strstr(single_msg,(const char*)"ack")==NULL) && strlen(single_msg)>30){
 			offset_dst_buf=convert_single_tbr_msg_into_uint(single_msg,dst_buf,offset_dst_buf);
 			messages_converted++;
 		}
@@ -425,10 +449,13 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 	int 			msg_count=0;
 	uint8_t			lora_buf_length=0;
 	char			temp_char='0';
+	char			intermediate_buffer[ARRAY_MESSAGE_SIZE];
+
 		//SD card msg_buffer
 	clear_buffer(msg_buf, ARRAY_MESSAGE_SIZE);
+	clear_buffer(intermediate_buffer, ARRAY_MESSAGE_SIZE);
 
-	sprintf(resuable_buffer, "\t\t\tBuffer is:\n");
+	sprintf(resuable_buffer, "\t\t\tMSg buffer is:\n");
 	debug_str(resuable_buffer);
 
 	while(!array_is_empty()){
@@ -443,7 +470,6 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 		msg_buf[loop_var]=temp_char;
 		loop_var++;
 	}
-
 	sprintf(resuable_buffer, "\n");
 	debug_str(resuable_buffer);
 
