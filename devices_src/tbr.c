@@ -178,6 +178,7 @@ void clear_buffer(char *buf, uint16_t size){
 	}
 	return;
 }
+char 			resuable_buffer[128];
 bool get_and_compare(char *compare_string){
 	char 			*cmd_compare_str;
 	char 			cmd_rx_tx_buf[CMD_RX_TX_BUF_SIZE];
@@ -204,19 +205,25 @@ bool get_and_compare(char *compare_string){
 	}
 	 else{
 		 ret_flag=false;
+////////////////////////////////////////////////////
+			int				debug_var=0;
+		debug_var=loop_var;
+		sprintf(resuable_buffer, "\t\tTBR no ack rcvd. Buf is:\n");
+		debug_str(resuable_buffer);
+		for(loop_var=0;loop_var<debug_var;loop_var++){
+		sprintf(resuable_buffer, "%c",cmd_rx_tx_buf[loop_var]);
+		debug_str(resuable_buffer);
+		delay_ms(1);
+		}
+		sprintf(resuable_buffer, "\n");
+		debug_str(resuable_buffer);
+////////////////////////////////////////////////////
 	 }
 	 check_other_messages(cmd_rx_tx_buf);
-	 /*if(temp_flag==true){
-		 rgb_on(false,false,true);
-		 delay_ms(7);
-		 rgb_shutdown();
-	 }*/
-
-	//debug_str("\tTBR G & C Returning\n");
 
 	return ret_flag;
 }
-char 			resuable_buffer[128];
+
 uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uint8_t offset){
 	//char 			resuable_buffer[128];
 	char			*temp_ptr;
@@ -225,11 +232,11 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 	bool			messgae_type=TBR_DETECION_MSG;
 	tbr_msesage_t	tbr_message;
 
-	delay_ms(4);
-	clear_buffer(resuable_buffer,128);
-	sprintf(resuable_buffer, "\t\tSingle:Msg=%s\n",single_msg);
-	debug_str(resuable_buffer);
-	delay_ms(4);
+	//delay_ms(4);
+	//clear_buffer(resuable_buffer,128);
+	//sprintf(resuable_buffer, "\t\tSingle:Msg=%s\n",single_msg);
+	//debug_str(resuable_buffer);
+	//delay_ms(4);
 		//$000xxx
 	token = strtok(single_msg, ref_token);
 		//timestamp
@@ -339,6 +346,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		single_msg[outer_loop_var]=src_buf[outer_loop_var+1];	//+1 to ignore $
 	}
 	dst_buf[0]=(uint8_t)strtoul(single_msg,&temp_ptr,10);
+	dst_buf[0]=0x84;
 	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;
