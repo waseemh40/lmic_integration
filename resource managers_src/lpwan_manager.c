@@ -169,8 +169,18 @@
 				  ref_tstamp=gps_get_nav_data();
 				  delay_ms(5);
 			  }
-			  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
-					  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
+
+			  ////////////
+			  do{
+				  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
+						  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
+				  ref_tstamp=gps_get_nav_data();
+				  delay_ms(7);
+			  }while(ref_tstamp.gps_timestamp%10!=0);
+			  ///////////
+
+			  //ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
+			  //	  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
 			  RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 			  time_manager_init();
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
