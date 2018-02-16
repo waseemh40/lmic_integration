@@ -165,18 +165,24 @@
 			  os_clearCallback(&init_job);
 			  rgb_shutdown();
 			  setup_channel();						//setup channel....
-			  while(ref_tstamp.valid!=true){		//wait for reference timestamp...
+			  ///////////////////////////////////
+			  /*while(ref_tstamp.valid!=true){		//wait for reference timestamp...
 				  ref_tstamp=gps_get_nav_data();
 				  delay_ms(5);
-			  }
+			  }*/
 
 			  ////////////
-			  do{
+			  while(1){
+				  delay_ms(7);
+				  ref_tstamp=gps_get_nav_data();
 				  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
 						  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
-				  ref_tstamp=gps_get_nav_data();
-				  delay_ms(7);
-			  }while(ref_tstamp.gps_timestamp%10!=0);
+				  if(ref_tstamp.valid==true && ref_tstamp.gps_timestamp%10==0){
+					  break;
+				  }
+			  }
+			  sprintf(temp_buf,"Ref Tstamp=%ld\n",ref_tstamp.gps_timestamp);
+			  debug_str((const u1_t*)temp_buf);
 			  ///////////
 
 			  //ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,

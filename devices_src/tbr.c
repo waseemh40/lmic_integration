@@ -137,10 +137,11 @@ int		parse_message_tbr(char *buffer){
 					 if(temp_buf_index>50){
 						 temp_buf_index=50;
 						 debug_str("\t\t\tParse temp_buf_index greater than 50, setting it to 50!!!\n");
+						 delay_ms(3);
 					 }
 					 if(strlen(token_str)>512){
-						 temp_buf_index=50;
 						 debug_str("\t\t\tParse strlen(token_strn) is greater than 512!!!\n");
+						 delay_ms(3);
 					 }
 					 /////////////////////////
 				}
@@ -200,7 +201,7 @@ bool get_and_compare(char *compare_string){
 	//debug_str("\tTBR G & C Called\n");
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	delay_ms(10);												//response time from TBR
+	delay_ms(9);												//response time from TBR
 	//debug_str("TBR RXVD\n");
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
 		temp_char=rs485_recieve_char();
@@ -356,7 +357,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		single_msg[outer_loop_var]=src_buf[outer_loop_var+1];	//+1 to ignore $
 	}
 	dst_buf[0]=(uint8_t)strtoul(single_msg,&temp_ptr,10);
-	dst_buf[0]=0x80;
+	dst_buf[0]=0x84;
 	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;
@@ -423,7 +424,7 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 	else if(tbr_cmd==cmd_basic_sync){
 		sprintf((char *)cmd_tx_buf,"(+)\n");
 		rs485_transmit_string(cmd_tx_buf,3);
-		ret_flag=get_and_compare((char *)"ack01");			//changed from 01
+		ret_flag=get_and_compare((char *)"ack01\r");			//changed from 01
 	}
 	else if(tbr_cmd==cmd_advance_sync){
 		my_timestamp=timestamp;
@@ -432,7 +433,7 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		temp_var=strlen((const char *)cmd_tx_buf);
 		cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
 		rs485_transmit_string(cmd_tx_buf,temp_var-1);
-		ret_flag=get_and_compare((char *)"ack02");		//changed from 02
+		ret_flag=get_and_compare((char *)"ack02\r");		//changed from 02
 	}
 	else{
 		ret_flag=false;

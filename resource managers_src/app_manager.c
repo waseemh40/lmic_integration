@@ -53,7 +53,7 @@ bool file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
     }
     else{
     	ret_flag=false;
-		sprintf((char *)rs232_tx_buf,"f_open=%1d\n",f_ret);
+		sprintf((char *)rs232_tx_buf,"f_open=%1d and name=%s\n",f_ret,filename);
 		rs232_transmit_string((unsigned char *)rs232_tx_buf,strlen((const char *)rs232_tx_buf));
     	f_close(&f_pointer);
     }
