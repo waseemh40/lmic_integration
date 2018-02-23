@@ -98,8 +98,12 @@ int		parse_message_tbr(char *buffer){
 	char		temp_buffer[50];
 	int			temp_buf_index=1;
 
+	delay_ms(5);
+	debug_str("\t\t\tTBR Parse Called\n");
+
 	token_str=strtok(buffer,ref_token);
 	if(token_str==NULL){
+		debug_str("\t\t\tTBR Parse Returned\n");
 		return -1;
 	}
 	else{
@@ -148,9 +152,11 @@ int		parse_message_tbr(char *buffer){
 				//array_add('\n');
 				token_str=strtok(NULL,ref_token);
 			}
+			debug_str("\t\t\tTBR Parse Returned\n");
 			return 1;
 		}
 		else{
+			debug_str("\t\t\tTBR Parse Returned\n");
 			return -1;
 		}
 	}
@@ -161,17 +167,18 @@ bool check_other_messages(char * cmd_rx_tx_buf){
 	int				temp_var=0;
 	char	 		*cmd_compare_str;
 
-	//delay_ms(5);
-	//debug_str("\tTBR CoM Called\n");
+	delay_ms(5);
+	debug_str("\t\tTBR CoM Called\n");
 
 	cmd_compare_str=strchr(cmd_rx_tx_buf,'$');
 	 if(cmd_compare_str==NULL){
-	 return false;
+		 debug_str("\t\tTBR CoM Returning\n");
+		 return false;
 	 }
 	 else{
 		 temp_var=parse_message_tbr(cmd_rx_tx_buf);
 
-			//debug_str("\tTBR CoM Returning\n");
+			debug_str("\t\tTBR CoM Returning\n");
 
 		 if(temp_var>0){
 			 return true;
@@ -198,7 +205,7 @@ bool get_and_compare(char *compare_string){
 	bool			ret_flag=false;
 
 	//delay_ms(5);
-	//debug_str("\tTBR G & C Called\n");
+	debug_str("\tTBR G & C Called\n");////////////////////////////////
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
 	delay_ms(9);												//response time from TBR
@@ -210,16 +217,30 @@ bool get_and_compare(char *compare_string){
 		//debug_char(temp_char);
 		//debug_str("\n");
 	}
+	////////////////////////////////
+	int				debug_var=0;
+	/////////////////////////////////
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
+		///////////////////////
+		debug_var=loop_var;
+		sprintf(resuable_buffer, "\t\tTBR ACK RXD. Buf is:\n");
+		debug_str(resuable_buffer);
+		for(loop_var=0;loop_var<debug_var;loop_var++){
+			sprintf(resuable_buffer, "%c",cmd_rx_tx_buf[loop_var]);
+			debug_str(resuable_buffer);
+			delay_ms(1);
+		}
+		sprintf(resuable_buffer, "\n");
+		///////////////////////
 	}
 	 else{
 		 ret_flag=false;
 ////////////////////////////////////////////////////
-			int				debug_var=0;
+
 		debug_var=loop_var;
-		sprintf(resuable_buffer, "\t\tTBR no ack rcvd. Buf is:\n");
+		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
 		for(loop_var=0;loop_var<debug_var;loop_var++){
 			sprintf(resuable_buffer, "%c",cmd_rx_tx_buf[loop_var]);
@@ -231,7 +252,7 @@ bool get_and_compare(char *compare_string){
 ////////////////////////////////////////////////////
 	 }
 	 check_other_messages(cmd_rx_tx_buf);
-
+	 debug_str("\tTBR G & C Returned\n");/////////////////////
 	return ret_flag;
 }
 
@@ -433,7 +454,7 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		temp_var=strlen((const char *)cmd_tx_buf);
 		cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
 		rs485_transmit_string(cmd_tx_buf,temp_var-1);
-		ret_flag=get_and_compare((char *)"ack02\r");		//changed from 02
+		ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
 	}
 	else{
 		ret_flag=false;

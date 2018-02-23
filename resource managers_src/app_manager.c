@@ -291,10 +291,13 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 			append_gps_status(tbr_msg_buf,tbr_msg_count, ref_timestamp);
 		}
 		//rs232_transmit_string(tbr_sd_card_buf,(tbr_msg_length+(tbr_msg_count*35)));
+		sprintf((char *)rs232_tx_buf,"Timestamp=%10d Lora buffer length=%d TBR message count=%d\n",running_tstamp.gps_timestamp,tbr_lora_length,tbr_msg_count);
+		temp_flag=file_sys_setup(1990,0x08,0x09,rs232_tx_buf);
 		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 		if(temp_flag==false){
 			sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d write failed\n",temp_flag,tbr_msg_length);
 			rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+			delay_ms(5);
 
 		}
 	  }

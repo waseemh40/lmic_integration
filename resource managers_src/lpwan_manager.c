@@ -183,6 +183,7 @@
 			  }
 			  sprintf(temp_buf,"Ref Tstamp=%ld\n",ref_tstamp.gps_timestamp);
 			  debug_str((const u1_t*)temp_buf);
+			  ref_tstamp.gps_timestamp=ref_tstamp.gps_timestamp-10;
 			  ///////////
 
 			  //ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
