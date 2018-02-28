@@ -19,7 +19,8 @@ static 	int			array_rear=0;
 	/*
 	 * shared global varibales
 	 */
-
+uint32_t 			cum_detections_counter=0;
+uint32_t 			cum_temp_counter=0;
 	/*
 	 * private functions
 	 */
@@ -98,9 +99,7 @@ int		parse_message_tbr(char *buffer){
 	char		temp_buffer[50];
 	int			temp_buf_index=1;
 
-	delay_ms(5);
 	debug_str("\t\t\tTBR Parse Called\n");
-
 	token_str=strtok(buffer,ref_token);
 	if(token_str==NULL){
 		debug_str("\t\t\tTBR Parse Returned\n");
@@ -109,25 +108,14 @@ int		parse_message_tbr(char *buffer){
 	else{
 		if(!array_is_full()){
 			while(token_str!=NULL){
-				//array_add('$');
 				temp_buffer[0]='$';
 				for(loop_var=0;loop_var<strlen(token_str);loop_var++){
-					 /*if(token_str[loop_var]=='\r'){
-						 debug_str("\t\t\tParse Found One Message\n");
-						 temp_buf_index=1;
-						 break;
-					 }*/
-					 //array_add(token_str[loop_var]);
 					 if(token_str[loop_var]=='\r'){
 						 if(strlen(temp_buffer)>30){
 							 for(loop_var=0;loop_var<temp_buf_index;loop_var++){
 								 array_add(temp_buffer[loop_var]);
 							 }
 							 array_add('\n');
-							 //debug_str("\t\t\tParse Found One Message\n");
-							 //debug_str(temp_buffer);
-							 //debug_str("\n");
-							 //delay_ms(4);
 						 }
 						 else{
 							 debug_str("\t\t\tParse Broken Message Found\n");
@@ -137,19 +125,14 @@ int		parse_message_tbr(char *buffer){
 					 }
 					 temp_buffer[temp_buf_index]=token_str[loop_var];
 					 temp_buf_index++;
-					 //////////////////////////
 					 if(temp_buf_index>50){
 						 temp_buf_index=50;
 						 debug_str("\t\t\tParse temp_buf_index greater than 50, setting it to 50!!!\n");
-						 delay_ms(3);
 					 }
 					 if(strlen(token_str)>512){
 						 debug_str("\t\t\tParse strlen(token_strn) is greater than 512!!!\n");
-						 delay_ms(3);
 					 }
-					 /////////////////////////
 				}
-				//array_add('\n');
 				token_str=strtok(NULL,ref_token);
 			}
 			debug_str("\t\t\tTBR Parse Returned\n");
@@ -167,9 +150,7 @@ bool check_other_messages(char * cmd_rx_tx_buf){
 	int				temp_var=0;
 	char	 		*cmd_compare_str;
 
-	delay_ms(5);
 	debug_str("\t\tTBR CoM Called\n");
-
 	cmd_compare_str=strchr(cmd_rx_tx_buf,'$');
 	 if(cmd_compare_str==NULL){
 		 debug_str("\t\tTBR CoM Returning\n");
@@ -203,72 +184,50 @@ bool get_and_compare(char *compare_string){
 	int				loop_var=0;
 	char			temp_char='0';
 	bool			ret_flag=false;
+	int				debug_var=0;
 
-	//delay_ms(5);
-	debug_str("\tTBR G & C Called\n");////////////////////////////////
+	debug_str("\tTBR G & C Called\n");
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
 	delay_ms(9);												//response time from TBR
-	//debug_str("TBR RXVD\n");
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
 		temp_char=rs485_recieve_char();
 		if(temp_char=='@'){break;}
 		cmd_rx_tx_buf[loop_var]=temp_char;
-		//debug_char(temp_char);
-		//debug_str("\n");
 	}
-	////////////////////////////////
-	int				debug_var=0;
-	/////////////////////////////////
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
-		///////////////////////
 		debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR ACK RXD. Buf is:\n");
 		debug_str(resuable_buffer);
 		for(loop_var=0;loop_var<debug_var;loop_var++){
-			sprintf(resuable_buffer, "%c",cmd_rx_tx_buf[loop_var]);
-			debug_str(resuable_buffer);
-			delay_ms(1);
+			debug_char(cmd_rx_tx_buf[loop_var]);
 		}
-		sprintf(resuable_buffer, "\n");
-		///////////////////////
+		debug_char('\n');
 	}
 	 else{
 		 ret_flag=false;
-////////////////////////////////////////////////////
-
 		debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
 		for(loop_var=0;loop_var<debug_var;loop_var++){
-			sprintf(resuable_buffer, "%c",cmd_rx_tx_buf[loop_var]);
-			debug_str(resuable_buffer);
-			delay_ms(1);
+			debug_char(cmd_rx_tx_buf[loop_var]);
 		}
-		sprintf(resuable_buffer, "\n");
-		debug_str(resuable_buffer);
-////////////////////////////////////////////////////
+		debug_char('\n');
 	 }
 	 check_other_messages(cmd_rx_tx_buf);
-	 debug_str("\tTBR G & C Returned\n");/////////////////////
+	 debug_str("\tTBR G & C Returned\n");
 	return ret_flag;
 }
 
 uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uint8_t offset){
-	//char 			resuable_buffer[128];
 	char			*temp_ptr;
 	char			ref_token[2]=",";
 	char			*token;
 	bool			messgae_type=TBR_DETECION_MSG;
 	tbr_msesage_t	tbr_message;
 
-	//delay_ms(4);
-	//clear_buffer(resuable_buffer,128);
-	//sprintf(resuable_buffer, "\t\tSingle:Msg=%s\n",single_msg);
-	//debug_str(resuable_buffer);
-	//delay_ms(4);
 		//$000xxx
 	token = strtok(single_msg, ref_token);
 		//timestamp
@@ -341,11 +300,7 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 		uint8_t temp_2=((tbr_message.millisec>>8));
 		dst_buf[offset+9]=temp_1 | temp_2;
 		dst_buf[offset+10]=(uint8_t)(tbr_message.millisec>>0);
-		/*for(int i=0;i<11;i++){
-			sprintf(resuable_buffer, "\tSingle:Broken Tag Offset=%d dst_buf[%d]=%2x\n",offset,i,dst_buf[offset+i]);
-			debug_str(resuable_buffer);
-			delay_ms(4);
-		}*/
+		cum_detections_counter++;
 	}else{
 		dst_buf[offset+4]=(uint8_t)0xFF;
 		dst_buf[offset+5]=(uint8_t)(tbr_message.Temperature>>8);
@@ -354,11 +309,7 @@ uint8_t convert_single_tbr_msg_into_uint(char *single_msg, uint8_t *dst_buf, uin
 		dst_buf[offset+8]=(uint8_t)tbr_message.NoiseLP;
 		dst_buf[offset+9]=(uint8_t)0xFF;
 		dst_buf[offset+10]=(uint8_t)tbr_message.frequency;
-		/*for(int i=0;i<11;i++){
-			sprintf(resuable_buffer, "\tSingle:Broken Sensor Offset=%d  dst_buf[%d]=%2x\n",offset,i,dst_buf[offset+i]);
-			debug_str(resuable_buffer);
-			delay_ms(4);
-		}*/
+		cum_temp_counter++;
 	}
 	return offset+11;		//fixed offset=message size - 1.....*/
 }
@@ -378,7 +329,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		single_msg[outer_loop_var]=src_buf[outer_loop_var+1];	//+1 to ignore $
 	}
 	dst_buf[0]=(uint8_t)strtoul(single_msg,&temp_ptr,10);
-	dst_buf[0]=0x84;
+	dst_buf[0]=0x85;
 	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;
@@ -392,14 +343,10 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		for(inner_loop_var=0;inner_loop_var<strlen(src_buf);inner_loop_var++){
 			if(src_buf[offset_src_buf+inner_loop_var]=='\n'){
 				offset_src_buf+=inner_loop_var+1;
-				//sprintf(resuable_buffer, "\tSingle: Offset Src buffer=%d\n",offset_src_buf);
-				//debug_str(resuable_buffer);
 				break;
 			}
 			single_msg[inner_loop_var]=src_buf[offset_src_buf+inner_loop_var];
 		}
-
-//		if((strstr(single_msg,(const char*)"TBR Sensor")==NULL) && (strstr(single_msg,(const char*)"ack")==NULL)){		//only add detections NOT sensor values....
 		if((strstr(single_msg,(const char*)"ack")==NULL) && strlen(single_msg)>30){
 			offset_dst_buf=convert_single_tbr_msg_into_uint(single_msg,dst_buf,offset_dst_buf);
 			messages_converted++;
@@ -434,9 +381,6 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 	uint8_t			luhn;
 	int				temp_var=0;
 
-	//delay_ms(5);
-	//debug_str("\tTBR Called\n");
-
 	if( tbr_cmd==cmd_sn_req){
 		sprintf((char *)cmd_tx_buf,"?\n");
 		rs485_transmit_string(cmd_tx_buf,1);
@@ -459,10 +403,6 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 	else{
 		ret_flag=false;
 	}
-	/*debug_str("\tTBR Returning\n");
-	for(int i=0;i<10;i++){
-		debug_str("\tHello shit I am working\n");
-	}*/
 	return ret_flag;
 }
 int tbr_recv_msg(char *msg_buf, int *msg_length){
@@ -500,19 +440,14 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 
 	while(!array_is_empty()){
 		temp_char=array_remove();
-
-		sprintf(resuable_buffer, "%c",temp_char);
-		debug_str(resuable_buffer);
-
+		debug_char(temp_char);
 		if(temp_char=='$'){
 			msg_count++;
 		}
 		msg_buf[loop_var]=temp_char;
 		loop_var++;
 	}
-	sprintf(resuable_buffer, "\n");
-	debug_str(resuable_buffer);
-
+	debug_char('\n');
 	*msg_length=loop_var;
 		//LoRa buffer
 	lora_buf_length=convert_tbr_msgs_to_uint(msg_buf,lora_msg_buf,(uint8_t)msg_count);

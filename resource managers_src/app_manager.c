@@ -20,7 +20,11 @@ static			char				tbr_sd_card_buf[ARRAY_MESSAGE_SIZE];	//tags with NAV data appen
 		 * public variables
 		 */
 static 			unsigned char  		rs232_tx_buf[512];
-
+		/*
+		 * external variables
+		 */
+extern 			uint32_t			cum_temp_counter;
+extern 			uint32_t			cum_detections_counter;
 		/*
 		 * private functions
 		 */
@@ -54,8 +58,8 @@ bool file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
     else{
     	ret_flag=false;
 		sprintf((char *)rs232_tx_buf,"f_open=%1d and name=%s\n",f_ret,filename);
-		rs232_transmit_string((unsigned char *)rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-    	f_close(&f_pointer);
+		debug_str((unsigned char *)rs232_tx_buf);
+		f_close(&f_pointer);
     }
     return ret_flag;
 }
@@ -63,7 +67,6 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	bool 	ret_flag=false;
 
 	ret_flag=tbr_send_cmd(tbr_cmd,timestamp);
-	//debug_str("\tAPP Manager TBR done\n");
 	if(ret_flag){
 		rgb_on(false,true,false);
 	}
@@ -134,8 +137,6 @@ void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data
 	long_deg=(int32_t)(longitude);
 	long_min=(float)(longitude-long_deg);
 	long_min=(float)long_min*60;
-	//sprintf((char *)rs232_tx_buf,"Long=%f %f %f\n",longitude,latitude,lat_min);
-	//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 
 		//DOP for position
 	p_dop=(float)(nav_data.pDOP/100);
@@ -167,8 +168,7 @@ void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data
 					break;
 				}
 			}
-			rs232_transmit_string(temp_single_appended_msg_buf,strlen(temp_single_appended_msg_buf));
-			delay_ms(5);
+			debug_str(temp_single_appended_msg_buf);
 		}
 	}
 }
@@ -176,7 +176,6 @@ void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data
 		 * public functions
 		 */
 bool app_manager_init(void){
-	  //const unsigned char  		rs232_tx_buf[64];
 	  uint8_t					init_retry=0;
 	  bool						temp_init_flag=false;
 
@@ -195,14 +194,14 @@ bool app_manager_init(void){
 			 init_retry++;
 			 if(init_retry>INIT_RETRIES){
 					sprintf((char *)rs232_tx_buf,"GPS INIT FAILED\n");
-					rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+					debug_str(rs232_tx_buf);
 					rgb_shutdown();
 					rgb_on(true,false,false);
 					return 0;
 			 }
 	  	  }while(!temp_init_flag);
 	sprintf((char *)rs232_tx_buf,"GPS Init. DONE\n");
-	rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+	debug_str(rs232_tx_buf);
 #endif
 
 #ifdef USE_SD_CARD
@@ -211,7 +210,7 @@ bool app_manager_init(void){
 			 init_retry++;
 			 if(init_retry>INIT_RETRIES){
 					sprintf((char *)rs232_tx_buf,"Init. SD Card Failed\n");
-					rs232_transmit_string((unsigned char *)rs232_tx_buf,21);
+					debug_str((unsigned char *)rs232_tx_buf);
 					rgb_shutdown();
 					rgb_on(true,false,false);
 					return 0;
@@ -224,12 +223,11 @@ bool app_manager_init(void){
 			 init_retry++;
 			 if(init_retry>INIT_RETRIES){
 					sprintf((char *)rs232_tx_buf,"Mounting SD Card Failed\n");
-					rs232_transmit_string((unsigned char *)rs232_tx_buf,24);
+					debug_str((unsigned char *)rs232_tx_buf);
 					sd_card_off();
 					return false;
 			 }
 		 }while(temp_init_flag);
-	//sd_card_off();
 #else
 	debug_str((const u1_t*)"\t\tNOT using SD Card\n");
 #endif
@@ -242,7 +240,7 @@ bool app_manager_init(void){
 			 init_retry++;
 			 if(init_retry>INIT_RETRIES){
 					sprintf((char *)rs232_tx_buf,"TBR Missing....\n");
-					rs232_transmit_string((unsigned char *)rs232_tx_buf,strlen((const char *)rs232_tx_buf));
+					debug_str((unsigned char *)rs232_tx_buf);
 					break;
 			 }
 		 }while(!temp_init_flag);
@@ -261,14 +259,10 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
-		//sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags,diff);
-		//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		delay_ms(5);
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
-	  //sprintf((char *)rs232_tx_buf,"%ld\t%d\t%ld\t%d\t%d\t%ld\t%d\t%d\n",(time_t)running_tstamp.gps_timestamp,running_tstamp.nano,(time_t)ref_timestamp.gps_timestamp,running_tstamp.sec,temp_flag,running_tstamp.tAcc,running_tstamp.t_flags,diff);
-	  //rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  delay_ms(5);
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
@@ -280,25 +274,20 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 #elif BOTH_RADIO_SD_CARD
 	  tbr_msg_count=tbr_recv_msg_uint(tbr_lora_buf,&tbr_lora_length,tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
-		//temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
-		//sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d Count=%d MSG=%s\n",temp_flag,tbr_msg_length,tbr_msg_count,tbr_msg_buf);
-		//sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
-		//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 		if(running_tstamp.valid==true){
 			append_gps_status(tbr_msg_buf,tbr_msg_count, running_tstamp);
 		}
 		else{
 			append_gps_status(tbr_msg_buf,tbr_msg_count, ref_timestamp);
 		}
-		//rs232_transmit_string(tbr_sd_card_buf,(tbr_msg_length+(tbr_msg_count*35)));
-		sprintf((char *)rs232_tx_buf,"Timestamp=%10d Lora buffer length=%d TBR message count=%d\n",running_tstamp.gps_timestamp,tbr_lora_length,tbr_msg_count);
+				//log file entry
+		sprintf((char *)rs232_tx_buf,"Timestamp=%10d,Lora buffer length=%d,TBR message count=%d,Cumulative detections=%d,Cumulative temperature=%d\n",running_tstamp.gps_timestamp,tbr_lora_length,tbr_msg_count,cum_detections_counter,cum_temp_counter);
 		temp_flag=file_sys_setup(1990,0x08,0x09,rs232_tx_buf);
+				//store buffer on SD card
 		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 		if(temp_flag==false){
 			sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d write failed\n",temp_flag,tbr_msg_length);
-			rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
-			delay_ms(5);
-
+			debug_str(rs232_tx_buf);
 		}
 	  }
 #elif RADIO_ONLY

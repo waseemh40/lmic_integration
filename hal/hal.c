@@ -35,7 +35,8 @@ extern void debug_function(void);
 
 static time_manager_cmd_t 		time_manager_cmd=basic_sync;
 static int 						time_count=0;
-char					temp_buf[128];
+char							temp_buf[128];
+
 void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
@@ -44,14 +45,9 @@ void BURTC_IRQHandler(void)
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
-				//wakeup
-			 //SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-			 debug_function();
-			 ///////////////////////
+			 	 //run time controller on GPS timestamp...
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
-				// sprintf(temp_buf,"\t\t\Ref=%ld Cur=%ld diff=%d\t",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
-				 //debug_str(temp_buf);
 				 if(diff_in_tstamp>=10){
 					 time_count=9;
 				 }
@@ -66,21 +62,19 @@ void BURTC_IRQHandler(void)
 			 else {
 				 time_count=0;
 			 }
-			 /////////////////////
-			//sprintf(temp_buf,"\t\t\t\tone_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
-			//debug_str(temp_buf);
+				//wakeup
+			 debug_function();
+
 		 }
 		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
 			 time_manager_cmd=basic_sync;
-				//wakeup
-			 //SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
-			 debug_function();
-			 //sprintf(temp_buf,"\t\t\one_sec_top=%d PPS_count=%d\t\n",one_sec_top_ref,ref_count);
-			 //debug_str(temp_buf);
 		 	 	 //update clock...
 			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
-			 BURTC_CompareSet(0,one_sec_top_ref);
+				 BURTC_CompareSet(0,one_sec_top_ref);
 			 }
+				//wakeup
+			 debug_function();
+
 		 }
 		 else {
 			 ;
@@ -92,10 +86,8 @@ void BURTC_IRQHandler(void)
 void 		time_manager_init(void){
 
 				/////////////GPS PPS and INT pins////////////
-	//GPIO_PinModeSet(GPS_SIG_PORT, GPS_INT, gpioModeInput, 0);
 	GPIO_PinModeSet(GPS_SIG_PORT, GPS_TIME_PULSE, gpioModeInput, 0);
 	GPIO_IntConfig(GPS_SIG_PORT,GPS_TIME_PULSE,true,false,true);
-	//GPIO_IntConfig(GPS_SIG_PORT,GPS_INT,true,false,false);
 	GPIO_IntClear(_GPIO_IF_MASK);
     NVIC_EnableIRQ(GPIO_EVEN_IRQn);
 

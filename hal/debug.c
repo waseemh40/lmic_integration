@@ -35,6 +35,7 @@ void debug_led (u1_t val)
 void debug_char (u1_t c)
 {
 	rs232_transmit_char( c);
+	delay_ms(0);
 }
 
 void debug_hex (u1_t b) {
@@ -59,7 +60,7 @@ void debug_uint (u4_t v) {
 
 void debug_str (const u1_t* str) {
 	rs232_transmit_string(str,(uint8_t)strlen((char *)str));
-	delay_ms(1);
+	delay_ms(5);
 }
 
 void debug_val (const u1_t* label, u4_t val) {

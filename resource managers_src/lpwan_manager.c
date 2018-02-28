@@ -91,46 +91,30 @@
 	static void app_funct (osjob_t* j) {
 		time_manager_cmd_t		time_manager_cmd=basic_sync;
 
-
-		//debug_str("\nApp funct Called\n");
-		//delay_ms(7);
 			//update Timestamps
 		running_tstamp=gps_get_nav_data();
 		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
 																running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
 						//add 10secs
 		ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
-	    	//update application manager
+	    	//get synch command type from time manager
 		time_manager_cmd=time_manager_get_cmd();
-
-		//debug_str("App funct timing part done\n");
-		//delay_ms(5);
-
+			//update application manager
 		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
-
-		//debug_str("App funct TBR part done\n");
-		//delay_ms(5);
-
 		if(time_manager_cmd==advance_sync){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			if(lora_msg_length>0){
 				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
 			 	debug_str((const u1_t*)temp_buf);
-			 	delay_ms(5);
-			 		//////
 			 	for(int i=0;i<lora_msg_length;i++){
-			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
-			 		debug_str((const u1_t*)temp_buf);
-			 		delay_ms(4);
+			 		debug_char((const u1_t)lora_buffer[i]);
 			 	}
 			 	debug_char('\n');
-			 		///////////*/
 			 	lora_tx_function();
 			}
 			else{
 			  sprintf(temp_buf,"No LoRa message\n");
 			  debug_str((const u1_t*)"No LoRa message\n");
-			  delay_ms(5);
 			}
 
 
@@ -146,32 +130,20 @@
 		os_init();
 		debug_str((const u1_t*)"\t\tRadio Version. OS initialized and join called. Waiting for join to finish...\n");
 		os_setCallback(&init_job, init_funct);
-		//init_funct(&init_job);
 		os_runloop();
 	}
 
 	void onEvent (ev_t ev) {
-		//debug_event(ev);
 
 		switch(ev) {
-
-		  // starting to join network
 		  case EV_JOINING:
 			  debug_str((const u1_t*)"\tEV_JOINING\n");
 			  break;
-		  // network joined, session established
 		  case EV_JOINED:
 			  debug_str((const u1_t*)"\tEV_JOINED\n");
 			  os_clearCallback(&init_job);
 			  rgb_shutdown();
 			  setup_channel();						//setup channel....
-			  ///////////////////////////////////
-			  /*while(ref_tstamp.valid!=true){		//wait for reference timestamp...
-				  ref_tstamp=gps_get_nav_data();
-				  delay_ms(5);
-			  }*/
-
-			  ////////////
 			  while(1){
 				  delay_ms(7);
 				  ref_tstamp=gps_get_nav_data();
@@ -184,19 +156,13 @@
 			  sprintf(temp_buf,"Ref Tstamp=%ld\n",ref_tstamp.gps_timestamp);
 			  debug_str((const u1_t*)temp_buf);
 			  ref_tstamp.gps_timestamp=ref_tstamp.gps_timestamp-10;
-			  ///////////
 
-			  //ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
-			  //	  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
 			  RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 			  time_manager_init();
 			  sprintf(temp_buf,"Dstmp\tnano\tTstamp\tsec\tFlag\tTacc\tflags\n");
 			  debug_str((const u1_t*)temp_buf);
-			  os_setCallback(&app_job, app_funct);//app_funct(&app_job);					//first time call....
 			  break;
-		  //transmission complete
 		  case EV_TXCOMPLETE:
-
 #ifdef USE_LORA_ACK
 		  if(LMIC.txrxFlags & TXRX_ACK){
 			  debug_str((const u1_t*)"\tEV_TXCOMPLETE\n");
@@ -226,13 +192,11 @@
 			  debug_str((const u1_t*)"\tEV_LINK_ALIVE\n");
 			  break;
 		  default:
-			  //os_setCallback(&app_job, app_funct);
 			  debug_str((const u1_t*)"\tEV_DEFAULT\n");
 			  break;
 		}
 	}
 
 	void debug_function(void){
-		//app_funct(&app_job);
 		os_setCallback(&app_job, app_funct);
 	}
