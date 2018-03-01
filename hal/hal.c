@@ -49,15 +49,9 @@ void BURTC_IRQHandler(void)
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
 				 if(diff_in_tstamp>=10){
-					 time_count=9;
+					 ref_tstamp.gps_timestamp+=10;
 				 }
-				 else{
 					 time_count=diff_in_tstamp;
-				 }
-				 if(diff_in_tstamp!=0){
-						sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
-						debug_str(temp_buf);
-				 }
 			 }
 			 else {
 				 time_count=0;
@@ -72,7 +66,7 @@ void BURTC_IRQHandler(void)
 			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
 				 BURTC_CompareSet(0,one_sec_top_ref);
 			 }
-				//wakeup
+			 	 //wakeup
 			 debug_function();
 
 		 }

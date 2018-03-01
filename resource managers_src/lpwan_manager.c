@@ -91,6 +91,10 @@
 	static void app_funct (osjob_t* j) {
 		time_manager_cmd_t		time_manager_cmd=basic_sync;
 
+		 if(diff_in_tstamp!=0){
+				sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
+				debug_str(temp_buf);
+		 }
 			//update Timestamps
 		running_tstamp=gps_get_nav_data();
 		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
@@ -107,7 +111,9 @@
 				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
 			 	debug_str((const u1_t*)temp_buf);
 			 	for(int i=0;i<lora_msg_length;i++){
-			 		debug_char((const u1_t)lora_buffer[i]);
+			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
+			 	 	rs232_transmit_string(temp_buf,(uint8_t)strlen((char *)temp_buf));
+					delay_ms(1);
 			 	}
 			 	debug_char('\n');
 			 	lora_tx_function();
@@ -155,7 +161,7 @@
 			  }
 			  sprintf(temp_buf,"Ref Tstamp=%ld\n",ref_tstamp.gps_timestamp);
 			  debug_str((const u1_t*)temp_buf);
-			  ref_tstamp.gps_timestamp=ref_tstamp.gps_timestamp-10;
+			  ref_tstamp.gps_timestamp=ref_tstamp.gps_timestamp;
 
 			  RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 			  time_manager_init();
