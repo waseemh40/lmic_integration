@@ -37,6 +37,11 @@ typedef enum{
 	extern int				diff_in_tstamp;
 
 	//
+	extern	uint32_t	one_sec_top_ref;
+	extern 	int			last_letimer_count;
+	extern	uint16_t	average_n;
+	extern 	uint32_t	avergae_sum;
+	extern 	uint32_t	ref_count;
 
 void 				time_manager_init(void);
 unsigned long 		time_manager_unixTimestamp(int year, int month, int day,

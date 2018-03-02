@@ -13,8 +13,8 @@
 #include "debug.h"
 
 
-#define N_SAMPLES 	4
-#define BASE_2_N 	16		//-1 done inside if...
+#define N_SAMPLES 	1
+#define BASE_2_N 	2		//-1 done inside if...
 
 // HAL state
 static struct
@@ -23,12 +23,12 @@ static struct
     uint64_t ticks;
 } HAL;
 //////////////////////////////////////////////////////////////
-static	uint32_t	one_sec_top_ref=32768;
+//static	uint32_t	one_sec_top_ref=32768;
 static	bool		letimer_running=false;
-static 	int			last_letimer_count=65535;
-static	uint16_t	average_n=0;
-static 	uint32_t	avergae_sum=0;
-static 	uint32_t	ref_count=0;
+//static 	int			last_letimer_count=65535;
+//static	uint16_t	average_n=0;
+//static 	uint32_t	avergae_sum=0;
+//static 	uint32_t	ref_count=0;
 
 extern void debug_function(void);
 //////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ void BURTC_IRQHandler(void)
 				 if(diff_in_tstamp>=10){
 					 ref_tstamp.gps_timestamp+=10;
 				 }
-					 time_count=diff_in_tstamp;
+					 time_count= (diff_in_tstamp > 1) ? diff_in_tstamp : 0;
 			 }
 			 else {
 				 time_count=0;

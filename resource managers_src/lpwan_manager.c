@@ -17,7 +17,14 @@
 	nav_data_t	 			ref_tstamp;
 	int						diff_in_tstamp;
 #endif
-	char					temp_buf[32];
+	char					temp_buf[128];
+		////////////////////////////////////////
+		uint32_t	one_sec_top_ref=32768;
+	 	int			last_letimer_count=65535;
+		uint16_t	average_n=0;
+	 	uint32_t	avergae_sum=0;
+	 	uint32_t	ref_count=0;
+		//////////////////////////////////////////////
 			/*
 			 * LMIC callbacks
 			 */
@@ -95,6 +102,9 @@
 				sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 				debug_str(temp_buf);
 		 }
+		sprintf(temp_buf,"\t\t\t\tSEC_TOP=%d,AVG=%d,AVG_N=%d,LAST=%d\n",one_sec_top_ref,avergae_sum,average_n,last_letimer_count);
+		debug_str(temp_buf);
+
 			//update Timestamps
 		running_tstamp=gps_get_nav_data();
 		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
