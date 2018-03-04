@@ -104,7 +104,7 @@
 		 }
 		sprintf(temp_buf,"\t\t\t\tSEC_TOP=%d,AVG=%d,AVG_N=%d,LAST=%d\n",one_sec_top_ref,avergae_sum,average_n,last_letimer_count);
 		debug_str(temp_buf);
-		debug_file_sys_setup((char *)"debug_delay.txt",temp_buf);
+		debug_file_sys_setup((char *)"debug",temp_buf);
 
 			//update Timestamps
 		running_tstamp=gps_get_nav_data();
