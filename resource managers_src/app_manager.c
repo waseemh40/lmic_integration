@@ -283,7 +283,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		}
 				//log file entry
 		sprintf((char *)rs232_tx_buf,"Timestamp=%10d,Lora buffer length=%d,TBR message count=%d,Cumulative detections=%d,Cumulative temperature=%d\n",running_tstamp.gps_timestamp,tbr_lora_length,tbr_msg_count,cum_detections_counter,cum_temp_counter);
-		temp_flag=debug_file_sys_setup((char *)"DebugLoRA",(char *)rs232_tx_buf);
+		temp_flag=debug_file_sys_setup((char *)"debug",(char *)rs232_tx_buf);
 				//store buffer on SD card
 		temp_flag=log_file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 		if(temp_flag==false){

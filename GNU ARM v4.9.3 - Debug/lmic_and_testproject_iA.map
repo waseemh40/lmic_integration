@@ -3068,36 +3068,36 @@ LOAD c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/
  .rodata.LORA_RXDONE_FIXUP
                 0x00011de0        0xe ./lmic/radio.o
  *fill*         0x00011dee        0x2 
- .rodata        0x00011df0      0x1c7 ./resource managers_src/app_manager.o
- *fill*         0x00011fb7        0x1 
+ .rodata        0x00011df0      0x1c3 ./resource managers_src/app_manager.o
+ *fill*         0x00011fb3        0x1 
  .rodata.APPEUI
-                0x00011fb8        0x8 ./resource managers_src/lpwan_manager.o
+                0x00011fb4        0x8 ./resource managers_src/lpwan_manager.o
  .rodata.DEVEUI
-                0x00011fc0        0x8 ./resource managers_src/lpwan_manager.o
+                0x00011fbc        0x8 ./resource managers_src/lpwan_manager.o
  .rodata.DEVKEY
-                0x00011fc8       0x10 ./resource managers_src/lpwan_manager.o
- .rodata        0x00011fd8      0x19d ./resource managers_src/lpwan_manager.o
- *fill*         0x00012175        0x3 
- .rodata        0x00012178       0x3e ./src/main.o
+                0x00011fc4       0x10 ./resource managers_src/lpwan_manager.o
+ .rodata        0x00011fd4      0x19d ./resource managers_src/lpwan_manager.o
+ *fill*         0x00012171        0x3 
+ .rodata        0x00012174       0x3e ./src/main.o
  .rodata.str1.1
-                0x000121b6        0x2 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-impure.o)
+                0x000121b2        0x2 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-impure.o)
  .rodata._global_impure_ptr
-                0x000121b8        0x4 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-impure.o)
-                0x000121b8                _global_impure_ptr
+                0x000121b4        0x4 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-impure.o)
+                0x000121b4                _global_impure_ptr
  .rodata.str1.1
-                0x000121bc       0x12 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-nano-vfprintf_float.o)
+                0x000121b8       0x12 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-nano-vfprintf_float.o)
  .rodata.str1.1
-                0x000121ce       0x22 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-nano-vfprintf_i.o)
+                0x000121ca       0x22 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-nano-vfprintf_i.o)
  .rodata._ctype_
-                0x000121f0      0x101 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-ctype_.o)
-                0x000121f0                _ctype_
+                0x000121ec      0x101 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-ctype_.o)
+                0x000121ec                _ctype_
  .rodata.str1.1
-                0x000122f1        0xd c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-dtoa.o)
+                0x000122ed        0xd c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-dtoa.o)
                                   0xf (size before relaxing)
  .rodata.str1.1
-                0x000122fe        0x8 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-locale.o)
+                0x000122fa        0x8 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-locale.o)
                                   0xb (size before relaxing)
- *fill*         0x00012306        0x2 
+ *fill*         0x00012302        0x6 
  .rodata.__mprec_tens
                 0x00012308       0xc8 c:/siliconlabs/simplicitystudio/v4/developer/toolchains/gnu_arm/4.9_2015q3/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7-m\libc_nano.a(lib_a-mprec.o)
                 0x00012308                __mprec_tens
