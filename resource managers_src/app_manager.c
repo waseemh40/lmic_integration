@@ -30,7 +30,7 @@ extern 			uint32_t			cum_detections_counter;
 		 */
 bool file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
 
-	char 			filename[8]="00000000";
+	char 			filename[32]="00000000";
 	bool			ret_flag=false;
 	FIL  			f_pointer;
 	FRESULT 		f_ret;
