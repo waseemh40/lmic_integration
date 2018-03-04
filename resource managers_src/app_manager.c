@@ -28,7 +28,7 @@ extern 			uint32_t			cum_detections_counter;
 		/*
 		 * private functions
 		 */
-bool file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
+bool log_file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
 
 	char 			filename[32]="00000000";
 	bool			ret_flag=false;
@@ -63,6 +63,7 @@ bool file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
     }
     return ret_flag;
 }
+
 bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	bool 	ret_flag=false;
 
@@ -267,7 +268,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
-		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
+		temp_flag=log_file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
 		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
 		//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  }
@@ -282,9 +283,9 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 		}
 				//log file entry
 		sprintf((char *)rs232_tx_buf,"Timestamp=%10d,Lora buffer length=%d,TBR message count=%d,Cumulative detections=%d,Cumulative temperature=%d\n",running_tstamp.gps_timestamp,tbr_lora_length,tbr_msg_count,cum_detections_counter,cum_temp_counter);
-		temp_flag=file_sys_setup(1990,0x08,0x09,rs232_tx_buf);
+		temp_flag=debug_file_sys_setup((char *)"DebugLoRA",(char *)rs232_tx_buf);
 				//store buffer on SD card
-		temp_flag=file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
+		temp_flag=log_file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 		if(temp_flag==false){
 			sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d write failed\n",temp_flag,tbr_msg_length);
 			debug_str(rs232_tx_buf);
@@ -322,4 +323,30 @@ uint8_t	app_manager_get_lora_buffer(uint8_t	*lora_buffer){
 	}
 }
 
+bool debug_file_sys_setup(char *debug_name, char buf[]){
 
+	char 			filename[32]="00000000";
+	bool			ret_flag=false;
+	FIL  			f_pointer;
+	FRESULT 		f_ret;
+
+	sprintf(filename,"%s.txt",debug_name);
+	f_ret = f_open(&f_pointer, filename, FA_WRITE | FA_OPEN_APPEND);
+	if(f_ret==FR_OK){
+    	f_ret = f_puts(buf,&f_pointer);
+    	f_close(&f_pointer);
+    	if(f_ret>0){
+    		ret_flag=true;
+    	}
+    	else{
+    		ret_flag=false;
+    	}
+    }
+    else{
+    	ret_flag=false;
+		sprintf((char *)rs232_tx_buf,"f_open=%1d and name=%s\n",f_ret,filename);
+		debug_str((unsigned char *)rs232_tx_buf);
+		f_close(&f_pointer);
+    }
+    return ret_flag;
+}

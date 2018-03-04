@@ -32,7 +32,7 @@
 	/*
 	 * private functions
 	 */
-bool 			file_sys_setup(uint16_t year,uint8_t date,uint8_t day,
+bool 			log_file_sys_setup(uint16_t year,uint8_t date,uint8_t day,
 											char buf[]);
 bool 			tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp);
 void 			append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data);
@@ -43,5 +43,6 @@ void 			app_manager_tbr_synch_msg(uint8_t time_manager_cmd, nav_data_t ref_times
 bool 			app_manager_init(void);
 uint8_t			app_manager_get_lora_buffer(uint8_t	*lora_buffer);
 nav_data_t 		app_manager_get_nav_data(void);
+bool 			debug_file_sys_setup(char *debug_name, char buf[]);
 
 #endif /* SRC_APP_MANAGER_H_ */
