@@ -13,8 +13,8 @@
 #include "debug.h"
 
 
-#define N_SAMPLES 	1
-#define BASE_2_N 	2		//-1 done inside if...
+#define N_SAMPLES 	5
+#define BASE_2_N 	32		//-1 done inside if...
 
 // HAL state
 static struct
@@ -51,7 +51,8 @@ void BURTC_IRQHandler(void)
 				 if(diff_in_tstamp>=10){
 					 ref_tstamp.gps_timestamp+=10;
 				 }
-					 time_count= (diff_in_tstamp > 1) ? diff_in_tstamp : 0;
+					 //time_count= (diff_in_tstamp > 1) ? diff_in_tstamp : 0;
+					 time_count=0;
 			 }
 			 else {
 				 time_count=0;
@@ -63,7 +64,7 @@ void BURTC_IRQHandler(void)
 		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
 			 time_manager_cmd=basic_sync;
 		 	 	 //update clock...
-			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
+			 if(one_sec_top_ref>32500 && one_sec_top_ref<33000){
 				 BURTC_CompareSet(0,one_sec_top_ref);
 			 }
 			 	 //wakeup

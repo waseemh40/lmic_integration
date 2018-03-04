@@ -28,6 +28,39 @@ extern 			uint32_t			cum_detections_counter;
 		/*
 		 * private functions
 		 */
+bool debug_file_sys_setup(char *file_name, char buf[]){
+
+	bool			ret_flag=false;
+	FIL  			f_pointer;
+	FRESULT 		f_ret;
+
+	/*
+	 * FR_NOT_READY issue not solved with delay. Maybe send a command and wait...
+	 * BUT only using f_open and not f_mount in this function works  :-)
+	 * shutdown only once in init. NOT in this function
+	 * Current Scenario: Current is 26mA on average but on write, goes to 46mA
+	 * which is normal and as per logic. Function is almost done.
+	 * Also works with remove and reinsert card
+	 */
+	f_ret = f_open(&f_pointer, file_name, FA_WRITE | FA_OPEN_APPEND);
+	if(f_ret==FR_OK){
+    	f_ret = f_puts(buf,&f_pointer);
+    	f_close(&f_pointer);
+    	if(f_ret>0){
+    		ret_flag=true;
+    	}
+    	else{
+    		ret_flag=false;
+    	}
+    }
+    else{
+    	ret_flag=false;
+		sprintf((char *)rs232_tx_buf,"f_open=%1d and name=%s\n",f_ret,file_name);
+		debug_str((unsigned char *)rs232_tx_buf);
+		f_close(&f_pointer);
+    }
+    return ret_flag;
+}
 bool file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
 
 	char 			filename[8]="00000000";
