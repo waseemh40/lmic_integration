@@ -190,6 +190,7 @@ bool get_and_compare(char *compare_string){
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
 	delay_ms(9);												//response time from TBR
+
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
 		temp_char=rs485_recieve_char();
 		if(temp_char=='@'){break;}
@@ -207,7 +208,7 @@ bool get_and_compare(char *compare_string){
 		debug_char('\n');
 	}
 	 else{
-		 ret_flag=false;
+		ret_flag=false;
 		debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
