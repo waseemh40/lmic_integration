@@ -16,6 +16,7 @@ static 	int			array_size=0;
 static 	int			array_front=0;
 static 	int			array_rear=0;
 
+static 	uint8_t		tbr_backoff_delay=4;
 	/*
 	 * shared global varibales
 	 */
@@ -91,15 +92,33 @@ uint8_t  CalculateLuhn(time_t * time){
 	}
 
 	return (luhn_sum * 9) % 10 + '0';
+
+void shiftElements(char *arr, int size, int positions)
+    {
+        for (int i=size-1; i>=0; i--)
+            arr[i+positions] = arr[i];
+    }
 }
+static 	char 		broken_msg_buf[64];
+static 	bool		last_broken_message_flag=false;
+static 	uint8_t		last_broken_message_size=0;
+
 int		parse_message_tbr(char *buffer){
 	int			loop_var=0;
+	int 		inner_loop_var=0;
 	char		*token_str;
 	char		ref_token[2]="$";
 	char		temp_buffer[50];
 	int			temp_buf_index=1;
 
 	debug_str("\t\t\tTBR Parse Called\n");
+	/*if(last_broken_message_flag==true){
+		shiftElements(buffer, CMD_RX_TX_BUF_SIZE ,last_broken_message_size);
+		for(loop_var=0;loop_var<last_broken_message_size;loop_var++){
+			buffer[loop_var]=broken_msg_buf[loop_var];
+		}
+		last_broken_message_flag=false;
+	}*/
 	token_str=strtok(buffer,ref_token);
 	if(token_str==NULL){
 		debug_str("\t\t\tTBR Parse Returned\n");
@@ -119,6 +138,10 @@ int		parse_message_tbr(char *buffer){
 						 }
 						 else{
 							 debug_str("\t\t\tParse Broken Message Found\n");
+							 for(inner_loop_var=1;inner_loop_var<temp_buf_index;inner_loop_var++){
+								 debug_char(temp_buffer[inner_loop_var]);
+							 }
+							 //last_broken_message_flag=false;
 						 }
 						 temp_buf_index=1;
 						 break;
@@ -177,6 +200,7 @@ void clear_buffer(char *buf, uint16_t size){
 	}
 	return;
 }
+static  bool flag=false;
 char 			resuable_buffer[128];
 bool get_and_compare(char *compare_string){
 	char 			*cmd_compare_str;
@@ -189,13 +213,28 @@ bool get_and_compare(char *compare_string){
 	debug_str("\tTBR G & C Called\n");
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	delay_ms(9);												//response time from TBR
+	tbr_backoff_delay=9;
+	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
 		temp_char=rs485_recieve_char();
 		if(temp_char=='@'){break;}
 		cmd_rx_tx_buf[loop_var]=temp_char;
 	}
+
+	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
+
+	if(flag==false){
+		sprintf(cmd_rx_tx_buf,"$000632,1520267041,240,S256,40,1,8,67,246509\rack01\rack02\r$000632,1520267048,241,S256,40,1,9,67,246510\r$000045,1520350432,505,S25");
+		loop_var=strlen(cmd_rx_tx_buf);
+		flag=true;
+	}
+	else{
+		sprintf(cmd_rx_tx_buf,"6,40,1,22,509268\rack01\r$000045,1520350439,506,S256,40,1,22,509269\r$000045,1520350446,504,S25");
+		loop_var=strlen(cmd_rx_tx_buf);
+		flag=false;
+	}
+
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
@@ -457,3 +496,4 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 	*lora_length=lora_buf_length;
 	return msg_count;
 }
+
