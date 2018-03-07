@@ -92,33 +92,34 @@ uint8_t  CalculateLuhn(time_t * time){
 	}
 
 	return (luhn_sum * 9) % 10 + '0';
-
-void shiftElements(char *arr, int size, int positions)
-    {
-        for (int i=size-1; i>=0; i--)
-            arr[i+positions] = arr[i];
-    }
 }
-static 	char 		broken_msg_buf[64];
-static 	bool		last_broken_message_flag=false;
-static 	uint8_t		last_broken_message_size=0;
+
+void shift_Elements(char *arr, int size, int positions){
+        for (int i=size-1; i>=positions; i--){
+            arr[i] = arr[i-positions];
+    }
+        return;
+}
 
 int		parse_message_tbr(char *buffer){
-	int			loop_var=0;
-	int 		inner_loop_var=0;
-	char		*token_str;
-	char		ref_token[2]="$";
-	char		temp_buffer[50];
-	int			temp_buf_index=1;
+	int				loop_var=0;
+	int				token_length=0;
+	char			*token_str;
+	char			ref_token[2]="\r";
+	uint8_t			comma_count=0;
+	static 	char 	broken_msg_buf[64];
+	static 	bool	last_broken_message_flag=false;
+	static 	uint8_t	last_broken_message_size=0;
 
 	debug_str("\t\t\tTBR Parse Called\n");
-	/*if(last_broken_message_flag==true){
-		shiftElements(buffer, CMD_RX_TX_BUF_SIZE ,last_broken_message_size);
+	if(last_broken_message_flag==true){
+		shift_Elements(buffer, CMD_RX_TX_BUF_SIZE ,last_broken_message_size);
 		for(loop_var=0;loop_var<last_broken_message_size;loop_var++){
 			buffer[loop_var]=broken_msg_buf[loop_var];
 		}
 		last_broken_message_flag=false;
-	}*/
+		last_broken_message_size=0;
+	}
 	token_str=strtok(buffer,ref_token);
 	if(token_str==NULL){
 		debug_str("\t\t\tTBR Parse Returned\n");
@@ -127,35 +128,47 @@ int		parse_message_tbr(char *buffer){
 	else{
 		if(!array_is_full()){
 			while(token_str!=NULL){
-				temp_buffer[0]='$';
-				for(loop_var=0;loop_var<strlen(token_str);loop_var++){
-					 if(token_str[loop_var]=='\r'){
-						 if(strlen(temp_buffer)>30){
-							 for(loop_var=0;loop_var<temp_buf_index;loop_var++){
-								 array_add(temp_buffer[loop_var]);
-							 }
-							 array_add('\n');
-						 }
-						 else{
-							 debug_str("\t\t\tParse Broken Message Found\n");
-							 for(inner_loop_var=1;inner_loop_var<temp_buf_index;inner_loop_var++){
-								 debug_char(temp_buffer[inner_loop_var]);
-							 }
-							 //last_broken_message_flag=false;
-						 }
-						 temp_buf_index=1;
-						 break;
-					 }
-					 temp_buffer[temp_buf_index]=token_str[loop_var];
-					 temp_buf_index++;
-					 if(temp_buf_index>50){
-						 temp_buf_index=50;
-						 debug_str("\t\t\tParse temp_buf_index greater than 50, setting it to 50!!!\n");
-					 }
-					 if(strlen(token_str)>512){
-						 debug_str("\t\t\tParse strlen(token_strn) is greater than 512!!!\n");
-					 }
+				if(token_str[0]=='$'){
+					comma_count=0;
+					token_length=strlen(token_str);
+					if(token_length>50){
+						debug_str("\t\t\tParse DANGER, setting string length back to 50!!!\n");
+						token_length=50;
+					}
+					for(loop_var=0;loop_var<token_length;loop_var++){
+						if(token_str[loop_var]==','){
+							comma_count++;
+						}
+					}
+					if(comma_count>=7){		//complete messages.
+						for(loop_var=0;loop_var<token_length;loop_var++){
+							array_add(token_str[loop_var]);
+						}
+						array_add('\n');
+						debug_str("\t\t\tParse Added Complete Message...\n");
+						debug_str(token_str);
+						debug_char('\n');
+					}
+					else{					//partial message at the end.
+						for(loop_var=0;loop_var<token_length;loop_var++){
+							broken_msg_buf[loop_var]=token_str[loop_var];
+						}
+						last_broken_message_size=loop_var;
+						last_broken_message_flag=true;
+						debug_str("\t\t\tParse partial message at the end...\n");
+						debug_str(token_str);
+						debug_char('\n');
+					}
 				}
+				else if(token_str[0]=='a') {
+					 debug_str("\t\t\tParse discarding ACK message...\n");
+				}
+				else{
+					 debug_str("\t\t\t!!!Parse partial message at the beginning!!!\n");
+					 debug_str(token_str);
+					 debug_char('\n');
+				}
+
 				token_str=strtok(NULL,ref_token);
 			}
 			debug_str("\t\t\tTBR Parse Returned\n");
@@ -230,7 +243,7 @@ bool get_and_compare(char *compare_string){
 		flag=true;
 	}
 	else{
-		sprintf(cmd_rx_tx_buf,"6,40,1,22,509268\rack01\r$000045,1520350439,506,S256,40,1,22,509269\r$000045,1520350446,504,S25");
+		sprintf(cmd_rx_tx_buf,"6,40,1,22,509268\rack01\r$000045,1520350439,506,S256,40,1,22,509269");
 		loop_var=strlen(cmd_rx_tx_buf);
 		flag=false;
 	}
@@ -257,6 +270,7 @@ bool get_and_compare(char *compare_string){
 		debug_char('\n');
 	 }
 	 check_other_messages(cmd_rx_tx_buf);
+	 for(loop_var=0;loop_var<5;loop_var++)
 	 debug_str("\tTBR G & C Returned\n");
 	return ret_flag;
 }
@@ -369,7 +383,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		single_msg[outer_loop_var]=src_buf[outer_loop_var+1];	//+1 to ignore $
 	}
 	dst_buf[0]=(uint8_t)strtoul(single_msg,&temp_ptr,10);
-	dst_buf[0]=0x85;
+	dst_buf[0]=0x82;
 	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;

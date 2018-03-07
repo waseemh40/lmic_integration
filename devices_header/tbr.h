@@ -48,6 +48,7 @@ bool 		get_and_compare(char *compare_string);
 uint8_t	  	CalculateLuhn(time_t * time);
 char 		array_remove(void);
 int			parse_message_tbr(char *buffer);
+void 		shift_Elements(char *arr, int size, int positions);
 	/*
 	 * public functions
 	 */
