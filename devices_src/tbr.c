@@ -15,7 +15,7 @@ static	char		array_msg[ARRAY_MESSAGE_SIZE];
 static 	int			array_size=0;
 static 	int			array_front=0;
 static 	int			array_rear=0;
-
+static 	bool		incomplete_ack_flag=false;
 static 	uint8_t		tbr_backoff_delay=4;
 	/*
 	 * shared global varibales
@@ -165,7 +165,7 @@ int		parse_message_tbr(char *buffer){
 				else if(token_str[0]=='a') {
 					 //debug_str("\t\t\tParse discarding ACK message...\n");
 					 //ack_incomplete_flag=true;
-					;
+					incomplete_ack_flag=true;
 				}
 				else{
 					 debug_str("\t\t\t!!!Parse partial message at the beginning!!!\n");
@@ -176,7 +176,7 @@ int		parse_message_tbr(char *buffer){
 				token_str=strtok(NULL,ref_token);
 			}
 			debug_str("\t\t\tTBR Parse Returned\n");
-			return (int) ack_incomplete_flag;
+			return 1;
 		}
 		else{
 			debug_str("\t\t\tTBR Parse Returned\n");
@@ -224,13 +224,11 @@ bool get_and_compare(char *compare_string){
 	int				loop_var=0;
 	char			temp_char='0';
 	bool			ret_flag=false;
-	bool			incomplete_ack_flag=false;
-	int				debug_var=0;
+	//int				debug_var=0;
 
 	debug_str("\tTBR G & C Called\n");
-
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	tbr_backoff_delay=9;
+	tbr_backoff_delay=4;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
@@ -242,28 +240,33 @@ bool get_and_compare(char *compare_string){
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
-		debug_var=loop_var;
+		debug_str("\t\t\tTBR ack received\n");
+		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR ACK RXD. Buf is:\n");
 		debug_str(resuable_buffer);
 		for(loop_var=0;loop_var<debug_var;loop_var++){
 			debug_char(cmd_rx_tx_buf[loop_var]);
 		}
-		debug_char('\n');
+		debug_char('\n');*/
 	}
 	 else{
 		ret_flag=false;
-		debug_var=loop_var;
+		debug_str("\t\t\tTBR ack NOT received\n");
+		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
 		for(loop_var=0;loop_var<debug_var;loop_var++){
 			debug_char(cmd_rx_tx_buf[loop_var]);
 		}
-		debug_char('\n');
+		debug_char('\n');*/
 	 }
+	incomplete_ack_flag=false;
 	incomplete_ack_flag=check_other_messages(cmd_rx_tx_buf);
-	 if(incomplete_ack_flag==true && ret_flag==false){
-		 debug_str("\t\t\tTBR Incomplete ACK found in buffer");
-		 ret_flag=true;
+	 if(ret_flag==false){
+		 if(incomplete_ack_flag==true){
+			 debug_str("\t\t\tTBR Incomplete ACK found in buffer\n");
+			 ret_flag=true;
+		 }
 	 }
 	 debug_str("\tTBR G & C Returned\n");
 	return ret_flag;
