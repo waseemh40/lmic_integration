@@ -110,8 +110,10 @@ int		parse_message_tbr(char *buffer){
 	static 	char 	broken_msg_buf[64];
 	static 	bool	last_broken_message_flag=false;
 	static 	uint8_t	last_broken_message_size=0;
+	bool			ack_incomplete_flag=false;
 
 	debug_str("\t\t\tTBR Parse Called\n");
+	ack_incomplete_flag=false;
 	if(last_broken_message_flag==true){
 		shift_Elements(buffer, CMD_RX_TX_BUF_SIZE ,last_broken_message_size);
 		for(loop_var=0;loop_var<last_broken_message_size;loop_var++){
@@ -145,9 +147,9 @@ int		parse_message_tbr(char *buffer){
 							array_add(token_str[loop_var]);
 						}
 						array_add('\n');
-						debug_str("\t\t\tParse Added Complete Message...\n");
-						debug_str(token_str);
-						debug_char('\n');
+						//debug_str("\t\t\tParse Added Complete Message...\n");
+						//debug_str(token_str);
+						//debug_char('\n');
 					}
 					else{					//partial message at the end.
 						for(loop_var=0;loop_var<token_length;loop_var++){
@@ -155,13 +157,15 @@ int		parse_message_tbr(char *buffer){
 						}
 						last_broken_message_size=loop_var;
 						last_broken_message_flag=true;
-						debug_str("\t\t\tParse partial message at the end...\n");
-						debug_str(token_str);
-						debug_char('\n');
+						//debug_str("\t\t\tParse partial message at the end...\n");
+						//debug_str(token_str);
+						//debug_char('\n');
 					}
 				}
 				else if(token_str[0]=='a') {
-					 debug_str("\t\t\tParse discarding ACK message...\n");
+					 //debug_str("\t\t\tParse discarding ACK message...\n");
+					 //ack_incomplete_flag=true;
+					;
 				}
 				else{
 					 debug_str("\t\t\t!!!Parse partial message at the beginning!!!\n");
@@ -172,7 +176,7 @@ int		parse_message_tbr(char *buffer){
 				token_str=strtok(NULL,ref_token);
 			}
 			debug_str("\t\t\tTBR Parse Returned\n");
-			return 1;
+			return (int) ack_incomplete_flag;
 		}
 		else{
 			debug_str("\t\t\tTBR Parse Returned\n");
@@ -213,7 +217,6 @@ void clear_buffer(char *buf, uint16_t size){
 	}
 	return;
 }
-static  bool flag=false;
 char 			resuable_buffer[128];
 bool get_and_compare(char *compare_string){
 	char 			*cmd_compare_str;
@@ -221,6 +224,7 @@ bool get_and_compare(char *compare_string){
 	int				loop_var=0;
 	char			temp_char='0';
 	bool			ret_flag=false;
+	bool			incomplete_ack_flag=false;
 	int				debug_var=0;
 
 	debug_str("\tTBR G & C Called\n");
@@ -233,19 +237,6 @@ bool get_and_compare(char *compare_string){
 		temp_char=rs485_recieve_char();
 		if(temp_char=='@'){break;}
 		cmd_rx_tx_buf[loop_var]=temp_char;
-	}
-
-	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-
-	if(flag==false){
-		sprintf(cmd_rx_tx_buf,"$000632,1520267041,240,S256,40,1,8,67,246509\rack01\rack02\r$000632,1520267048,241,S256,40,1,9,67,246510\r$000045,1520350432,505,S25");
-		loop_var=strlen(cmd_rx_tx_buf);
-		flag=true;
-	}
-	else{
-		sprintf(cmd_rx_tx_buf,"6,40,1,22,509268\rack01\r$000045,1520350439,506,S256,40,1,22,509269");
-		loop_var=strlen(cmd_rx_tx_buf);
-		flag=false;
 	}
 
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
@@ -269,8 +260,11 @@ bool get_and_compare(char *compare_string){
 		}
 		debug_char('\n');
 	 }
-	 check_other_messages(cmd_rx_tx_buf);
-	 for(loop_var=0;loop_var<5;loop_var++)
+	incomplete_ack_flag=check_other_messages(cmd_rx_tx_buf);
+	 if(incomplete_ack_flag==true && ret_flag==false){
+		 debug_str("\t\t\tTBR Incomplete ACK found in buffer");
+		 ret_flag=true;
+	 }
 	 debug_str("\tTBR G & C Returned\n");
 	return ret_flag;
 }
