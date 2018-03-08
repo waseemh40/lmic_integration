@@ -110,10 +110,8 @@ int		parse_message_tbr(char *buffer){
 	static 	char 	broken_msg_buf[64];
 	static 	bool	last_broken_message_flag=false;
 	static 	uint8_t	last_broken_message_size=0;
-	bool			ack_incomplete_flag=false;
 
 	debug_str("\t\t\tTBR Parse Called\n");
-	ack_incomplete_flag=false;
 	if(last_broken_message_flag==true){
 		shift_Elements(buffer, CMD_RX_TX_BUF_SIZE ,last_broken_message_size);
 		for(loop_var=0;loop_var<last_broken_message_size;loop_var++){
@@ -134,8 +132,10 @@ int		parse_message_tbr(char *buffer){
 					comma_count=0;
 					token_length=strlen(token_str);
 					if(token_length>50){
-						debug_str("\t\t\tParse DANGER, setting string length back to 50!!!\n");
-						token_length=50;
+						debug_str("\t\t\tParse DANGER, string length larger than 50!!!\n");
+						debug_str(token_str);
+						debug_char('\n');
+						//token_length=50;
 					}
 					for(loop_var=0;loop_var<token_length;loop_var++){
 						if(token_str[loop_var]==','){
@@ -164,8 +164,7 @@ int		parse_message_tbr(char *buffer){
 				}
 				else if(token_str[0]=='a') {
 					 //debug_str("\t\t\tParse discarding ACK message...\n");
-					 //ack_incomplete_flag=true;
-					incomplete_ack_flag=true;
+					 incomplete_ack_flag=true;
 				}
 				else{
 					 debug_str("\t\t\t!!!Parse partial message at the beginning!!!\n");
@@ -187,7 +186,7 @@ int		parse_message_tbr(char *buffer){
 }
 
 bool check_other_messages(char * cmd_rx_tx_buf){
-	int				temp_var=0;
+	/*int				temp_var=0;
 	char	 		*cmd_compare_str;
 
 	debug_str("\t\tTBR CoM Called\n");
@@ -208,7 +207,8 @@ bool check_other_messages(char * cmd_rx_tx_buf){
 			 return false;
 		 }
 	 }
-		return 0;
+		return 0;*/
+	return parse_message_tbr(cmd_rx_tx_buf);
 }
 void clear_buffer(char *buf, uint16_t size){
 	int			loop_var=0;
@@ -228,7 +228,7 @@ bool get_and_compare(char *compare_string){
 
 	debug_str("\tTBR G & C Called\n");
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	tbr_backoff_delay=4;
+	tbr_backoff_delay=9;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
@@ -261,7 +261,7 @@ bool get_and_compare(char *compare_string){
 		debug_char('\n');*/
 	 }
 	incomplete_ack_flag=false;
-	incomplete_ack_flag=check_other_messages(cmd_rx_tx_buf);
+	check_other_messages(cmd_rx_tx_buf);
 	 if(ret_flag==false){
 		 if(incomplete_ack_flag==true){
 			 debug_str("\t\t\tTBR Incomplete ACK found in buffer\n");
@@ -480,25 +480,38 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 	int 			msg_count=0;
 	uint8_t			lora_buf_length=0;
 	char			temp_char='0';
-	char			intermediate_buffer[ARRAY_MESSAGE_SIZE];
+	char			temp_char_last='0';
+	bool			first_dollar_found=false;
 
 		//SD card msg_buffer
 	clear_buffer(msg_buf, ARRAY_MESSAGE_SIZE);
-	clear_buffer(intermediate_buffer, ARRAY_MESSAGE_SIZE);
 
 	sprintf(resuable_buffer, "\t\t\tMSg buffer is:\n");
 	debug_str(resuable_buffer);
 
+	loop_var=0;
+	temp_char_last=0;
+	first_dollar_found=false;
 	while(!array_is_empty()){
 		temp_char=array_remove();
-		debug_char(temp_char);
 		if(temp_char=='$'){
 			msg_count++;
+			if(first_dollar_found==true){
+				if(temp_char_last!='\n'){
+					msg_buf[loop_var]='\n';
+					loop_var++;
+				}
+			}
+			first_dollar_found=true;
 		}
 		msg_buf[loop_var]=temp_char;
 		loop_var++;
+		temp_char_last=temp_char;
+		debug_char(temp_char);
 	}
 	debug_char('\n');
+	msg_buf[loop_var]='\n';		//safety of convert_tbr_msgs_to_uint function
+	loop_var++;
 	*msg_length=loop_var;
 		//LoRa buffer
 	lora_buf_length=convert_tbr_msgs_to_uint(msg_buf,lora_msg_buf,(uint8_t)msg_count);

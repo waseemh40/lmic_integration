@@ -14,7 +14,7 @@
 static			FATFS 				FatFs;
 static 			int					tbr_lora_length=0;
 static 			uint8_t				tbr_lora_buf[ARRAY_MESSAGE_SIZE];
-static			char				tbr_sd_card_buf[ARRAY_MESSAGE_SIZE];	//tags with NAV data appended
+static			char				tbr_sd_card_buf[2*ARRAY_MESSAGE_SIZE];	//tags with NAV data appended
 
 		/*
 		 * public variables
