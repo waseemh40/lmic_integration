@@ -111,7 +111,7 @@ int		parse_message_tbr(char *buffer){
 	static 	bool	last_broken_message_flag=false;
 	static 	uint8_t	last_broken_message_size=0;
 
-	debug_str("\t\t\tTBR Parse Called\n");
+	//debug_str("\t\t\tTBR Parse Called\n");
 	if(last_broken_message_flag==true){
 		shift_Elements(buffer, CMD_RX_TX_BUF_SIZE ,last_broken_message_size);
 		for(loop_var=0;loop_var<last_broken_message_size;loop_var++){
@@ -122,7 +122,7 @@ int		parse_message_tbr(char *buffer){
 	}
 	token_str=strtok(buffer,ref_token);
 	if(token_str==NULL){
-		debug_str("\t\t\tTBR Parse Returned\n");
+		//debug_str("\t\t\tTBR Parse Returned\n");
 		return -1;
 	}
 	else{
@@ -152,11 +152,18 @@ int		parse_message_tbr(char *buffer){
 						//debug_char('\n');
 					}
 					else{					//partial message at the end.
-						for(loop_var=0;loop_var<token_length;loop_var++){
-							broken_msg_buf[loop_var]=token_str[loop_var];
+						if(token_length<50){
+							for(loop_var=0;loop_var<token_length;loop_var++){
+								broken_msg_buf[loop_var]=token_str[loop_var];
+							}
+							last_broken_message_size=loop_var;
+							last_broken_message_flag=true;
 						}
-						last_broken_message_size=loop_var;
-						last_broken_message_flag=true;
+						else {
+							debug_str("\t\t\tParse discarding partial message at the end!!!\n");
+							debug_str(token_str);
+							debug_char('\n');
+						}
 						//debug_str("\t\t\tParse partial message at the end...\n");
 						//debug_str(token_str);
 						//debug_char('\n');
@@ -174,11 +181,11 @@ int		parse_message_tbr(char *buffer){
 
 				token_str=strtok(NULL,ref_token);
 			}
-			debug_str("\t\t\tTBR Parse Returned\n");
+			//debug_str("\t\t\tTBR Parse Returned\n");
 			return 1;
 		}
 		else{
-			debug_str("\t\t\tTBR Parse Returned\n");
+			//debug_str("\t\t\tTBR Parse Returned\n");
 			return -1;
 		}
 	}
@@ -226,7 +233,7 @@ bool get_and_compare(char *compare_string){
 	bool			ret_flag=false;
 	//int				debug_var=0;
 
-	debug_str("\tTBR G & C Called\n");
+	//debug_str("\tTBR G & C Called\n");
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
 	tbr_backoff_delay=9;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
@@ -240,7 +247,7 @@ bool get_and_compare(char *compare_string){
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
-		debug_str("\t\t\tTBR ack received\n");
+		debug_str("\t\t\tTBR ACK received\n");
 		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR ACK RXD. Buf is:\n");
 		debug_str(resuable_buffer);
@@ -251,7 +258,7 @@ bool get_and_compare(char *compare_string){
 	}
 	 else{
 		ret_flag=false;
-		debug_str("\t\t\tTBR ack NOT received\n");
+		debug_str("\t\t\tTBR ACK NOT received\n");
 		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
@@ -268,7 +275,7 @@ bool get_and_compare(char *compare_string){
 			 ret_flag=true;
 		 }
 	 }
-	 debug_str("\tTBR G & C Returned\n");
+	 //debug_str("\tTBR G & C Returned\n");
 	return ret_flag;
 }
 
@@ -486,8 +493,8 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 		//SD card msg_buffer
 	clear_buffer(msg_buf, ARRAY_MESSAGE_SIZE);
 
-	sprintf(resuable_buffer, "\t\t\tMSg buffer is:\n");
-	debug_str(resuable_buffer);
+	//sprintf(resuable_buffer, "\t\t\tMSg buffer is:\n");
+	//debug_str(resuable_buffer);
 
 	loop_var=0;
 	temp_char_last=0;
@@ -507,9 +514,9 @@ uint8_t tbr_recv_msg_uint(uint8_t *lora_msg_buf, int *lora_length, char *msg_buf
 		msg_buf[loop_var]=temp_char;
 		loop_var++;
 		temp_char_last=temp_char;
-		debug_char(temp_char);
+		//debug_char(temp_char);
 	}
-	debug_char('\n');
+	//debug_char('\n');
 	msg_buf[loop_var]='\n';		//safety of convert_tbr_msgs_to_uint function
 	loop_var++;
 	*msg_length=loop_var;
