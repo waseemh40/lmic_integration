@@ -106,10 +106,15 @@ int		parse_message_tbr(char *buffer){
 	int				token_length=0;
 	char			*token_str;
 	char			ref_token[2]="\r";
-	uint8_t			comma_count=0;
 	static 	char 	broken_msg_buf[64];
 	static 	bool	last_broken_message_flag=false;
 	static 	uint8_t	last_broken_message_size=0;
+
+	uint32_t		inner_loop_var=0;
+	uint32_t		outer_loop_var=0;
+	uint8_t			n_complete_messages=0;
+	uint8_t			n_converted_tokens=0;
+	bool			found_partial_msg=false;
 
 	//debug_str("\t\t\tTBR Parse Called\n");
 	if(last_broken_message_flag==true){
@@ -120,76 +125,95 @@ int		parse_message_tbr(char *buffer){
 		last_broken_message_flag=false;
 		last_broken_message_size=0;
 	}
-	token_str=strtok(buffer,ref_token);
-	if(token_str==NULL){
-		//debug_str("\t\t\tTBR Parse Returned\n");
-		return -1;
+	n_complete_messages=0;
+	found_partial_msg=false;
+	for(outer_loop_var=0;outer_loop_var<strlen(buffer);outer_loop_var++){
+		if(buffer[outer_loop_var]=='$' || buffer[outer_loop_var]=='a'){
+			for(inner_loop_var=1;inner_loop_var<64;inner_loop_var++){		//64 is also danger!!!
+				if(buffer[outer_loop_var+inner_loop_var]=='\r'){
+					n_complete_messages++;
+					outer_loop_var+=inner_loop_var;
+					break;
+				}
+				if(inner_loop_var==63){
+					found_partial_msg=true;
+				}
+			}
+		}
+		if(found_partial_msg==true){
+			break;
+		}
 	}
-	else{
-		if(!array_is_full()){
-			while(token_str!=NULL){
-				if(token_str[0]=='$'){
-					comma_count=0;
-					token_length=strlen(token_str);
-					if(token_length>50){
-						debug_str("\t\t\tParse DANGER, string length larger than 50!!!\n");
-						debug_str(token_str);
-						debug_char('\n');
-						//token_length=50;
-					}
-					for(loop_var=0;loop_var<token_length;loop_var++){
-						if(token_str[loop_var]==','){
-							comma_count++;
+
+	last_broken_message_size=0;
+	last_broken_message_flag=false;
+	clear_buffer(broken_msg_buf,64);
+	if(outer_loop_var<strlen(buffer)){
+		for(loop_var=outer_loop_var;loop_var<strlen(buffer);loop_var++){
+			broken_msg_buf[loop_var-outer_loop_var]=buffer[loop_var];
+		}
+		last_broken_message_flag=true;
+		last_broken_message_size=loop_var-outer_loop_var;
+		 debug_str("\t\t\t\tParse found and added half message...");
+		 debug_str(broken_msg_buf);
+		 debug_char('\n');
+	}
+	n_converted_tokens=0;
+
+	if(n_complete_messages>0){
+		token_str=strtok(buffer,ref_token);
+		if(token_str==NULL){
+			debug_str("Parse DANGER, complete messages >0 BUT no token found!!!!\n");
+			return -1;
+		}
+		else{
+			if(!array_is_full()){
+				while(token_str!=NULL){
+					if(token_str[0]=='$'){
+						token_length=strlen(token_str);
+						if(token_length>50){
+							debug_str("\t\t\tParse DANGER, string length larger than 50!!!");
+							debug_str(token_str);
+							debug_char('\n');
+							//token_length=50;
 						}
-					}
-					if(comma_count>=7){		//complete messages.
 						for(loop_var=0;loop_var<token_length;loop_var++){
 							array_add(token_str[loop_var]);
 						}
 						array_add('\n');
-						//debug_str("\t\t\tParse Added Complete Message...\n");
-						//debug_str(token_str);
-						//debug_char('\n');
+						 debug_str("\t\t\tParse Added complete message...");
+						 debug_str(token_str);
+						 debug_char('\n');
 					}
-					else{					//partial message at the end.
-						if(token_length<50){
-							for(loop_var=0;loop_var<token_length;loop_var++){
-								broken_msg_buf[loop_var]=token_str[loop_var];
-							}
-							last_broken_message_size=loop_var;
-							last_broken_message_flag=true;
-						}
-						else {
-							debug_str("\t\t\tParse discarding partial message at the end!!!\n");
-							debug_str(token_str);
-							debug_char('\n');
-						}
-						//debug_str("\t\t\tParse partial message at the end...\n");
-						//debug_str(token_str);
-						//debug_char('\n');
+					else if(token_str[0]=='a') {
+						 debug_str("\t\t\tParse discarding ACK message...");
+						 debug_str(token_str);
+						 debug_char('\n');
+						 incomplete_ack_flag=true;
 					}
+					else{
+						 debug_str("\t\t\t!!!Parse discarding unknown message type!!!");
+						 debug_str(token_str);
+						 debug_char('\n');
+					}
+					n_converted_tokens++;
+					if(n_converted_tokens>=n_complete_messages){
+						break;
+					}
+					token_str=strtok(NULL,ref_token);
 				}
-				else if(token_str[0]=='a') {
-					 //debug_str("\t\t\tParse discarding ACK message...\n");
-					 incomplete_ack_flag=true;
-				}
-				else{
-					 debug_str("\t\t\t!!!Parse partial message at the beginning!!!\n");
-					 debug_str(token_str);
-					 debug_char('\n');
-				}
-
-				token_str=strtok(NULL,ref_token);
+				//debug_str("\t\t\tTBR Parse Returned\n");
+				return 1;
 			}
-			//debug_str("\t\t\tTBR Parse Returned\n");
-			return 1;
-		}
-		else{
-			//debug_str("\t\t\tTBR Parse Returned\n");
-			return -1;
+			else{
+				//debug_str("\t\t\tTBR Parse Returned\n");
+				return -1;
+			}
 		}
 	}
-	return 0;
+	else{
+		return 0;
+	}
 }
 
 bool check_other_messages(char * cmd_rx_tx_buf){
@@ -243,11 +267,10 @@ bool get_and_compare(char *compare_string){
 		if(temp_char=='@'){break;}
 		cmd_rx_tx_buf[loop_var]=temp_char;
 	}
-
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
-		debug_str("\t\t\tTBR ACK received\n");
+		debug_str("\t\tTBR ACK received\n");
 		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR ACK RXD. Buf is:\n");
 		debug_str(resuable_buffer);
@@ -258,7 +281,7 @@ bool get_and_compare(char *compare_string){
 	}
 	 else{
 		ret_flag=false;
-		debug_str("\t\t\tTBR ACK NOT received\n");
+		debug_str("\t\tTBR ACK NOT received\n");
 		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
