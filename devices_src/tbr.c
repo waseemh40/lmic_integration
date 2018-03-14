@@ -181,14 +181,14 @@ int		parse_message_tbr(char *buffer){
 							array_add(token_str[loop_var]);
 						}
 						array_add('\n');
-						 debug_str("\t\t\tParse Added complete message...");
-						 debug_str(token_str);
-						 debug_char('\n');
+						 //debug_str("\t\t\tParse Added complete message...");
+						 //debug_str(token_str);
+						 //debug_char('\n');
 					}
 					else if(token_str[0]=='a') {
-						 debug_str("\t\t\tParse discarding ACK message...");
-						 debug_str(token_str);
-						 debug_char('\n');
+						 //debug_str("\t\t\tParse discarding ACK message...");
+						 //debug_str(token_str);
+						 //debug_char('\n');
 						 incomplete_ack_flag=true;
 					}
 					else{
@@ -259,7 +259,7 @@ bool get_and_compare(char *compare_string){
 
 	//debug_str("\tTBR G & C Called\n");
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	tbr_backoff_delay=9;
+	tbr_backoff_delay=4;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
@@ -410,7 +410,7 @@ uint8_t convert_tbr_msgs_to_uint(char *src_buf, uint8_t *dst_buf, uint8_t msg_co
 		single_msg[outer_loop_var]=src_buf[outer_loop_var+1];	//+1 to ignore $
 	}
 	dst_buf[0]=(uint8_t)strtoul(single_msg,&temp_ptr,10);
-	dst_buf[0]=0x82;
+	dst_buf[0]=0x80;
 	offset_dst_buf=1;
 		//now convert rest of the messages into uint8_t (7 bytes per message => TimeStamp(4)+milli_sec(2)+tagID(1))
 	offset_src_buf=0;

@@ -56,6 +56,7 @@ void BURTC_IRQHandler(void)
 			 else {
 				 time_count=0;
 			 }
+			 time_count=0;
 				//wakeup
 			 debug_function();
 

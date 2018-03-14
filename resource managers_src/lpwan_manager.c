@@ -90,22 +90,23 @@
 
 	static void app_funct (osjob_t* j) {
 		time_manager_cmd_t		time_manager_cmd=basic_sync;
-
-		 if(diff_in_tstamp!=0){
-				sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
-				debug_str(temp_buf);
-		 }
-			//update Timestamps
-		running_tstamp=gps_get_nav_data();
-		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
-																running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
-						//add 10secs
+				//add 10secs
 		ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
-	    	//get synch command type from time manager
+				//get synch command type from time manager
 		time_manager_cmd=time_manager_get_cmd();
-			//update application manager
+				//update application manager
 		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
+
 		if(time_manager_cmd==advance_sync){
+				//update Timestamps
+			running_tstamp=gps_get_nav_data();
+			running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
+																	running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
+			running_tstamp.gps_timestamp+=50;
+			if(diff_in_tstamp!=0){
+					sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
+					debug_str(temp_buf);
+			}
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 			if(lora_msg_length>0){
 				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
@@ -122,8 +123,6 @@
 			  sprintf(temp_buf,"No LoRa message\n");
 			  debug_str((const u1_t*)"No LoRa message\n");
 			}
-
-
 		}
 		os_clearCallback(&app_job);
 	return;

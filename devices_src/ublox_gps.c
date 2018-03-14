@@ -367,10 +367,12 @@ nav_data_t 		gps_get_nav_data (void){
 				flag_success=true;
 				break;
 			}
-			else{retry++;}
-			if(retry>RETRY){
-				delay_ms(0);
-				break;
+			else{
+				retry++;
+				if(retry>RETRY){
+					delay_ms(0);
+					break;
+				}
 			}
 			delay_ms(0);
 		}
