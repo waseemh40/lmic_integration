@@ -22,8 +22,13 @@
 typedef enum{
 	gps=0,
 	sd_card,
-	radio
+	radio,
+	display
 }device_t;
+typedef enum{
+	msbf=0,
+	lsbf
+}byte_order_t;
 /*
  * private functions
  */
@@ -40,6 +45,8 @@ void 		spi_cs_clear(device_t device);
 uint8_t 	spi_read_write_byte(uint8_t data);
 void 		spi_write_byte(uint8_t data );
 uint8_t 	spi_read_byte( void );
+void 		spi_set_byte_order(byte_order_t order);
+
 
 
 #endif /* SRC_SPI_H_ */

@@ -50,13 +50,13 @@
 		 	//onEvent(0);
 		}
 #else
-		if(!LMIC_setTxData2(2,lora_buffer,lora_msg_length,0)){
-			return;
-		}
-		else{
-		 	debug_str((const u1_t*)"Tx function failed on length");
-		 	//onEvent(0);
-		}
+//		if(!LMIC_setTxData2(2,lora_buffer,lora_msg_length,0)){
+//			return;
+//		}
+//		else{
+//		 	debug_str((const u1_t*)"Tx function failed on length");
+//		 	//onEvent(0);
+//		}
 #endif
 		return;
 	}
@@ -107,22 +107,22 @@
 					sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 					debug_str(temp_buf);
 			}
-			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
-			if(lora_msg_length>0){
-				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
-			 	debug_str((const u1_t*)temp_buf);
-			 	for(int i=0;i<lora_msg_length;i++){
-			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
-			 	 	rs232_transmit_string(temp_buf,(uint8_t)strlen((char *)temp_buf));
-					delay_ms(1);
-			 	}
-			 	debug_char('\n');
-			 	lora_tx_function();
-			}
-			else{
-			  sprintf(temp_buf,"No LoRa message\n");
-			  debug_str((const u1_t*)"No LoRa message\n");
-			}
+//			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
+//			if(lora_msg_length>0){
+//				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
+//			 	debug_str((const u1_t*)temp_buf);
+//			 	for(int i=0;i<lora_msg_length;i++){
+//			 		sprintf(temp_buf,"%2x ",lora_buffer[i]);
+//			 	 	rs232_transmit_string(temp_buf,(uint8_t)strlen((char *)temp_buf));
+//					delay_ms(1);
+//			 	}
+//			 	debug_char('\n');
+//			 	lora_tx_function();
+//			}
+//			else{
+//			  sprintf(temp_buf,"No LoRa message\n");
+//			  debug_str((const u1_t*)"No LoRa message\n");
+//			}
 		}
 		os_clearCallback(&app_job);
 	return;

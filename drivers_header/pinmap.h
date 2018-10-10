@@ -70,7 +70,20 @@
 #define 	CS_GPS		 		3
 		//SD card signals
 #define 	CS_SD_CARD	 		12
-
+		//Display
+#define 	CS_DISPLAY	 		5
+		//Status LEDs
+#define 	LED_GPS		 		2
+#define 	LED_RADIO	 		3
+#define 	LED_R		 		8
+#define 	LED_G		 		9
+		//Address switch
+#define 	SW_1		 		8 	//PD8
+#define 	SW_2	 			12	//PF12
+#define 	SW_3		 		11	//PB11
+#define 	SW_4		 		10	//PA10
+#define 	SW_5		 		9	//PA9
+#define 	SW_6		 		8	//PA8
 		/*
 		 * Port Definition
 		 */
@@ -87,5 +100,10 @@
 #define		GPS_SIG_PORT		gpioPortD
 #define 	RADIO_IO_0345_PORT	gpioPortC
 #define 	RADIO_IO_12_PORT	gpioPortE
-
+#define 	LED_GPS_RADIO_PORT	gpioPortC
+#define 	LED_RED_GREEN_PORT	gpioPortE
+#define 	SWITCH_1_PORT		gpioPortD
+#define 	SWITCH_2_PORT		gpioPortF
+#define 	SWITCH_3_PORT		gpioPortB
+#define 	SWITCH_456_PORT		gpioPortA
 #endif /* SRC_PINMAP_H_ */

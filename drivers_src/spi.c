@@ -125,3 +125,10 @@ uint8_t spi_read_byte( void ){
 	spi_disable();
 	return rx_data;
 }
+void spi_set_byte_order(byte_order_t order)
+{
+	if (order == msbf)
+		SPI_USART->CTRL |= USART_CTRL_MSBF;
+	else
+		SPI_USART->CTRL &= ~USART_CTRL_MSBF;
+}

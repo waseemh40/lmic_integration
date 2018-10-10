@@ -270,7 +270,7 @@ bool get_and_compare(char *compare_string){
 	cmd_compare_str=strstr(cmd_rx_tx_buf,(const char *)compare_string);
 	if(cmd_compare_str!=NULL){
 		ret_flag=true;
-		debug_str("\t\tTBR ACK received\n");
+		//debug_str("\t\tTBR ACK received\n");
 		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR ACK RXD. Buf is:\n");
 		debug_str(resuable_buffer);
@@ -281,7 +281,7 @@ bool get_and_compare(char *compare_string){
 	}
 	 else{
 		ret_flag=false;
-		debug_str("\t\tTBR ACK NOT received\n");
+		//debug_str("\t\tTBR ACK NOT received\n");
 		/*debug_var=loop_var;
 		sprintf(resuable_buffer, "\t\tTBR NO ack rcvd. Buf is:\n");
 		debug_str(resuable_buffer);
@@ -294,7 +294,7 @@ bool get_and_compare(char *compare_string){
 	check_other_messages(cmd_rx_tx_buf);
 	 if(ret_flag==false){
 		 if(incomplete_ack_flag==true){
-			 debug_str("\t\t\tTBR Incomplete ACK found in buffer\n");
+			 //debug_str("\t\t\tTBR Incomplete ACK found in buffer\n");
 			 ret_flag=true;
 		 }
 	 }
@@ -471,6 +471,21 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		sprintf((char *)cmd_tx_buf,"(+)\n");
 		rs485_transmit_string(cmd_tx_buf,3);
 		ret_flag=get_and_compare((char *)"ack01\r");			//changed from 01
+		if (!ret_flag){
+			//rs485_transmit_string(cmd_tx_buf,3);
+			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
+		}
+		if (!ret_flag){
+			rs485_transmit_string(cmd_tx_buf,3);
+			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
+		}
+		if(ret_flag){
+			debug_str("\t\tTBR ACK received\n");
+		}
+		else {
+			debug_str("\t\tTBR ACK NOT received\n");
+		}
+
 	}
 	else if(tbr_cmd==cmd_advance_sync){
 		my_timestamp=timestamp;
@@ -480,6 +495,21 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
 		rs485_transmit_string(cmd_tx_buf,temp_var-1);
 		ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
+		if (!ret_flag){
+			//rs485_transmit_string(cmd_tx_buf,temp_var-1);
+			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
+		}
+		if (!ret_flag){
+			rs485_transmit_string(cmd_tx_buf,temp_var-1);
+			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
+		}
+		if(ret_flag){
+			debug_str("\t\tTBR ACK received\n");
+		}
+		else {
+			debug_str("\t\tTBR ACK NOT received\n");
+		}
+
 	}
 	else{
 		ret_flag=false;

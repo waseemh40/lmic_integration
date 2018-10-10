@@ -11,10 +11,17 @@
 #include "../lmic/hal.h"
 #include "../lmic/lmic.h"
 #include "debug.h"
+#include "../resource managers_header/app_manager.h"
 
 
-#define N_SAMPLES 	4
-#define BASE_2_N 	16		//-1 done inside if...
+#define N_SAMPLES 		4
+#define BASE_2_N 		16		//-1 done inside if...
+
+#define FREQ_TOLERANCE	50		//+- value for top of sec
+#define FREQ_TOP		32768
+
+		static 			unsigned char  		display_buffer[512];
+
 
 // HAL state
 static struct
@@ -25,10 +32,10 @@ static struct
 //////////////////////////////////////////////////////////////
 static	uint32_t	one_sec_top_ref=32768;
 static	bool		letimer_running=false;
-static 	int			last_letimer_count=65535;
-static	uint16_t	average_n=0;
 static 	uint32_t	avergae_sum=0;
-static 	uint32_t	ref_count=0;
+static 	uint32_t	debug_var=0;
+static 	uint8_t		counter=0;
+static 	uint32_t	timer_cycles=0;
 
 extern void debug_function(void);
 //////////////////////////////////////////////////////////////
@@ -41,13 +48,15 @@ void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
 	if(int_mask & BURTC_IF_COMP0){
-
+		GPIO_PinOutToggle(LED_GPS_RADIO_PORT, LED_RADIO);
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
+				//sprintf(display_buffer,"\t\t\tOneSecTop=%d\tTimerCycles_3=%d\tDebug_var=%ld\tcount=%d\n",one_sec_top_ref,timer_cycles,debug_var,counter);
+				//debug_str(display_buffer);
 			 time_manager_cmd=advance_sync;
 			 	 //run time controller on GPS timestamp...
 			 if(running_tstamp.valid==true){
-				 diff_in_tstamp=(int)((uint32_t)running_tstamp.gps_timestamp-(uint32_t)ref_tstamp.gps_timestamp);
+				 diff_in_tstamp=(int)((uint32_t)(running_tstamp.gps_timestamp)-(uint32_t)(ref_tstamp.gps_timestamp));
 				 if(diff_in_tstamp>=10){
 					 ref_tstamp.gps_timestamp+=10;
 				 }
@@ -56,23 +65,31 @@ void BURTC_IRQHandler(void)
 			 else {
 				 time_count=0;
 			 }
-			 //time_count=0;
+			 time_count=0;
 				//wakeup
+#ifdef SD_CARD_ONLY
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+#else
 			 debug_function();
+#endif
 
 		 }
-		 else if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
-			 time_manager_cmd=basic_sync;
-		 	 	 //update clock...
-			 if(one_sec_top_ref>32000 && one_sec_top_ref<33000){
-				 BURTC_CompareSet(0,one_sec_top_ref);
-			 }
-			 	 //wakeup
-			 debug_function();
 
-		 }
 		 else {
-			 ;
+			 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
+				 time_manager_cmd=basic_sync;
+			 	 	 //update clock...
+				 if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
+					 BURTC_CompareSet(0,one_sec_top_ref);
+				 }
+				 	 //wakeup
+#ifdef SD_CARD_ONLY
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+#else
+			 debug_function();
+#endif
+
+			 }
 		 }
 
 	}
@@ -103,9 +120,19 @@ void 		time_manager_init(void){
 		//Setup and initialize LETIMER
     LETIMER_Init_TypeDef	letimer_init=LETIMER_INIT_DEFAULT;
     letimer_init.enable=false;
+	/* Ensure LE modules are accessible */
+	CMU_ClockEnable(cmuClock_CORELE, true);
+	/* Enable LFACLK in CMU (will also enable oscillator if not enabled) */
+	CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
 	CMU_ClockEnable(cmuClock_LETIMER0, true);
 	LETIMER_Reset(LETIMER0);
 	LETIMER_Init(LETIMER0,&letimer_init);
+
+	TIMER_Init_TypeDef PWMTimerInit = TIMER_INIT_DEFAULT;
+  	PWMTimerInit.enable=false;
+  	PWMTimerInit.prescale=timerPrescale256;
+	CMU_ClockEnable(cmuClock_TIMER3, true);
+	TIMER_Init(TIMER3, &PWMTimerInit);
 		//start BURTC
 		BURTC_Enable(true);
     return;
@@ -140,6 +167,7 @@ extern void radio_irq_handler(u1_t dio);
 
 void GPIO_EVEN_IRQHandler()	//impar
  {
+
 	u4_t int_mask = GPIO_IntGetEnabled();
 	GPIO_IntClear(int_mask);
 	if (int_mask & 1<<RADIO_IO_0){
@@ -149,28 +177,28 @@ void GPIO_EVEN_IRQHandler()	//impar
 		radio_irq_handler(2);
 	}
 	else if (int_mask & 1<<GPS_TIME_PULSE){
-		if(letimer_running){
-			LETIMER_Enable(LETIMER0,false);
-			if(LETIMER_CounterGet(LETIMER0)>last_letimer_count){
-				avergae_sum+=(uint32_t)(LETIMER_CounterGet(LETIMER0)-last_letimer_count);
-			}
-			else{
-				avergae_sum+=(uint32_t)(last_letimer_count-LETIMER_CounterGet(LETIMER0));
-			}
-			last_letimer_count=LETIMER_CounterGet(LETIMER0);
-			letimer_running=false;
-			average_n++;
-			if(average_n>BASE_2_N-1){
-				one_sec_top_ref=avergae_sum>>N_SAMPLES;
-				avergae_sum=0;
-				average_n=0;
-			}
+		if(letimer_running==false){
+				LETIMER0->CMD=LETIMER_CMD_CLEAR;
+				LETIMER_Enable(LETIMER0,true);
+				letimer_running=true;
+				TIMER_CounterSet(TIMER3,0);
+				//timer_cycles=TIMER_CounterGet(TIMER0);
+				TIMER_Enable(TIMER3,true);
 		}
 		else{
-			LETIMER_Enable(LETIMER0,true);
-			letimer_running=true;
+			LETIMER_Enable(LETIMER0,false);
+			avergae_sum+=(65535-LETIMER_CounterGet(LETIMER0));
+			counter++;
+			letimer_running=false;
+			if(counter>=BASE_2_N){
+				one_sec_top_ref=avergae_sum>>(N_SAMPLES);
+				debug_var=avergae_sum;
+				avergae_sum=0;
+				counter=0;
+			}
+			TIMER_Enable(TIMER3,false);
+			timer_cycles=TIMER_CounterGet(TIMER3);
 		}
-		ref_count++;
 	}
 	else{
 		;
@@ -191,8 +219,6 @@ void GPIO_ODD_IRQHandler()	//par
 static void hal_io_init ()
 {
 
-	GPIO_PinModeSet(PWR_EN_PORT,RADIO_PWR_EN,gpioModePushPull,0);
-	GPIO_PinOutSet(PWR_EN_PORT,RADIO_PWR_EN);
 	spi_cs_set(radio);
 
 	GPIO_PinModeSet(RADIO_IO_0345_PORT, RADIO_IO_0, gpioModeInput, 0);	//DIO0=PayLoadReady
@@ -416,7 +442,7 @@ void hal_init ()
 
 void hal_failed ()
 {
-	rgb_on(true,false,false);
+	//rgb_on(true,false,false);
 	CORE_EXIT_ATOMIC();
 	debug_str("Failed");
 	spi_cs_clear(radio);

@@ -249,6 +249,7 @@ nav_data_t		parse_message(uint8_t data[]){
 	nano|=(data[offset+17]<<8);				//added later on
 	nano|=data[offset+16];					//added later on
 	nav_data.nano=(uint32_t)(nano);			//added later on
+	nav_data.fix=data[offset+20];			//added later later later on
 	nav_data.numSV=data[offset+23];			//added later on
 	nav_data.pDOP=data[offset+76];			//added later later on
 		//extract longitude
@@ -315,9 +316,9 @@ bool 			gps_init(void){
 		rs232_transmit_string(rs232_tx_buf,strlen((char *)rs232_tx_buf));
 	}while(1);
 					//configure and enter low power
-	flag_config_lp=config_low_power();
+	//flag_config_lp=config_low_power();
 	flag_sbas=disable_sbas();
-	flag_enter_lp=enter_low_power();
+	/*flag_enter_lp=enter_low_power();
 					//grid search delay....
 	for(loop_var=0;loop_var<25;loop_var++){
 		 delay_ms(10);
@@ -333,6 +334,12 @@ bool 			gps_init(void){
 	}
 	else{
 		return false;
+	}*/
+	if(flag_port==true && flag_sbas==true && flag_init==true){
+		return true;
+	}
+	else{
+		return false;
 	}
 }
 nav_data_t 		gps_get_nav_data (void){
@@ -344,53 +351,60 @@ nav_data_t 		gps_get_nav_data (void){
 	bool					flag_success=false;
 	uint8_t					msg_buf[90];
 
-	spi_cs_set(gps);
-	delay_ms(0);
-	spi_cs_clear(gps);
-	spi_read_write_byte(0xFF);
+
 	flag_success=false;
-	for(outer_loop_var=0;outer_loop_var<50;outer_loop_var++){
+	for(outer_loop_var=0;outer_loop_var<15;outer_loop_var++){
+		spi_cs_clear(gps);
+		spi_read_write_byte(0xFF);
 		for(inner_loop_var=0;inner_loop_var<(sizeof(nav_pvt_gps_data)/sizeof(uint8_t));inner_loop_var++){
 			spi_read_write_byte(nav_pvt_gps_data[inner_loop_var]);
 		}
 		retry=0;
-		while(1){
-			reply=spi_read_byte();
-			if(reply==0xB5){
-				msg_buf[0]=reply;
-				for(inner_loop_var=1;inner_loop_var<(88+1);inner_loop_var++){
-					reply=spi_read_byte();
-					msg_buf[inner_loop_var]=reply;
-					//delay_ms(0);
-				}
-				nav_data=parse_message(msg_buf);
-				flag_success=true;
+		flag_success=true;
+		while(spi_read_byte()!=0xB5){
+			retry++;
+			if(retry>1024){
+				flag_success=false;
 				break;
 			}
-			else{
-				retry++;
-				if(retry>RETRY){
-					delay_ms(0);
-					break;
-				}
-			}
-			delay_ms(0);
 		}
-		if(flag_success==true){break;}
+		if(flag_success){
+			msg_buf[0]=0xB5;
+			for(inner_loop_var=1;inner_loop_var<(88+1);inner_loop_var++){
+				reply=spi_read_byte();
+				msg_buf[inner_loop_var]=reply;
+			}
+			nav_data=parse_message(msg_buf);
+			if(nav_data.valid==false){
+				nav_data.valid=false;
+				nav_data.year=0;
+				nav_data.month=0;
+				nav_data.day=0;
+				nav_data.hour=0;
+				nav_data.min=0;
+				nav_data.sec=0;
+				nav_data.latitude=0;
+				nav_data.longitude=0;
+				nav_data.height=0;
+			}
+			break;
+		}
+		else {
+			nav_data.valid=false;
+			nav_data.year=0;
+			nav_data.month=0;
+			nav_data.day=0;
+			nav_data.hour=0;
+			nav_data.min=0;
+			nav_data.sec=0;
+			nav_data.latitude=0;
+			nav_data.longitude=0;
+			nav_data.height=0;
+		}
+		spi_cs_set(gps);
+
 	}
-	if(outer_loop_var>=50 || nav_data.valid==false ){
-		nav_data.valid=false;
-		nav_data.year=0;
-		nav_data.month=0;
-		nav_data.day=0;
-		nav_data.hour=0;
-		nav_data.min=0;
-		nav_data.sec=0;
-		nav_data.latitude=0;
-		nav_data.longitude=0;
-		nav_data.height=0;
-	}
-	spi_cs_set(gps);
+
 	return nav_data;
 }
 void 			gps_on(void){

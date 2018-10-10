@@ -8,23 +8,23 @@
 #ifndef SRC_APP_MANAGER_H_
 #define SRC_APP_MANAGER_H_
 
-#include "../devices_header/rgb_led.h"
 #include "../devices_header/tbr.h"
 #include "../devices_header/ublox_gps.h"
 #include "../fat_filesystem_header/ff.h"
 #include "../fat_filesystem_header/diskio.h"
+#include "../devices_header/led_and_switch.h"
 
 
 #define 	INIT_RETRIES	10
 
 #define 	USE_TBR 			true
-#define		USE_GPS				ture
+#define		USE_GPS				true
 #define		USE_SD_CARD			true
-#define		USE_RADIO			true
-#define 	BOTH_RADIO_SD_CARD	true		//app_manager.c => inside advance_synch_message function
-//#define 	SD_CARD_ONLY		true		//app_manager.c => inside advance_synch_message function
+//#define		USE_RADIO			true
+//#define 	BOTH_RADIO_SD_CARD	true		//app_manager.c => inside advance_synch_message function
+#define 	SD_CARD_ONLY		true		//app_manager.c => inside advance_synch_message function
 //#define		RADIO_ONLY			true
-//#define		USE_LORA_ACK		true
+//#define	USE_LORA_ACK		true
 	/*
 	 * shared variables
 	 */
