@@ -90,19 +90,29 @@
 
 	static void app_funct (osjob_t* j) {
 		time_manager_cmd_t		time_manager_cmd=basic_sync;
+		uint8_t					gps_state=0;
+
 				//add 10secs
 		ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
 				//get synch command type from time manager
 		time_manager_cmd=time_manager_get_cmd();
 				//update application manager
 		app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
+				//update Timestamps
+		gps_state=0;
+		running_tstamp=gps_get_nav_data();
+		if (running_tstamp.valid!=true){
+			running_tstamp=gps_get_nav_data();
+			gps_state=1;
+		}
+		if (running_tstamp.valid!=true){
+			gps_state=2;
+			running_tstamp=gps_get_nav_data();
+		}
+		running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
+															running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
 
 		if(time_manager_cmd==advance_sync){
-				//update Timestamps
-			running_tstamp=gps_get_nav_data();
-			running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
-																	running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
-			running_tstamp.gps_timestamp+=50;
 			if(diff_in_tstamp!=0){
 					sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 					debug_str(temp_buf);

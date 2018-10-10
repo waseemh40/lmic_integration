@@ -51,8 +51,6 @@ void BURTC_IRQHandler(void)
 		GPIO_PinOutToggle(LED_GPS_RADIO_PORT, LED_RADIO);
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
-				//sprintf(display_buffer,"\t\t\tOneSecTop=%d\tTimerCycles_3=%d\tDebug_var=%ld\tcount=%d\n",one_sec_top_ref,timer_cycles,debug_var,counter);
-				//debug_str(display_buffer);
 			 time_manager_cmd=advance_sync;
 			 	 //run time controller on GPS timestamp...
 			 if(running_tstamp.valid==true){
@@ -182,7 +180,6 @@ void GPIO_EVEN_IRQHandler()	//impar
 				LETIMER_Enable(LETIMER0,true);
 				letimer_running=true;
 				TIMER_CounterSet(TIMER3,0);
-				//timer_cycles=TIMER_CounterGet(TIMER0);
 				TIMER_Enable(TIMER3,true);
 		}
 		else{

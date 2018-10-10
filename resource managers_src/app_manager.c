@@ -268,11 +268,17 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
+		if(running_tstamp.valid==true){
+			append_gps_status(tbr_msg_buf,tbr_msg_count, running_tstamp);
+		}
+		else{
+			append_gps_status(tbr_msg_buf,tbr_msg_count, ref_timestamp);
+		}
 			//debug file entry
 		sprintf((char *)rs232_tx_buf,"TBR_Flag=%d\tRef_TS=%ld\tRunning_TS=%10d\tnano=%d\tTBR message count=%d,Cumulative detections=%d,Cumulative temperature=%d\n",temp_flag,ref_timestamp.gps_timestamp,running_tstamp.gps_timestamp,running_tstamp.nano,tbr_msg_count,cum_detections_counter,cum_temp_counter);
 		temp_flag=debug_file_sys_setup((char *)"debug",(char *)rs232_tx_buf);
 			//log file entry
-		temp_flag=log_file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_msg_buf);
+		temp_flag=log_file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
 		sprintf((char *)rs232_tx_buf,"Wrt Flg=%1d Lngth=%3d\n",temp_flag,tbr_msg_length);
 		//rs232_transmit_string(rs232_tx_buf,strlen((const char *)rs232_tx_buf));
 	  }
@@ -286,7 +292,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 			append_gps_status(tbr_msg_buf,tbr_msg_count, ref_timestamp);
 		}
 				//log file entry
-		sprintf((char *)rs232_tx_buf,"Timestamp=%10d,Lora buffer length=%d,TBR message count=%d,Cumulative detections=%d,Cumulative temperature=%d\n",running_tstamp.gps_timestamp,tbr_lora_length,tbr_msg_count,cum_detections_counter,cum_temp_counter);
+		sprintf((char *)rs232_tx_buf,"TBR_Flag=%d\tRef_TS=%ld\tRunning_TS=%10d\tnano=%d\tLora_buffer_length=%d\tTBR_message_count=%\tCumulative_detections=%d\tCumulative_temperature=%d\n",temp_flag,ref_timestamp.gps_timestamp,running_tstamp.gps_timestamp,running_tstamp.nano,tbr_lora_length,tbr_msg_count,cum_detections_counter,cum_temp_counter);
 		temp_flag=debug_file_sys_setup((char *)"debug",(char *)rs232_tx_buf);
 				//store buffer on SD card
 		temp_flag=log_file_sys_setup(ref_timestamp.year,ref_timestamp.month,ref_timestamp.day,tbr_sd_card_buf);
