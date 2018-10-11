@@ -275,11 +275,11 @@ nav_data_t		parse_message(uint8_t data[]){
 	height|=data[offset+36];
 	nav_data.height=(uint32_t)(height);
 		//status of gps
-	if(data[offset+20]==0x03){
-		nav_data.valid=true;
+	if(data[offset+20]==0x00){
+		nav_data.valid=false;
 	}
 	else{
-		nav_data.valid=false;
+		nav_data.valid=true;
 	}
 	return nav_data;
 }
