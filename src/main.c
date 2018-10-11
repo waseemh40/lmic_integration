@@ -79,8 +79,8 @@ int main() {
 			  ref_tstamp=gps_get_nav_data();
 			  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
 					  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
-			  if(ref_tstamp.valid==true && ref_tstamp.gps_timestamp%10==0){
-//			  if(ref_tstamp.valid==true){
+			  if(ref_tstamp.fix==0x03 && ref_tstamp.gps_timestamp%10==0){
+//			  if(ref_tstamp.fix==0x03){
 				  break;
 			  }
 		  }
@@ -115,12 +115,12 @@ int main() {
 			running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
 																running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
 
-			if(time_manager_cmd==advance_sync){
+			/*if(time_manager_cmd==advance_sync){
 				if(diff_in_tstamp!=0){
 						sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 						debug_str(rs232_tx_buf);
 				}
-			}
+			}*/
 			sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld\tCur=%ld\tdiff=%d\tnano=%ld\tGPS_fix=%2x\tgps_state=%d\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp,running_tstamp.nano,running_tstamp.fix,gps_state);
 			debug_str(rs232_tx_buf);
 		}

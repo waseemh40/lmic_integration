@@ -153,9 +153,9 @@ int		parse_message_tbr(char *buffer){
 		}
 		last_broken_message_flag=true;
 		last_broken_message_size=loop_var-outer_loop_var;
-		 debug_str("\t\t\t\tParse found and added half message...");
-		 debug_str(broken_msg_buf);
-		 debug_char('\n');
+		 //debug_str("\t\t\t\tParse found and added half message...");
+		 //debug_str(broken_msg_buf);
+		 //debug_char('\n');
 	}
 	n_converted_tokens=0;
 
@@ -184,9 +184,9 @@ int		parse_message_tbr(char *buffer){
 						 incomplete_ack_flag=true;
 					}
 					else{
-						 debug_str("\t\t\t!!!Parse discarding unknown message type!!!");
-						 debug_str(token_str);
-						 debug_char('\n');
+						 //debug_str("\t\t\t!!!Parse discarding unknown message type!!!");
+						 //debug_str(token_str);
+						 //debug_char('\n');
 					}
 					n_converted_tokens++;
 					if(n_converted_tokens>=n_complete_messages){
@@ -429,12 +429,12 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 			tbr_backoff_delay=6;
 			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
 		}
-		if(ret_flag){
+		/*if(ret_flag){
 			debug_str("\t\tTBR ACK received\n");
 		}
 		else {
 			debug_str("\t\tTBR ACK NOT received\n");
-		}
+		}*/
 
 	}
 	else if(tbr_cmd==cmd_advance_sync){
@@ -454,12 +454,12 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 			tbr_backoff_delay=6;
 			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
 		}
-		if(ret_flag){
+		/*if(ret_flag){
 			debug_str("\t\tTBR ACK received\n");
 		}
 		else {
 			debug_str("\t\tTBR ACK NOT received\n");
-		}
+		}*/
 
 	}
 	else{

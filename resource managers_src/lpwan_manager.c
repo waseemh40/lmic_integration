@@ -113,10 +113,10 @@
 															running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
 
 		if(time_manager_cmd==advance_sync){
-			if(diff_in_tstamp!=0){
+			/*if(diff_in_tstamp!=0){
 					sprintf(temp_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
 					debug_str(temp_buf);
-			}
+			}*/
 //			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
 //			if(lora_msg_length>0){
 //				sprintf(temp_buf,"LoRa message length=%d MSG=\n",lora_msg_length);
@@ -164,7 +164,8 @@
 				  ref_tstamp=gps_get_nav_data();
 				  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
 						  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
-				  if(ref_tstamp.valid==true && ref_tstamp.gps_timestamp%10==0){
+				  if(ref_tstamp.fix==0x03 && ref_tstamp.gps_timestamp%10==0){
+	//			  if(ref_tstamp.fix==0x03){
 					  break;
 				  }
 			  }

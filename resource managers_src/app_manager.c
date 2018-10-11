@@ -74,7 +74,7 @@ bool tbr_cmd_update_rgb_led(tbr_cmd_t tbr_cmd, time_t timestamp){
 	else{
 		rgb_on(true,false,false);
 	}
-	delay_ms(7);
+	delay_ms(6);
 	rgb_shutdown();
 	return ret_flag;
 }
@@ -169,7 +169,7 @@ void append_gps_status(char *tbr_msg_buf, int tbr_msg_count, nav_data_t nav_data
 					break;
 				}
 			}
-			debug_str(temp_single_appended_msg_buf);
+			//debug_str(temp_single_appended_msg_buf);
 		}
 	}
 }
@@ -260,11 +260,9 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp.gps_timestamp);
-		delay_ms(5);
 	}
 	else if (time_manager_cmd==1){
 	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp.gps_timestamp);
-	  delay_ms(5);
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
