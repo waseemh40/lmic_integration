@@ -44,6 +44,7 @@ int main() {
 	display_clear();
 	display_put_string(3,3,"Init...\n\n",font_medium);
 	display_update();
+
 	if(app_manager_init()){
 		debug_str((const u1_t*)"\tInit Successful\t\n");
 		display_put_string(3,3,"\tSuccessful",font_medium);

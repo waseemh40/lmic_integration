@@ -248,13 +248,11 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 		while(reply!=0xFE){
 			reply=spi_read_write_byte(0xFF);
 			outer_loop_var++;
-			delay_ms(3);	//delay_ms(7);
-			if(outer_loop_var==10){
+			if(outer_loop_var==100){
 				flag =false;
 				break;
 			}
 		}
-		delay_ms(3);	//7
 		if (flag==true){
 			for(outer_loop_var=0;outer_loop_var<SD_CARD_BLOCK_SIZE+2;outer_loop_var++){
 				if(outer_loop_var<SD_CARD_BLOCK_SIZE){
@@ -266,51 +264,8 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 			}
 		}
 		end_transfer();
-		delay_ms(3);	//
 		addr++;
 	}
-	/*	//CMD17 and response
-	start_transfer();
-	spi_write_byte(0xFF);
-	spi_write_byte(CMD_17);
-	spi_write_byte((uint8_t)(addr>>24));
-	spi_write_byte((uint8_t)(addr>>16));
-	spi_write_byte((uint8_t)(addr>>8));
-	spi_write_byte((uint8_t)(addr>>0));
-	spi_write_byte(0xFF);	//CRC
-	reply=0xFF;
-	outer_loop_var=0;
-	while(reply!=0x00){
-		reply=spi_read_write_byte(0xFF);
-		outer_loop_var++;
-		if(outer_loop_var==10){
-			flag =false;
-			break;
-		}
-	}
-	reply=0xFF;
-	outer_loop_var=0;
-	while(reply!=0xFE){
-		reply=spi_read_write_byte(0xFF);
-		outer_loop_var++;
-		delay_ms(7);
-		if(outer_loop_var==10){
-			flag =false;
-			break;
-		}
-	}
-	delay_ms(7);
-	if (flag==true){
-		for(outer_loop_var=0;outer_loop_var<SD_CARD_BLOCK_SIZE+2;outer_loop_var++){
-			if(outer_loop_var<SD_CARD_BLOCK_SIZE){
-			read_buf[outer_loop_var]=(char)spi_read_write_byte(0xFF);
-			}
-			else{
-				spi_read_write_byte(0xFF);	//discard CRC
-			}
-		}
-	}
-	end_transfer();*/
 	return flag;
 }
 
@@ -320,10 +275,10 @@ bool sd_card_write(uint32_t addr, char *write_buf,uint32_t scetor_count){
 	uint8_t	reply=0;
 	bool 	flag=true;
 
-	for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
+	//for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
 		start_transfer();
 		spi_write_byte(0xFF);
-		spi_write_byte(CMD_24);
+		spi_write_byte(CMD_25);
 		spi_write_byte((uint8_t)(addr>>24));
 		spi_write_byte((uint8_t)(addr>>16));
 		spi_write_byte((uint8_t)(addr>>8));
@@ -331,65 +286,40 @@ bool sd_card_write(uint32_t addr, char *write_buf,uint32_t scetor_count){
 		spi_write_byte(0xFF);	//CRC
 		reply=0xFF;
 		outer_loop_var=0;
+			//CMD response
 		while(reply!=0x00){
 			reply=spi_read_write_byte(0xFF);
 			outer_loop_var++;
-			if(outer_loop_var==10){
+			if(outer_loop_var>=100){
 				flag =false;
 				break;
 			}
 		}
+		//////////////////////
 		spi_write_byte(0xFF);		//1 byte gap
-		spi_write_byte(0xFE);
+		spi_write_byte(DATA_TKN_25);		//???
+			//write data packet
 		if(flag==true){
-			for(outer_loop_var=0;outer_loop_var<SD_CARD_BLOCK_SIZE+2;outer_loop_var++){
-				spi_read_write_byte((uint8_t)write_buf[outer_loop_var]);
+			for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
+					//actual packet
+				for(outer_loop_var=0;outer_loop_var<SD_CARD_BLOCK_SIZE+2;outer_loop_var++){
+					spi_read_write_byte((uint8_t)write_buf[outer_loop_var]);
+					}
+					//repnose
+				while(1){
+					reply=spi_read_write_byte(0xFF);
+					if(reply==0xFF){
+						break;
+					}
 				}
-			while(1){
-				reply=spi_read_write_byte(0xFF);
-				if(reply==0xFF){
-					break;
-				}
-				delay_ms(3);	//7
 			}
 		}
+		spi_write_byte(STOP_TOKEN);		//???
+		spi_write_byte(0xFF);		//???
+		while(!spi_read_write_byte(0xFF));
 		end_transfer();
-		addr++;
-		delay_ms(3);		//7
-	}
-/*	start_transfer();
-	spi_write_byte(0xFF);
-	spi_write_byte(CMD_24);
-	spi_write_byte((uint8_t)(addr>>24));
-	spi_write_byte((uint8_t)(addr>>16));
-	spi_write_byte((uint8_t)(addr>>8));
-	spi_write_byte((uint8_t)(addr>>0));
-	spi_write_byte(0xFF);	//CRC
-	reply=0xFF;
-	outer_loop_var=0;
-	while(reply!=0x00){
-		reply=spi_read_write_byte(0xFF);
-		outer_loop_var++;
-		if(outer_loop_var==10){
-			flag =false;
-			break;
-		}
-	}
-	spi_write_byte(0xFF);		//1 byte gap
-	spi_write_byte(0xFE);
-	if(flag==true){
-		for(outer_loop_var=0;outer_loop_var<SD_CARD_BLOCK_SIZE+2;outer_loop_var++){
-			spi_read_write_byte((uint8_t)write_buf[outer_loop_var]);
-			}
-		while(1){
-			reply=spi_read_write_byte(0xFF);
-			if(reply==0xFF){
-				break;
-			}
-			delay_ms(7);
-		}
-	}
-	end_transfer();*/
+		//addr++;
+	//}
 	return flag;
 }
 
