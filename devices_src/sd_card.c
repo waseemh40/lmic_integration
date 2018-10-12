@@ -7,6 +7,7 @@
 
 #include "../devices_header/sd_card.h"
 
+static	uint8_t 	sector_erase_size=0;
 /*
  * private functions
  */
@@ -41,7 +42,7 @@ void send_cmd(uint8_t cmd){
 		spi_write_byte(ARG_0);
 		spi_write_byte(ARG_0);
 		spi_write_byte(ARG_0);
-		spi_write_byte(ARG_0);
+		spi_write_byte(0xff);//ARG_0
 		break;
 	}
 	case CMD_8:{
@@ -94,6 +95,16 @@ void send_cmd(uint8_t cmd){
 		spi_write_byte(CRC_58);
 		break;
 	}
+	case CMD_23:{
+		spi_write_byte(0xFF);
+		spi_write_byte(CMD_23);
+		spi_write_byte(ARG_0);
+		spi_write_byte(ARG_0);
+		spi_write_byte(ARG_0);
+		spi_write_byte(sector_erase_size);
+		spi_write_byte(0xff);
+		break;
+	}
 	default:{
 		spi_write_byte(0xFF);
 		break;
@@ -103,7 +114,18 @@ void send_cmd(uint8_t cmd){
 }
 
 
-
+void set_sector_size(uint8_t size){
+		//ACMD_23 and response
+	start_transfer();
+	send_cmd(CMD_55);
+	while(spi_read_write_byte(0xFF)==0xff);		//Modification for Kingston...
+	end_transfer();
+	sector_erase_size=size;
+	start_transfer();
+	send_cmd(CMD_23);
+	while(spi_read_write_byte(0xFF)==0xff);
+	end_transfer();
+}
 /*
  * public functions
  */
@@ -174,7 +196,7 @@ bool sd_card_init(void){
 			inner_loop_var++;
 			if(inner_loop_var>3){break;}
 		}
-		delay_ms(7);
+		//delay_ms(7);
 		outer_loop_var++;
 		if(outer_loop_var>=100){
 			end_transfer();
@@ -220,11 +242,77 @@ void sd_card_off(void){
 }
 
 bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
-	int 	outer_loop_var=0;
-	int 	inner_loop_var=0;
-	uint8_t	reply=0;
-	bool 	flag=true;
-	for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
+	int 		outer_loop_var=0;
+	int 		inner_loop_var=0;
+	uint32_t	offset=0;
+	uint8_t		reply=0;
+	bool 		flag=true;
+
+	start_transfer();
+	spi_write_byte(0xFF);
+	spi_write_byte(CMD_18);
+	spi_write_byte((uint8_t)(addr>>24));
+	spi_write_byte((uint8_t)(addr>>16));
+	spi_write_byte((uint8_t)(addr>>8));
+	spi_write_byte((uint8_t)(addr>>0));
+	spi_write_byte(0xFF);	//CRC
+	reply=0xFF;
+	outer_loop_var=0;
+	while(reply!=0x00){
+		reply=spi_read_write_byte(0xFF);
+		outer_loop_var++;
+		if(outer_loop_var==10){
+			flag =false;
+			break;
+		}
+	}
+	offset=0;
+	if(flag==true){
+		for(outer_loop_var=0;outer_loop_var<scetor_count;outer_loop_var++){
+			inner_loop_var=0;
+			reply=0xFF;
+			while(reply!=0xFE){
+				reply=spi_read_write_byte(0xFF);
+				inner_loop_var++;
+				if(inner_loop_var==100){
+					flag =false;
+					break;
+					spi_write_byte(CMD_12);
+					spi_write_byte((uint8_t)(ARG_0));
+					spi_write_byte((uint8_t)(ARG_0));
+					spi_write_byte((uint8_t)(ARG_0));
+					spi_write_byte((uint8_t)(ARG_0));
+					spi_write_byte(0xFF);	//CRC
+					end_transfer();
+					return flag;
+				}
+			}
+				//actual packet
+			for(inner_loop_var=0;inner_loop_var<SD_CARD_BLOCK_SIZE+2;inner_loop_var++){
+				if(inner_loop_var<SD_CARD_BLOCK_SIZE){
+				read_buf[inner_loop_var+offset]=(char)spi_read_write_byte(0xFF);
+				}
+				else{
+					spi_read_write_byte(0xFF);	//discard CRC
+				}
+			}
+			offset=SD_CARD_BLOCK_SIZE;
+		}
+
+		spi_write_byte(CMD_12);
+		spi_write_byte((uint8_t)(ARG_0));
+		spi_write_byte((uint8_t)(ARG_0));
+		spi_write_byte((uint8_t)(ARG_0));
+		spi_write_byte((uint8_t)(ARG_0));
+		spi_write_byte(0xFF);	//CRC
+
+		while(spi_read_write_byte(0xFF)!=0x00);	//1-8 bytes and afterwards 00
+		spi_read_write_byte(0xFF);
+		while(spi_read_write_byte(0xFF)!=0xFF);	//afterwards 0xff
+
+	}
+	end_transfer();
+/*	for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
 		start_transfer();
 		spi_write_byte(0xFF);
 		spi_write_byte(CMD_17);
@@ -266,6 +354,7 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 		end_transfer();
 		addr++;
 	}
+	*/
 	return flag;
 }
 
@@ -275,6 +364,7 @@ bool sd_card_write(uint32_t addr, char *write_buf,uint32_t scetor_count){
 	uint8_t	reply=0;
 	bool 	flag=true;
 
+	set_sector_size((uint8_t)scetor_count);
 	//for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
 		start_transfer();
 		spi_write_byte(0xFF);

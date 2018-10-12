@@ -23,6 +23,8 @@
 #define 	CMD_12		0x4C
 #define 	CMD_16		0x50
 #define 	CMD_17		0x51
+#define 	CMD_18		0x52
+#define 	CMD_23		0x57
 #define 	CMD_24		0x58
 #define 	CMD_25		0x59
 #define 	CMD_41		0x69
