@@ -115,15 +115,30 @@ void send_cmd(uint8_t cmd){
 
 
 void set_sector_size(uint8_t size){
+	uint8_t retry=0;
 		//ACMD_23 and response
 	start_transfer();
 	send_cmd(CMD_55);
-	while(spi_read_write_byte(0xFF)==0xff);		//Modification for Kingston...
+	retry=0;
+	while(spi_read_write_byte(0xFF)==0xff){
+		retry++;
+		if(retry>500){
+			end_transfer();
+			return;
+		}
+	}
 	end_transfer();
 	sector_erase_size=size;
 	start_transfer();
 	send_cmd(CMD_23);
-	while(spi_read_write_byte(0xFF)==0xff);
+	retry=0;
+	while(spi_read_write_byte(0xFF)==0xff){
+		retry++;
+		if(retry>500){
+			end_transfer();
+			return;
+		}
+	}
 	end_transfer();
 }
 /*
@@ -247,6 +262,7 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 	uint32_t	offset=0;
 	uint8_t		reply=0;
 	bool 		flag=true;
+	uint32_t	retry=0;
 
 	start_transfer();
 	spi_write_byte(0xFF);
@@ -306,9 +322,23 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 		spi_write_byte((uint8_t)(ARG_0));
 		spi_write_byte(0xFF);	//CRC
 
-		while(spi_read_write_byte(0xFF)!=0x00);	//1-8 bytes and afterwards 00
+			retry=0;
+		while(spi_read_write_byte(0xFF)!=0x00){
+			retry++;
+			if(retry>500){
+				flag=false;
+				break;
+			}
+		}	//1-8 bytes and afterwards 00
 		spi_read_write_byte(0xFF);
-		while(spi_read_write_byte(0xFF)!=0xFF);	//afterwards 0xff
+		retry=0;
+		while(spi_read_write_byte(0xFF)!=0xFF){
+			retry++;
+			if(retry>500){
+				flag=false;
+				break;
+			}
+		}	//afterwards 0xff
 
 	}
 	end_transfer();
@@ -363,6 +393,7 @@ bool sd_card_write(uint32_t addr, char *write_buf,uint32_t scetor_count){
 	int 	inner_loop_var=0;
 	uint8_t	reply=0;
 	bool 	flag=true;
+	uint8_t	retry=0;
 
 	set_sector_size((uint8_t)scetor_count);
 	//for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
@@ -389,6 +420,7 @@ bool sd_card_write(uint32_t addr, char *write_buf,uint32_t scetor_count){
 		spi_write_byte(0xFF);		//1 byte gap
 		spi_write_byte(DATA_TKN_25);		//???
 			//write data packet
+		retry=0;
 		if(flag==true){
 			for(inner_loop_var=0;inner_loop_var<scetor_count;inner_loop_var++){
 					//actual packet
@@ -401,12 +433,26 @@ bool sd_card_write(uint32_t addr, char *write_buf,uint32_t scetor_count){
 					if(reply==0xFF){
 						break;
 					}
+					else{
+						retry++;
+						if(retry>500){
+							flag=false;
+							break;
+						}
+					}
 				}
 			}
 		}
 		spi_write_byte(STOP_TOKEN);		//???
 		spi_write_byte(0xFF);		//???
-		while(!spi_read_write_byte(0xFF));
+		retry=0;
+		while(!spi_read_write_byte(0xFF)){
+			retry++;
+			if(retry>500){
+				flag=false;
+				break;
+			}
+		}
 		end_transfer();
 		//addr++;
 	//}

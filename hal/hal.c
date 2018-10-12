@@ -126,11 +126,11 @@ void 		time_manager_init(void){
 	LETIMER_Reset(LETIMER0);
 	LETIMER_Init(LETIMER0,&letimer_init);
 
-	TIMER_Init_TypeDef PWMTimerInit = TIMER_INIT_DEFAULT;
-  	PWMTimerInit.enable=false;
-  	PWMTimerInit.prescale=timerPrescale256;
-	CMU_ClockEnable(cmuClock_TIMER3, true);
-	TIMER_Init(TIMER3, &PWMTimerInit);
+	//TIMER_Init_TypeDef PWMTimerInit = TIMER_INIT_DEFAULT;
+  	//PWMTimerInit.enable=false;
+  	//PWMTimerInit.prescale=timerPrescale256;
+	//CMU_ClockEnable(cmuClock_TIMER3, true);
+	//TIMER_Init(TIMER3, &PWMTimerInit);
 		//start BURTC
 		BURTC_Enable(true);
     return;
@@ -179,12 +179,12 @@ void GPIO_EVEN_IRQHandler()	//impar
 				LETIMER0->CMD=LETIMER_CMD_CLEAR;
 				LETIMER_Enable(LETIMER0,true);
 				letimer_running=true;
-				TIMER_CounterSet(TIMER3,0);
-				TIMER_Enable(TIMER3,true);
+				//TIMER_CounterSet(TIMER3,0);
+				//TIMER_Enable(TIMER3,true);
 		}
 		else{
 			LETIMER_Enable(LETIMER0,false);
-			avergae_sum+=(65535-LETIMER_CounterGet(LETIMER0));
+			avergae_sum+=(65537-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
 			counter++;
 			letimer_running=false;
 			if(counter>=BASE_2_N){
@@ -193,8 +193,8 @@ void GPIO_EVEN_IRQHandler()	//impar
 				avergae_sum=0;
 				counter=0;
 			}
-			TIMER_Enable(TIMER3,false);
-			timer_cycles=TIMER_CounterGet(TIMER3);
+			//TIMER_Enable(TIMER3,false);
+			//timer_cycles=TIMER_CounterGet(TIMER3);
 		}
 	}
 	else{

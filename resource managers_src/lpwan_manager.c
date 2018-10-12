@@ -160,7 +160,7 @@
 			  rgb_shutdown();
 			  setup_channel();						//setup channel....
 			  while(1){
-				  delay_ms(7);
+				  delay_ms(3);
 				  ref_tstamp=gps_get_nav_data();
 				  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
 						  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
