@@ -52,7 +52,7 @@ void BURTC_IRQHandler(void)
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
-			 	 //run time controller on GPS timestamp...
+/*			 	 //run time controller on GPS timestamp...
 			 if(running_tstamp.valid==true){
 				 diff_in_tstamp=(int)((uint32_t)(running_tstamp.gps_timestamp)-(uint32_t)(ref_tstamp.gps_timestamp));
 				 if(diff_in_tstamp>=10){
@@ -63,7 +63,9 @@ void BURTC_IRQHandler(void)
 			 else {
 				 time_count=0;
 			 }
-			 time_count=0;
+*/
+		 diff_in_tstamp=(int)((uint32_t)(running_tstamp.gps_timestamp)-(uint32_t)(ref_tstamp.gps_timestamp));
+		 time_count=0;
 				//wakeup
 #ifdef SD_CARD_ONLY
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
@@ -184,7 +186,7 @@ void GPIO_EVEN_IRQHandler()	//impar
 		}
 		else{
 			LETIMER_Enable(LETIMER0,false);
-			avergae_sum+=(65537-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
+			avergae_sum+=(65536-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
 			counter++;
 			letimer_running=false;
 			if(counter>=BASE_2_N){

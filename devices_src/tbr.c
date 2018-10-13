@@ -225,7 +225,7 @@ bool get_and_compare(char *compare_string){
 	bool			ret_flag=false;
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	tbr_backoff_delay=4;
+	tbr_backoff_delay=6;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
