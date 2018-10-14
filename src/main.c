@@ -10,7 +10,7 @@ uint8_t			lora_msg_length=0;
 #else
 nav_data_t	 	running_tstamp;
 nav_data_t	 	ref_tstamp;
-int				diff_in_tstamp;
+int				diff_in_tstamp=0;
 #endif
 
 static 			unsigned char  		display_buffer[512];
@@ -93,16 +93,11 @@ int main() {
 		RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 		time_manager_init();
 		while(1){
-				//goto sleep
-			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-			EMU_EnterEM1();
-					//add 10secs
-			ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
 					//get synch command type from time manager
 			time_manager_cmd=time_manager_get_cmd();
 					//update application manager
 			app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
-			//update Timestamps
+					//update Timestamps
 			gps_state=0;
 			running_tstamp=gps_get_nav_data();
 			if (running_tstamp.valid!=true){
@@ -122,8 +117,14 @@ int main() {
 						debug_str(rs232_tx_buf);
 				}
 			}*/
+			diff_in_tstamp= (int)(running_tstamp.gps_timestamp-running_tstamp.gps_timestamp);
 			sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld\tCur=%ld\tdiff=%d\tnano=%ld\tGPS_fix=%2x\tgps_state=%d\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp,running_tstamp.nano,running_tstamp.fix,gps_state);
 			debug_str(rs232_tx_buf);
+				//add 10secs
+			ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
+				//goto sleep
+			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+			EMU_EnterEM1();
 		}
 #endif
   }

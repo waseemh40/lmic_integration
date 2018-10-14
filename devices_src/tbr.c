@@ -225,7 +225,7 @@ bool get_and_compare(char *compare_string){
 	bool			ret_flag=false;
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	tbr_backoff_delay=6;
+	tbr_backoff_delay=8;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
@@ -242,11 +242,11 @@ bool get_and_compare(char *compare_string){
 	 }
 	incomplete_ack_flag=false;
 	check_other_messages(cmd_rx_tx_buf);
-	 if(ret_flag==false){
+	 /*if(ret_flag==false){
 		 if(incomplete_ack_flag==true){
 			 ret_flag=true;
 		 }
-	 }
+	 }*/
 	return ret_flag;
 }
 
@@ -419,12 +419,12 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		sprintf((char *)cmd_tx_buf,"(+)\n");
 		rs485_transmit_string(cmd_tx_buf,3);
 		ret_flag=get_and_compare((char *)"ack01\r");			//changed from 01
-		if (!ret_flag){
+		/*if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
 		}
 		if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
-		}
+		}*/
 		/*if(ret_flag){
 			debug_str("\t\tTBR ACK received\n");
 		}
@@ -441,12 +441,12 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
 		rs485_transmit_string(cmd_tx_buf,temp_var-1);
 		ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
-		if (!ret_flag){
+		/*if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
 		}
 		if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
-		}
+		}*/
 		/*if(ret_flag){
 			debug_str("\t\tTBR ACK received\n");
 		}
