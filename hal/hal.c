@@ -14,8 +14,8 @@
 #include "../resource managers_header/app_manager.h"
 
 
-#define N_SAMPLES 		4
-#define BASE_2_N 		16		//-1 done inside if...
+#define N_SAMPLES 		2
+#define BASE_2_N 		4		//-1 done inside if...
 
 #define FREQ_TOLERANCE	50		//+- value for top of sec
 #define FREQ_TOP		32768
@@ -65,10 +65,6 @@ void BURTC_IRQHandler(void)
 		 else {
 			 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
 				 time_manager_cmd=basic_sync;
-			 	 	 //update clock...
-				 if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
-					 BURTC_CompareSet(0,one_sec_top_ref);
-				 }
 				 	 //wakeup
 #ifdef SD_CARD_ONLY
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
@@ -173,7 +169,7 @@ void GPIO_EVEN_IRQHandler()	//impar
 		}
 		else{
 			LETIMER_Enable(LETIMER0,false);
-			avergae_sum+=(65535-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
+			avergae_sum+=(65536-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
 			counter++;
 			letimer_running=false;
 			if(counter>=BASE_2_N){
@@ -181,6 +177,10 @@ void GPIO_EVEN_IRQHandler()	//impar
 				debug_var=avergae_sum;
 				avergae_sum=0;
 				counter=0;
+		 	 	 //update clock...
+				if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
+					BURTC_CompareSet(0,one_sec_top_ref);
+				}
 			}
 			//TIMER_Enable(TIMER3,false);
 			//timer_cycles=TIMER_CounterGet(TIMER3);

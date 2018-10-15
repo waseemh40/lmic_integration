@@ -75,6 +75,7 @@ int main() {
 		uint8_t					gps_state=0;
 
 		debug_str((const u1_t*)"\t\tNo radio version started\n");
+		RMU_ResetControl(rmuResetBU, rmuResetModeClear);
 		  while(1){
 			  delay_ms(3);
 			  ref_tstamp=gps_get_nav_data();
@@ -85,14 +86,18 @@ int main() {
 				  break;
 			  }
 		  }
-		display_clear();
-		sprintf(display_buffer,"\tNo radio version\nExecuting loop...\nTS=%ld\n",ref_tstamp.gps_timestamp);
-		display_put_string(3,3,display_buffer,font_medium);
-		display_update();
-		set_status_led(false,false);
-		RMU_ResetControl(rmuResetBU, rmuResetModeClear);
+		//display_clear();
+		//sprintf(display_buffer,"\tNo radio version\nExecuting loop...\nTS=%ld\n",ref_tstamp.gps_timestamp);
+		//display_put_string(3,3,display_buffer,font_medium);
+		//display_update();
+		//set_status_led(false,false);
 		time_manager_init();
 		while(1){
+					//goto sleep
+			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+			EMU_EnterEM1();
+					//add 10secs
+			ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
 					//get synch command type from time manager
 			time_manager_cmd=time_manager_get_cmd();
 					//update application manager
@@ -117,14 +122,9 @@ int main() {
 						debug_str(rs232_tx_buf);
 				}
 			}*/
-			diff_in_tstamp= (int)(running_tstamp.gps_timestamp-running_tstamp.gps_timestamp);
-			sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld\tCur=%ld\tdiff=%d\tnano=%ld\tGPS_fix=%2x\tgps_state=%d\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp,running_tstamp.nano,running_tstamp.fix,gps_state);
+			diff_in_tstamp= (int)(ref_tstamp.gps_timestamp-running_tstamp.gps_timestamp);
+			sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld\tCur=%ld\tdiff=%d\tnano=%ld\ttAcc=%ld\tGPS_fix=%2x\tgps_state=%d\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp,running_tstamp.nano,running_tstamp.tAcc,running_tstamp.fix,gps_state);
 			debug_str(rs232_tx_buf);
-				//add 10secs
-			ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
-				//goto sleep
-			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-			EMU_EnterEM1();
 		}
 #endif
   }
