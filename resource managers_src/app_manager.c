@@ -277,7 +277,7 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 			append_gps_status(tbr_msg_buf,tbr_msg_count, ref_timestamp_local_function);
 		}
 			//log file entry
-		sprintf((char *)rs232_tx_buf,"TBR_Flag=%d\tRef_TS=%ld\tRunning_TS=%10d\tnano=%ld\ttAcc=%ld\tTBR message count=%d,Cumulative detections=%d,Cumulative temperature=%d\n",temp_flag,ref_timestamp_local_function.gps_timestamp,running_tstamp_local_function.gps_timestamp,running_tstamp_local_function.nano,running_tstamp_local_function.tAcc,tbr_msg_count,cum_detections_counter,cum_temp_counter);
+		sprintf((char *)rs232_tx_buf,"TBR_Flag=%d\tRef_TS=%ld\tRunning_TS=%10d\tnano=%ld\ttAcc=%ld\tTBR message count=%d\tCumulative detections=%d\tCumulative temperature=%d\n",temp_flag,ref_timestamp_local_function.gps_timestamp,running_tstamp_local_function.gps_timestamp,running_tstamp_local_function.nano,running_tstamp_local_function.tAcc,tbr_msg_count,cum_detections_counter,cum_temp_counter);
 		temp_flag=debug_file_sys_setup((char *)"debug",(char *)rs232_tx_buf);
 			//store buffer on SD card
 		temp_flag=log_file_sys_setup(ref_timestamp_local_function.year,ref_timestamp_local_function.month,ref_timestamp_local_function.day,tbr_sd_card_buf);

@@ -76,21 +76,27 @@ int main() {
 
 		debug_str((const u1_t*)"\t\tNo radio version started\n");
 		RMU_ResetControl(rmuResetBU, rmuResetModeClear);
+		gps_poll_nav_status();
 		  while(1){
-			  delay_ms(3);
 			  ref_tstamp=gps_get_nav_data();
 			  ref_tstamp.gps_timestamp=time_manager_unixTimestamp(ref_tstamp.year,ref_tstamp.month,ref_tstamp.day,
 					  	  	  	  	  	  	  	  	  	  	  	  	 ref_tstamp.hour,ref_tstamp.min,ref_tstamp.sec);
-			  if(ref_tstamp.fix==0x03 && ref_tstamp.gps_timestamp%10==0){
-//			  if(ref_tstamp.fix==0x03){
-				  break;
+			  if(ref_tstamp.valid==false){
+				  gps_state++;
+				  if(gps_state>10){
+					  debug_str("GPS double polling scenario\n");
+					  gps_poll_nav_status();
+				  }
+			  }
+			  else {
+				  if(ref_tstamp.fix==0x03 && ref_tstamp.gps_timestamp%10==0){
+					  break;
+				  }
+				  else {
+						gps_poll_nav_status();
+				  }
 			  }
 		  }
-		//display_clear();
-		//sprintf(display_buffer,"\tNo radio version\nExecuting loop...\nTS=%ld\n",ref_tstamp.gps_timestamp);
-		//display_put_string(3,3,display_buffer,font_medium);
-		//display_update();
-		//set_status_led(false,false);
 		time_manager_init();
 		while(1){
 					//goto sleep
@@ -102,29 +108,24 @@ int main() {
 			time_manager_cmd=time_manager_get_cmd();
 					//update application manager
 			app_manager_tbr_synch_msg(time_manager_cmd,ref_tstamp,running_tstamp,diff_in_tstamp);
-					//update Timestamps
-			gps_state=0;
-			running_tstamp=gps_get_nav_data();
-			if (running_tstamp.valid!=true){
+						//update Timestamps
+				gps_state=0;
+				gps_poll_nav_status();
 				running_tstamp=gps_get_nav_data();
-				gps_state=1;
-			}
-			if (running_tstamp.valid!=true){
-				gps_state=2;
-				running_tstamp=gps_get_nav_data();
-			}
-			running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
-																running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
-
-			/*if(time_manager_cmd==advance_sync){
-				if(diff_in_tstamp!=0){
-						sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld Cur=%ld diff=%d\t\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp);
-						debug_str(rs232_tx_buf);
+				if (running_tstamp.valid!=true){
+					running_tstamp=gps_get_nav_data();
+					gps_state=1;
 				}
-			}*/
-			diff_in_tstamp= (int)(ref_tstamp.gps_timestamp-running_tstamp.gps_timestamp);
-			sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld\tCur=%ld\tdiff=%d\tnano=%ld\ttAcc=%ld\tGPS_fix=%2x\tgps_state=%d\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp,running_tstamp.nano,running_tstamp.tAcc,running_tstamp.fix,gps_state);
-			debug_str(rs232_tx_buf);
+				if (running_tstamp.valid!=true){
+					gps_state=2;
+					running_tstamp=gps_get_nav_data();
+				}
+				running_tstamp.gps_timestamp=time_manager_unixTimestamp(running_tstamp.year,running_tstamp.month,running_tstamp.day,
+																	running_tstamp.hour,running_tstamp.min,running_tstamp.sec);
+
+				diff_in_tstamp= (int)(ref_tstamp.gps_timestamp-running_tstamp.gps_timestamp);
+				sprintf(rs232_tx_buf,"\t\t\tTime Diff:Ref=%ld\tCur=%ld\tdiff=%d\tmin=%d\tsec=%d\tnano=%ld\ttAcc=%ld\tGPS_fix=%2x\tgps_state=%d\n",(time_t)ref_tstamp.gps_timestamp,(time_t)running_tstamp.gps_timestamp,diff_in_tstamp,running_tstamp.min,running_tstamp.sec,running_tstamp.nano,running_tstamp.tAcc,running_tstamp.fix,gps_state);
+				debug_str(rs232_tx_buf);
 		}
 #endif
   }

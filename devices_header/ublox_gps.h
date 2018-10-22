@@ -66,5 +66,6 @@ void 			gps_off(void);
 bool			gps_init(void);
 bool			gps_status(void);
 bool 			gps_low_power(void);
+void 			gps_poll_nav_status (void);
 nav_data_t 		gps_get_nav_data(void);
 #endif /* SRC_UBLOX_GPS_H_ */

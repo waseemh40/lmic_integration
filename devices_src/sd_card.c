@@ -277,7 +277,7 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 	while(reply!=0x00){
 		reply=spi_read_write_byte(0xFF);
 		outer_loop_var++;
-		if(outer_loop_var==10){
+		if(outer_loop_var>=10){
 			flag =false;
 			break;
 		}
@@ -290,7 +290,7 @@ bool sd_card_read(uint32_t addr, char *read_buf,uint32_t scetor_count){
 			while(reply!=0xFE){
 				reply=spi_read_write_byte(0xFF);
 				inner_loop_var++;
-				if(inner_loop_var==100){
+				if(inner_loop_var>=100){
 					flag =false;
 					break;
 					spi_write_byte(CMD_12);
@@ -477,7 +477,7 @@ bool sd_card_specs(char *csd){
 	while(reply!=0x00){
 		reply=spi_read_write_byte(0xFF);
 		outer_loop_var++;
-		if(outer_loop_var==10){
+		if(outer_loop_var>=10){
 			flag =false;
 			break;
 		}
@@ -487,7 +487,7 @@ bool sd_card_specs(char *csd){
 	while(reply!=0xFE){
 		reply=spi_read_write_byte(0xFF);
 		outer_loop_var++;
-		if(outer_loop_var==10){
+		if(outer_loop_var>=10){
 			flag =false;
 			break;
 		}

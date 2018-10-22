@@ -17,10 +17,9 @@
 #define N_SAMPLES 		2
 #define BASE_2_N 		4		//-1 done inside if...
 
-#define FREQ_TOLERANCE	50		//+- value for top of sec
+#define FREQ_TOLERANCE	100		//+- value for top of sec
 #define FREQ_TOP		32768
 
-		static 			unsigned char  		display_buffer[512];
 
 
 // HAL state
@@ -41,18 +40,23 @@ extern void debug_function(void);
 //////////////////////////////////////////////////////////////
 
 static time_manager_cmd_t 		time_manager_cmd=advance_sync;
-static int 						time_count=0;
-char							temp_buf[128];
+static uint64_t					time_count=0;
 
 void BURTC_IRQHandler(void)
 {
-	uint32_t	int_mask=BURTC_IntGet();
+	static		uint32_t	last_one_sec_top=32768;
+				uint32_t	int_mask=BURTC_IntGet();
 	if(int_mask & BURTC_IF_COMP0){
-		GPIO_PinOutToggle(LED_GPS_RADIO_PORT, LED_RADIO);
+	 	 	 //update clock...
+		if(last_one_sec_top!=one_sec_top_ref){
+			last_one_sec_top=one_sec_top_ref;
+			if(last_one_sec_top>FREQ_TOP-FREQ_TOLERANCE && last_one_sec_top<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
+				BURTC_CompareSet(0,last_one_sec_top);
+			}
+		}
 		time_count++;
-		 if(time_count==ADVANCE_SYNCH_SECONDS){
+		 if(time_count%(ADVANCE_SYNCH_SECONDS)==0){
 			 time_manager_cmd=advance_sync;
-			 time_count=0;
 				//wakeup
 #ifdef SD_CARD_ONLY
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
@@ -63,7 +67,7 @@ void BURTC_IRQHandler(void)
 		 }
 
 		 else {
-			 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
+			 if(time_count%(BASIC_SYNCH_SECONDS)==0){
 				 time_manager_cmd=basic_sync;
 				 	 //wakeup
 #ifdef SD_CARD_ONLY
@@ -156,10 +160,10 @@ void GPIO_EVEN_IRQHandler()	//impar
 	if (int_mask & 1<<RADIO_IO_0){
 		radio_irq_handler(0);
 	}
-	else if (int_mask & 1<<RADIO_IO_2){
+	if (int_mask & 1<<RADIO_IO_2){
 		radio_irq_handler(2);
 	}
-	else if (int_mask & 1<<GPS_TIME_PULSE){
+	if (int_mask & 1<<GPS_TIME_PULSE){
 		if(letimer_running==false){
 				LETIMER0->CMD=LETIMER_CMD_CLEAR;
 				LETIMER_Enable(LETIMER0,true);
@@ -177,17 +181,10 @@ void GPIO_EVEN_IRQHandler()	//impar
 				debug_var=avergae_sum;
 				avergae_sum=0;
 				counter=0;
-		 	 	 //update clock...
-				if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
-					BURTC_CompareSet(0,one_sec_top_ref);
-				}
 			}
 			//TIMER_Enable(TIMER3,false);
 			//timer_cycles=TIMER_CounterGet(TIMER3);
 		}
-	}
-	else{
-		;
 	}
 	return;
  }
