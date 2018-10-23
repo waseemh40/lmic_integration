@@ -343,31 +343,40 @@ bool 			gps_init(void){
 		return false;
 	}
 }
-nav_data_t 		gps_get_nav_data (void){
-	nav_data_t 				nav_data;
-	uint8_t 				reply=0;
+
+void 	gps_poll_nav_status (void){
 	int 					inner_loop_var=0;
-	int						outer_loop_var=0;
-	int 					retry=0;
-	bool					flag_success=false;
-	uint8_t					msg_buf[90];
 
-
-	flag_success=false;
-	for(outer_loop_var=0;outer_loop_var<15;outer_loop_var++){
 		spi_cs_clear(gps);
 		spi_read_write_byte(0xFF);
 		for(inner_loop_var=0;inner_loop_var<(sizeof(nav_pvt_gps_data)/sizeof(uint8_t));inner_loop_var++){
 			spi_read_write_byte(nav_pvt_gps_data[inner_loop_var]);
 		}
+		spi_cs_set(gps);
+		delay_ms(2);
+
+		return;
+}
+
+nav_data_t 		gps_get_nav_data (void){
+	nav_data_t 				nav_data;
+	uint8_t 				reply=0;
+	int 					inner_loop_var=0;
+	int 					retry=0;
+	bool					flag_success=false;
+	uint8_t					msg_buf[90];
+
+		spi_cs_clear(gps);
+		spi_read_write_byte(0xFF);
 		retry=0;
 		flag_success=true;
 		while(spi_read_byte()!=0xB5){
 			retry++;
-			if(retry>1024){
+			if(retry>255){
 				flag_success=false;
 				break;
 			}
+			delay_ms(0);
 		}
 		if(flag_success){
 			msg_buf[0]=0xB5;
@@ -388,7 +397,6 @@ nav_data_t 		gps_get_nav_data (void){
 				nav_data.longitude=0;
 				nav_data.height=0;
 			}
-			break;
 		}
 		else {
 			nav_data.valid=false;
@@ -403,9 +411,6 @@ nav_data_t 		gps_get_nav_data (void){
 			nav_data.height=0;
 		}
 		spi_cs_set(gps);
-
-	}
-
 	return nav_data;
 }
 void 			gps_on(void){

@@ -14,8 +14,8 @@
 #include "../resource managers_header/app_manager.h"
 
 
-#define N_SAMPLES 		4
-#define BASE_2_N 		16		//-1 done inside if...
+#define N_SAMPLES 		2
+#define BASE_2_N 		4		//-1 done inside if...
 
 #define FREQ_TOLERANCE	50		//+- value for top of sec
 #define FREQ_TOP		32768
@@ -40,7 +40,7 @@ static 	uint32_t	timer_cycles=0;
 extern void debug_function(void);
 //////////////////////////////////////////////////////////////
 
-static time_manager_cmd_t 		time_manager_cmd=basic_sync;
+static time_manager_cmd_t 		time_manager_cmd=advance_sync;
 static int 						time_count=0;
 char							temp_buf[128];
 
@@ -48,24 +48,10 @@ void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
 	if(int_mask & BURTC_IF_COMP0){
-		GPIO_PinOutToggle(LED_GPS_RADIO_PORT, LED_RADIO);
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
-/*			 	 //run time controller on GPS timestamp...
-			 if(running_tstamp.valid==true){
-				 diff_in_tstamp=(int)((uint32_t)(running_tstamp.gps_timestamp)-(uint32_t)(ref_tstamp.gps_timestamp));
-				 if(diff_in_tstamp>=10){
-					 ref_tstamp.gps_timestamp+=10;
-				 }
-					 time_count=diff_in_tstamp;
-			 }
-			 else {
-				 time_count=0;
-			 }
-*/
-		 diff_in_tstamp=(int)((uint32_t)(running_tstamp.gps_timestamp)-(uint32_t)(ref_tstamp.gps_timestamp));
-		 time_count=0;
+			 time_count=0;
 				//wakeup
 #ifdef SD_CARD_ONLY
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;

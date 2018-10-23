@@ -225,7 +225,7 @@ bool get_and_compare(char *compare_string){
 	bool			ret_flag=false;
 
 	clear_buffer(cmd_rx_tx_buf,CMD_RX_TX_BUF_SIZE);
-	tbr_backoff_delay=6;
+	tbr_backoff_delay=8;
 	delay_ms(tbr_backoff_delay);												//response time from TBR
 
 	for(loop_var=0;loop_var<FIFO_TBR_RX_DATA_SIZE;loop_var++){
@@ -242,11 +242,11 @@ bool get_and_compare(char *compare_string){
 	 }
 	incomplete_ack_flag=false;
 	check_other_messages(cmd_rx_tx_buf);
-	 if(ret_flag==false){
+	 /*if(ret_flag==false){
 		 if(incomplete_ack_flag==true){
 			 ret_flag=true;
 		 }
-	 }
+	 }*/
 	return ret_flag;
 }
 
@@ -412,19 +412,23 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 
 	if( tbr_cmd==cmd_sn_req){
 		sprintf((char *)cmd_tx_buf,"?\n");
-		rs485_transmit_string(cmd_tx_buf,1);
+		rs485_transmit_string_new(cmd_tx_buf,1);
 		ret_flag=get_and_compare((char *)"SN=");
 	}
 	else if(tbr_cmd==cmd_basic_sync){
-		sprintf((char *)cmd_tx_buf,"(+)\n");
-		rs485_transmit_string(cmd_tx_buf,3);
+		//sprintf((char *)cmd_tx_buf,"(+)\n");
+		cmd_tx_buf[0]='(';
+		cmd_tx_buf[1]='+';
+		cmd_tx_buf[2]=')';
+		cmd_tx_buf[3]='\r';
+		rs485_transmit_string_new(cmd_tx_buf,4);
 		ret_flag=get_and_compare((char *)"ack01\r");			//changed from 01
-		if (!ret_flag){
+		/*if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
 		}
 		if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
-		}
+		}*/
 		/*if(ret_flag){
 			debug_str("\t\tTBR ACK received\n");
 		}
@@ -436,17 +440,23 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 	else if(tbr_cmd==cmd_advance_sync){
 		my_timestamp=timestamp;
 		luhn=CalculateLuhn(&my_timestamp);
-		sprintf((char *)cmd_tx_buf,"(+)%ld\n",my_timestamp);
-		temp_var=strlen((const char *)cmd_tx_buf);
-		cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
-		rs485_transmit_string(cmd_tx_buf,temp_var-1);
+		//sprintf((char *)cmd_tx_buf,"(+)%ld\n",my_timestamp);
+		cmd_tx_buf[0]='(';											cmd_tx_buf[1]='+'; 											cmd_tx_buf[2]=')';
+		cmd_tx_buf[3]=((int)(timestamp/1000000000))%10 +  '0';		cmd_tx_buf[4]=((int)(timestamp/100000000))%10 + '0'; 		cmd_tx_buf[5]=((int)(timestamp/10000000))%10 + '0';
+		cmd_tx_buf[6]=((int)(timestamp/1000000))%10 + '0';			cmd_tx_buf[7]=((int)(timestamp/100000))%10 + '0'; 			cmd_tx_buf[8]=((int)(timestamp/10000))%10 + '0';
+		cmd_tx_buf[9]=((int)(timestamp/1000))%10 + '0';				cmd_tx_buf[10]=((int)(timestamp/100))%10 + '0'; 			cmd_tx_buf[11]=((int)(timestamp/10))%10 + '0';
+		cmd_tx_buf[12]=luhn;										cmd_tx_buf[13]='\r';
+
+		//temp_var=strlen((const char *)cmd_tx_buf);
+		//cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
+		rs485_transmit_string_new(cmd_tx_buf,14);
 		ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
-		if (!ret_flag){
+		/*if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
 		}
 		if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
-		}
+		}*/
 		/*if(ret_flag){
 			debug_str("\t\tTBR ACK received\n");
 		}
