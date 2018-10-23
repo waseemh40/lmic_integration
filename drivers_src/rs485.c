@@ -91,9 +91,9 @@ void rs485_transmit_string_new(char* data,uint8_t length){
 	int loop_var=0;
 	rs485_tx_mode();
 	for(loop_var=0;loop_var<length;loop_var++){
-		LEUART_FreezeEnable(RS485_UART,true);
+		//LEUART_FreezeEnable(RS485_UART,true);
 		LEUART_Tx(RS485_UART,(uint8_t)data[loop_var] );
-		LEUART_FreezeEnable(RS485_UART,false);
+		//LEUART_FreezeEnable(RS485_UART,false);
 		delay_ms(0);
 	}
 	rs485_rx_mode();
