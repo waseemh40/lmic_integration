@@ -111,7 +111,7 @@ int main() {
 						//update Timestamps
 				gps_state=0;
 				gps_poll_nav_status();
-				while(gps_state<5){
+				while(gps_state<10){
 					running_tstamp=gps_get_nav_data();
 					if (running_tstamp.valid==true){
 						break;

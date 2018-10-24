@@ -141,17 +141,17 @@ void rs485_rx_mode(void){
  */
 void RS485_ISR(){
 	 if (RS485_UART->STATUS & LEUART_STATUS_TXBL){
-		if(!fifo_tbr_is_empty(fifo_tbr_tx_cmd)){
+		while(!fifo_tbr_is_empty(fifo_tbr_tx_cmd)){
 			isr_rx_tx_char=fifo_tbr_remove(fifo_tbr_tx_cmd);
 			LEUART_FreezeEnable(RS485_UART,true);
 			LEUART_Tx(RS485_UART,(uint8_t)isr_rx_tx_char );
 			LEUART_FreezeEnable(RS485_UART,false);
 			delay_ms(1);
 		}
-	  else{
+	  //else{
 		  	LEUART_IntDisable(RS485_UART,LEUART_IF_TXBL);
 		  	rs485_rx_mode();
-	  	}
+	  	//}
 		LEUART_IntClear(RS485_UART, LEUART_IF_TXBL);
 	  }
 	 if (RS485_UART->STATUS & LEUART_STATUS_RXDATAV){

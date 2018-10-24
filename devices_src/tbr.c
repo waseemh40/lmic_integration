@@ -412,7 +412,7 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 
 	if( tbr_cmd==cmd_sn_req){
 		sprintf((char *)cmd_tx_buf,"?\n");
-		rs485_transmit_string_new(cmd_tx_buf,1);
+		rs485_transmit_string(cmd_tx_buf,1);
 		ret_flag=get_and_compare((char *)"SN=");
 	}
 	else if(tbr_cmd==cmd_basic_sync){
@@ -421,7 +421,7 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 		cmd_tx_buf[1]='+';
 		cmd_tx_buf[2]=')';
 		cmd_tx_buf[3]='\r';
-		rs485_transmit_string_new(cmd_tx_buf,4);
+		rs485_transmit_string(cmd_tx_buf,4);
 		ret_flag=get_and_compare((char *)"ack01\r");			//changed from 01
 		/*if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\r");		//changed from 01
@@ -449,7 +449,7 @@ bool tbr_send_cmd(tbr_cmd_t tbr_cmd,time_t timestamp){
 
 		//temp_var=strlen((const char *)cmd_tx_buf);
 		//cmd_tx_buf[temp_var-2]=luhn;						//change last digit of TimeStamp
-		rs485_transmit_string_new(cmd_tx_buf,14);
+		rs485_transmit_string(cmd_tx_buf,14);
 		ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02
 		/*if (!ret_flag){
 			ret_flag=get_and_compare((char *)"ack01\rack02\r");		//changed from 02

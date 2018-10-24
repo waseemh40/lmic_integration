@@ -48,6 +48,10 @@ void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
 	if(int_mask & BURTC_IF_COMP0){
+			 //update clock...
+		 if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
+			 BURTC_CompareSet(0,one_sec_top_ref);
+		 }
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
@@ -64,10 +68,6 @@ void BURTC_IRQHandler(void)
 		 else {
 			 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
 				 time_manager_cmd=basic_sync;
-			 	 	 //update clock...
-				 if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
-					 BURTC_CompareSet(0,one_sec_top_ref);
-				 }
 				 	 //wakeup
 #ifdef SD_CARD_ONLY
 			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
