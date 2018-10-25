@@ -14,8 +14,8 @@
 #include "../resource managers_header/app_manager.h"
 
 
-#define N_SAMPLES 		4
-#define BASE_2_N 		16		//-1 done inside if...
+#define N_SAMPLES 		2
+#define BASE_2_N 		4		//-1 done inside if...
 
 #define FREQ_TOLERANCE	50		//+- value for top of sec
 #define FREQ_TOP		32768

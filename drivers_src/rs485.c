@@ -77,7 +77,7 @@ int rs485_transmit_string(char* data,uint8_t length){
 		fifo_tbr_add(fifo_tbr_tx_cmd,data[loop_var]);
 	}
 	rs485_tx_mode();
-	delay_ms(1);
+	//delay_ms(1);
 	LEUART_IntEnable(RS485_UART,LEUART_IF_TXBL);
 	ret_val=1;
 	}
