@@ -91,9 +91,7 @@ void rs485_transmit_string_new(char* data,uint8_t length){
 	int loop_var=0;
 	rs485_tx_mode();
 	for(loop_var=0;loop_var<length;loop_var++){
-		LEUART_FreezeEnable(RS485_UART,true);
 		LEUART_Tx(RS485_UART,(uint8_t)data[loop_var] );
-		LEUART_FreezeEnable(RS485_UART,false);
 		pwm_us_delay(1000);
 	}
 	rs485_rx_mode();
@@ -143,9 +141,7 @@ void RS485_ISR(){
 	 if (RS485_UART->STATUS & LEUART_STATUS_TXBL){
 		while(!fifo_tbr_is_empty(fifo_tbr_tx_cmd)){
 			isr_rx_tx_char=fifo_tbr_remove(fifo_tbr_tx_cmd);
-			LEUART_FreezeEnable(RS485_UART,true);
 			LEUART_Tx(RS485_UART,(uint8_t)isr_rx_tx_char );
-			LEUART_FreezeEnable(RS485_UART,false);
 			delay_ms(1);
 		}
 	  //else{
@@ -155,9 +151,7 @@ void RS485_ISR(){
 		LEUART_IntClear(RS485_UART, LEUART_IF_TXBL);
 	  }
 	 if (RS485_UART->STATUS & LEUART_STATUS_RXDATAV){
-		 LEUART_FreezeEnable(RS485_UART,true);
 		 isr_rx_tx_char=(char) LEUART_Rx(RS485_UART);
-		 LEUART_FreezeEnable(RS485_UART,false);
 			 if(!fifo_tbr_is_full(current_rx_fifo)){
 				 fifo_tbr_add(current_rx_fifo, isr_rx_tx_char);
 			}
