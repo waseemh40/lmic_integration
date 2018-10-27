@@ -120,7 +120,7 @@ void 		time_manager_init(void){
 	//CMU_ClockEnable(cmuClock_TIMER3, true);
 	//TIMER_Init(TIMER3, &PWMTimerInit);
 		//start BURTC
-		BURTC_Enable(true);
+	//	BURTC_Enable(true);
     return;
 }
 
@@ -163,27 +163,55 @@ void GPIO_EVEN_IRQHandler()	//impar
 		radio_irq_handler(2);
 	}
 	else if (int_mask & 1<<GPS_TIME_PULSE){
-		if(letimer_running==false){
-				LETIMER0->CMD=LETIMER_CMD_CLEAR;
-				LETIMER_Enable(LETIMER0,true);
-				letimer_running=true;
-				//TIMER_CounterSet(TIMER3,0);
-				//TIMER_Enable(TIMER3,true);
-		}
-		else{
-			LETIMER_Enable(LETIMER0,false);
-			avergae_sum+=(65536-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
-			counter++;
-			letimer_running=false;
-			if(counter>=BASE_2_N){
-				one_sec_top_ref=avergae_sum>>(N_SAMPLES);
-				debug_var=avergae_sum;
-				avergae_sum=0;
-				counter=0;
-			}
-			//TIMER_Enable(TIMER3,false);
-			//timer_cycles=TIMER_CounterGet(TIMER3);
-		}
+//		if(letimer_running==false){
+//				LETIMER0->CMD=LETIMER_CMD_CLEAR;
+//				LETIMER_Enable(LETIMER0,true);
+//				letimer_running=true;
+//				//TIMER_CounterSet(TIMER3,0);
+//				//TIMER_Enable(TIMER3,true);
+//		}
+//		else{
+//			LETIMER_Enable(LETIMER0,false);
+//			avergae_sum+=(65537-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
+//			counter++;
+//			letimer_running=false;
+//			if(counter>=BASE_2_N){
+//				one_sec_top_ref=avergae_sum>>(N_SAMPLES);
+//				debug_var=avergae_sum;
+//				avergae_sum=0;
+//				counter=0;
+//			}
+//			//TIMER_Enable(TIMER3,false);
+//			//timer_cycles=TIMER_CounterGet(TIMER3);
+//		}
+		///////////////////////////
+		time_count++;
+		 if(time_count==ADVANCE_SYNCH_SECONDS){
+			 time_manager_cmd=advance_sync;
+			 time_count=0;
+				//wakeup
+#ifdef SD_CARD_ONLY
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+#else
+			 debug_function();
+#endif
+
+		 }
+
+		 else {
+			 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
+				 time_manager_cmd=basic_sync;
+				 	 //wakeup
+#ifdef SD_CARD_ONLY
+			 SCB->SCR &= ~SCB_SCR_SLEEPONEXIT_Msk;
+#else
+			 debug_function();
+#endif
+
+			 }
+		 }
+
+		////////////////////////////
 	}
 	else{
 		;

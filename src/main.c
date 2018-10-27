@@ -101,7 +101,7 @@ int main() {
 		while(1){
 					//goto sleep
 			SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-			//EMU_EnterEM1();
+			EMU_EnterEM1();
 					//add 10secs
 			ref_tstamp.gps_timestamp+=BASIC_SYNCH_SECONDS;
 					//get synch command type from time manager
