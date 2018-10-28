@@ -230,6 +230,8 @@ void GPIO_ODD_IRQHandler()	//par
 
 static void hal_io_init ()
 {
+	GPIO_PinModeSet(PWR_EN_PORT,RADIO_PWR_EN,gpioModePushPull,0);
+	GPIO_PinOutSet(PWR_EN_PORT,RADIO_PWR_EN);
 
 	spi_cs_set(radio);
 
