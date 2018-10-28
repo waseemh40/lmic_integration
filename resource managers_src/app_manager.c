@@ -262,11 +262,18 @@ void app_manager_tbr_synch_msg(uint8_t  time_manager_cmd, nav_data_t ref_timesta
 	int				tbr_msg_length=0;
 	char			tbr_msg_buf[ARRAY_MESSAGE_SIZE];
 
+	static bool		sent_adv_synch=false;
+
 	if(time_manager_cmd==0){
 		temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp_local_function.gps_timestamp);
 	}
 	else if (time_manager_cmd==1){
-	  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp_local_function.gps_timestamp);
+		if(sent_adv_synch){
+			temp_flag=tbr_cmd_update_rgb_led(cmd_basic_sync,(time_t)ref_timestamp_local_function.gps_timestamp);
+		}else{
+			  temp_flag=tbr_cmd_update_rgb_led(cmd_advance_sync,(time_t)ref_timestamp_local_function.gps_timestamp);
+			  time_manager_cmd=1;
+		}
 #ifdef SD_CARD_ONLY
 	  tbr_msg_count=tbr_recv_msg((char *)tbr_msg_buf,&tbr_msg_length);
 	  if(tbr_msg_count>0){
