@@ -172,11 +172,7 @@ void GPIO_EVEN_IRQHandler()	//impar
 //		}
 //		else{
 //			LETIMER_Enable(LETIMER0,false);
-<<<<<<< HEAD
 //			avergae_sum+=(65536-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
-=======
-//			avergae_sum+=(65537-LETIMER_CounterGet(LETIMER0));	//changed from 65535 to 65537
->>>>>>> ce4f86bae2347922ea749b3a96ffdeeac93b0bfa
 //			counter++;
 //			letimer_running=false;
 //			if(counter>=BASE_2_N){
@@ -214,10 +210,6 @@ void GPIO_EVEN_IRQHandler()	//impar
 
 			 }
 		 }
-<<<<<<< HEAD
-=======
-
->>>>>>> ce4f86bae2347922ea749b3a96ffdeeac93b0bfa
 		////////////////////////////
 	}
 	else{
