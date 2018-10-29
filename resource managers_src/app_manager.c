@@ -43,6 +43,7 @@ bool log_file_sys_setup(uint16_t year,uint8_t month,uint8_t day, char buf[]){
 	 * which is normal and as per logic. Function is almost done.
 	 * Also works with remove and reinsert card
 	 */
+	f_mount(&FatFs,"", 1);
 	sprintf(filename,"%4d%d%d.txt",year,month,day);
 	f_ret = f_open(&f_pointer, filename, FA_WRITE | FA_OPEN_APPEND);
 	if(f_ret==FR_OK){
@@ -351,6 +352,7 @@ bool debug_file_sys_setup(char *debug_name, char buf[]){
 	FIL  			f_pointer;
 	FRESULT 		f_ret;
 
+	f_mount(&FatFs,"", 1);
 	sprintf(filename,"%s.txt",debug_name);
 	f_ret = f_open(&f_pointer, filename, FA_WRITE | FA_OPEN_APPEND);
 	if(f_ret==FR_OK){
