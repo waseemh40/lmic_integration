@@ -14,6 +14,7 @@
 	static osjob_t			app_job;
 	static bool				joined_lora=false;
 	static uint8_t			gps_state=0;
+	static uint8_t 			node_id=0;
 #ifdef USE_RADIO
 	nav_data_t	 			running_tstamp;
 	nav_data_t	 			ref_tstamp;
@@ -32,6 +33,7 @@
 	// provide device ID (8 bytes, LSBF)
 	void os_getDevEui (u1_t* buf) {
 	    memcpy(buf, DEVEUI, 8);
+	    node_id=DEVEUI[1];		//which is MSByte -1!!!
 	}
 
 	// provide device key (16 bytes)
@@ -141,6 +143,7 @@
 			debug_str(temp_buf);
 		if(time_manager_cmd==advance_sync && joined_lora==true){
 			lora_msg_length=app_manager_get_lora_buffer(lora_buffer);
+			lora_buffer[0]=node_id;
 			if(lora_msg_length>0){
 			 	lora_tx_function();
 			}

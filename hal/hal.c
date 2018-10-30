@@ -20,7 +20,6 @@
 #define FREQ_TOLERANCE	50		//+- value for top of sec
 #define FREQ_TOP		32768
 
-		static 			unsigned char  		display_buffer[512];
 
 
 // HAL state
@@ -35,7 +34,6 @@ static	bool		letimer_running=false;
 static 	uint32_t	avergae_sum=0;
 static 	uint32_t	debug_var=0;
 static 	uint8_t		counter=0;
-static 	uint32_t	timer_cycles=0;
 
 extern void debug_function(void);
 //////////////////////////////////////////////////////////////
@@ -48,10 +46,7 @@ void BURTC_IRQHandler(void)
 {
 	uint32_t	int_mask=BURTC_IntGet();
 	if(int_mask & BURTC_IF_COMP0){
-			 //update clock...
-		 if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
-			 BURTC_CompareSet(0,one_sec_top_ref);
-		 }
+
 		time_count++;
 		 if(time_count==ADVANCE_SYNCH_SECONDS){
 			 time_manager_cmd=advance_sync;
@@ -67,6 +62,10 @@ void BURTC_IRQHandler(void)
 
 		 else {
 			 if(time_count%(BASIC_SYNCH_SECONDS)==0 && time_count!=0 ){
+					 //update clock...
+				 if(one_sec_top_ref>FREQ_TOP-FREQ_TOLERANCE && one_sec_top_ref<FREQ_TOP+FREQ_TOLERANCE){		//+-2.5%
+					 BURTC_CompareSet(0,one_sec_top_ref);
+				 }
 				 time_manager_cmd=basic_sync;
 				 	 //wakeup
 #ifdef SD_CARD_ONLY
